@@ -1,6 +1,7 @@
 namespace Chess_Final.Tests;
+using Library;
 using FluentAssertions;
-public class UnitTest1
+public class Player_Tests
 {
     [Fact]
     public void ShouldCreateNewPlayer()
@@ -12,4 +13,5 @@ public class UnitTest1
         // Assert
         player.Should().NotBeNull();
     }
+
 }
