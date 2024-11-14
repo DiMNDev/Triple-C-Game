@@ -40,3 +40,45 @@ public class Player_Tests
 
     }
 }
+
+public class GamePiece_Tests
+{
+    [Fact]
+    public void ShouldHaveValidMove()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+}
+
+public class GameBoard_Tests
+{
+    [Fact]
+    public void ChessBoardShouldBe8X8()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+}
+
+public class ChessGame_Tests
+{
+    [Fact]
+    public void ChessShouldBeOfTypeGame()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+}
