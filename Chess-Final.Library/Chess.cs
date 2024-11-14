@@ -2,7 +2,7 @@ namespace Chess_Final.Chess;
 using Generics;
 using Player;
 
-internal class Pawn : GamePiece
+public class Pawn : GamePiece
 {
     public string Name { get; set; }
     public (int X, int Y) AllowedMovement { get; set; }
@@ -18,4 +18,5 @@ public class Chess : Game
 
     public string Name { get; private set; } = "Chess";
     public GameBoard Board { get; set; }
+    public void LayoutGamePieces() { }
 }

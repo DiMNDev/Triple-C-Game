@@ -81,4 +81,14 @@ public class ChessGame_Tests
         // Assert
         chess.Should().BeAssignableTo<Game>();
     }
+    [Fact]
+    public void ChessBoardShouldCreateCorrectLayout()
+    {
+        // Arrange
+        Chess chess = new Chess();
+        // Act
+        chess.LayoutGamePieces();
+        // Assert
+        chess.Board.Matrix![((int)ChessCoordinate.B), 0].Should().BeAssignableTo<Pawn>();
+    }
 }
