@@ -1,8 +1,12 @@
-﻿namespace Chess_Final.Library;
+﻿namespace Chess_Final.Player;
+using Generics;
 
-public class Player
+public class Player : IPlayer
 {
-    public string Name { get; set; }
+    public List<GamePiece>? GamePieces { get; set; } = null;
+    public string Name { get; init; }
+    public int Wins { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public int Losses { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public Player(string name)
     {
