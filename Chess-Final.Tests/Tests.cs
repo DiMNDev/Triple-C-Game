@@ -61,11 +61,11 @@ public class GameBoard_Tests
     public void ChessBoardShouldBe8X8()
     {
         // Arrange
-
         // Act
+        GameBoard gameBoard = new GameBoard(GameType.Chess);
 
         // Assert
-
+        gameBoard.BoardSize.Should().Be((8, 8));
     }
 }
 
