@@ -72,13 +72,13 @@ public class GameBoard_Tests
 public class ChessGame_Tests
 {
     [Fact]
-    public void ChessShouldBeOfTypeGame()
+    public void ChessShouldInheritFromTypeGame()
     {
         // Arrange
-
         // Act
+        Chess chess = new Chess();
 
         // Assert
-
+        chess.Should().BeAssignableTo<Game>();
     }
 }
