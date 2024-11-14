@@ -28,4 +28,15 @@ public class Player_Tests
         player.Name.Should().Be(newPlayerName);
     }
 
+    [Fact]
+    public void ShouldNotHaveAnyGamePieces()
+    {
+        // Arrange
+        Player player = new Player("P1");
+        // Act
+        var result = player.GamePieces;
+        // Assert
+        result.Should().BeNull();
+
+    }
 }
