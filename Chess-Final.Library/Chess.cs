@@ -20,3 +20,8 @@ public class Chess : Game
     public GameBoard Board { get; set; }
     public void LayoutGamePieces() { }
 }
+
+internal record ChessPieceLayout
+{
+
+}
