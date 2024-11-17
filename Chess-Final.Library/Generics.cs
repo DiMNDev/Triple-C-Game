@@ -1,6 +1,6 @@
 namespace Chess_Final.Generics;
 
-using Chess_Final.Player;
+using Player;
 
 public interface IPlayer
 {
