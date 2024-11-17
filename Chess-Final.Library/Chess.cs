@@ -1,141 +1,122 @@
 namespace Chess_Final.Chess;
-using Generics;
-using Player;
 
-public class Pawn : GamePiece
+using Player;
+using Generics;
+using TC_DataManager;
+
+public class ChessPieces
 {
-    public string Name { get; set; }
-    public (int X, int Y) AllowedMovement { get; set; }
-    public bool CanMove { get; set; }
-    public (int X, int Y) CurrentPosition { get; set; }
+
+    public class Pawn : GamePiece
+    {
+        public PieceType Type { get; set; }
+        public (int X, int Y) AllowedMovement { get; set; }
+        public bool CanMove { get; set; }
+        public (string X, int Y) CurrentPosition { get; set; }
+
+    }
+    public class Rook : GamePiece
+    {
+        public PieceType Type { get; set; }
+        public (int X, int Y) AllowedMovement { get; set; }
+        public bool CanMove { get; set; }
+        public (string X, int Y) CurrentPosition { get; set; }
+
+    }
+    public class Knight : GamePiece
+    {
+        public PieceType Type { get; set; }
+        public (int X, int Y) AllowedMovement { get; set; }
+        public bool CanMove { get; set; }
+        public (string X, int Y) CurrentPosition { get; set; }
+
+    }
+    public class Bishop : GamePiece
+    {
+        public PieceType Type { get; set; }
+        public (int X, int Y) AllowedMovement { get; set; }
+        public bool CanMove { get; set; }
+        public (string X, int Y) CurrentPosition { get; set; }
+
+    }
+    public class Queen : GamePiece
+    {
+        public PieceType Type { get; set; }
+        public (int X, int Y) AllowedMovement { get; set; }
+        public bool CanMove { get; set; }
+        public (string X, int Y) CurrentPosition { get; set; }
+
+    }
+    public class King : GamePiece
+    {
+        public PieceType Type { get; set; }
+        public (int X, int Y) AllowedMovement { get; set; }
+        public bool CanMove { get; set; }
+        public (string X, int Y) CurrentPosition { get; set; }
+
+    }
 }
 
 public class Chess : Game
 {
+    public static Chess CurrentGame { get; set; } = new Chess();
     public Chess() : base(GameType.Chess)
     {
+
     }
-    private string LayoutPath = "git";
 
     public string Name { get; private set; } = "Chess";
     public GameBoard Board { get; set; }
     public void LayoutGamePieces()
     {
+        var data = DataManager.LoadFile<IEnumerable<PlayerData>>("ChessLayout.json");
+
+        foreach (var player in data.SelectMany(p => p.player))
+        {
+
+            foreach (var pawn in player.pawns)
+            {
+                PlayerOne.GamePieces.Add(new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (pawn.x, pawn.y) });
+            }
+        }
+
+
+
+        if (data != null)
+        {
+
+
+            // GamePiece newPiece = prop.Name switch
+            // {
+            //     "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
+            //     "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
+            //     "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
+            //     "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
+            //     "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
+            //     "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+            // };
+            // return newPiece;
+            // }
+
+
+
+        }
+
+
+    }
+
+    public void JoinGame(Player player)
+    {
 
     }
 }
 
-internal record ChessPieceLayout
+public enum PieceType
 {
-    //PlayerOpponent[] player = {get; set;}
-}
-
-internal record PlayerOpponent
-{
-
-}
-//internal record 
-
-
-public class Rootobject
-{
-    public Class1[] Property1 { get; set; }
-}
-
-public class Class1
-{
-    public Player[] Player { get; set; }
-    public Opponent[] Opponent { get; set; }
-}
-
-public class Player
-{
-    public Pawn[] pawns { get; set; }
-    public Rook[] rooks { get; set; }
-    public Knight[] knights { get; set; }
-    public Bishop[] bishops { get; set; }
-    public Queen[] queen { get; set; }
-    public King[] king { get; set; }
-}
-
-public class Pawn
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Rook
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Knight
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Bishop
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Queen
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class King
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Opponent
-{
-    public Pawn1[] pawns { get; set; }
-    public Rook1[] rooks { get; set; }
-    public Knight1[] knights { get; set; }
-    public Bishop1[] bishops { get; set; }
-    public Queen1[] queen { get; set; }
-    public King1[] king { get; set; }
-}
-
-public class Pawn1
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Rook1
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Knight1
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Bishop1
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class Queen1
-{
-    public string x { get; set; }
-    public int y { get; set; }
-}
-
-public class King1
-{
-    public string x { get; set; }
-    public int y { get; set; }
+    pawn,
+    rook,
+    knight,
+    bishop,
+    queen,
+    king
 }
