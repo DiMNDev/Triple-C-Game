@@ -1,0 +1,27 @@
+@page "/{GameName}/lobby/"
+@using Chess_Final.Generics
+<link rel="stylesheet" href="Lobby.css">
+<link rel="stylesheet" href="Generic.css">
+
+<PageTitle>Triple C</PageTitle>
+
+<h1>@GameName Lobby</h1>
+
+<div class="LobbyCard">
+    @* ForEach this *@
+    <LobbyCard PlayerOne="PlayerOne" />
+    <LobbyCard PlayerOne="PlayerOne" PlayerTwo="PlayerTwo" />
+
+</div>
+<button @onclick=CreateNewGame>Create New Game</button>
+
+@code
+{
+    [Parameter]
+    public string? GameName { get; set; }
+
+    void CreateNewGame()
+    {
+        //Create a new game(GameName as type) w/ player name as playerOne
+    }
+}

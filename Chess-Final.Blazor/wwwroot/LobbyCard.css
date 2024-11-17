@@ -1,0 +1,21 @@
+.container {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1fr;
+  border: solid red 2px;
+  width: 50vw;
+  height: 3rem;
+}
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell:nth-child(4),
+.cell:nth-child(5) {
+  justify-self: flex-end;
+  height: 100%;
+  width: 100%;
+  padding: 0rem;
+  gap: 0.5rem;
+}

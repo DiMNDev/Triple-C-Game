@@ -1,0 +1,13 @@
+button {
+  font-size: larger;
+  color: white;
+  background-color: red;
+  padding: 1rem;
+  border: none;
+}
+
+button:hover:not(:disabled) {
+  scale: 105%;
+  transition: all 0.25s;
+  cursor: pointer;
+}

@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="LobbyCard.css">
+<div class="container">
+    <div class="cell">@PlayerOne</div>
+    <div class="cell">vs</div>
+    <div class="cell">@PlayerTwo</div>
+    <button class="cell" disabled=@Playable>Join</button>
+    <button class="cell">Watch</button>
+</div>
+
+@code
+{
+    [Parameter] public string? PlayerOne { get; set; }
+    [Parameter] public string? PlayerTwo { get; set; }
+    [Parameter] public Guid GameId { get; set; }
+    public bool Playable => PlayerTwo != null ? true : false; // Event on toggle for filter
+
+
+}

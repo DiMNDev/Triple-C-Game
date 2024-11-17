@@ -1,0 +1,25 @@
+.SelectionContainer {
+  display: flex;
+  justify-content: space-around;
+  width: 80vw;
+  height: 100vh;
+}
+
+.GameCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 25vw;
+  height: 100%;
+  align-items: center;
+  border: solid red 2px;
+}
+a {
+  width: 100%;
+  height: 50%;
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}

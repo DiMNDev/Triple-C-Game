@@ -1,7 +1,25 @@
 ﻿@page "/"
+@using Chess_Final.Generics
+<link rel="stylesheet" href="Home.css">
+<PageTitle>Triple C</PageTitle>
 
-<PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+<div class="SelectionContainer">
+    @foreach (GameType type in gameTypes)
+    {
+        <a href="/@type/lobby/">
+            <div class="GameCard">
+                <h1>Play @type</h1>
+            </div>
+        </a>
+    }
+</div>
+
+
+@code
+{
+    List<GameType> gameTypes = [GameType.Checkers, GameType.Chess, GameType.ConnectFour];
+
+}

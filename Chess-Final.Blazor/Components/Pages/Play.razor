@@ -1,0 +1,23 @@
+@page "/{GameName}/lobby/{GameID}"
+@using Chess_Final.Generics
+<link rel="stylesheet" href="Play.css">
+
+<PageTitle>Triple C</PageTitle>
+
+<h1>@GameName</h1>
+
+<div class="LobbyContainer">
+
+</div>
+
+@code
+{
+    [Parameter]
+    public string? GameName { get; set; }
+    public Guid? ID { get; set; }
+
+    protected override void OnParametersSet()
+    {
+
+    }
+}

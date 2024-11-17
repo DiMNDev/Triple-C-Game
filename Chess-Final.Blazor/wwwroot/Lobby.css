@@ -1,0 +1,13 @@
+.LobbyContainer {
+  border: solid red 2px;
+  width: 60vw;
+  height: 60vh;
+  overflow: scroll;
+}
+
+.LobbyCard {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1rem;
+}
