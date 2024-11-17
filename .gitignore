@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# my ignored files
+Chess-Final.Console/Program.cs
+
 # dotenv files
 .env
 
