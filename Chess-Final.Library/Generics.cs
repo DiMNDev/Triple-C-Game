@@ -41,6 +41,7 @@ public class GameBoard
 }
 public abstract class Game
 {
+    public Guid UUID { get; set; } = Guid.NewGuid();
     public GameType Type { get; init; }
     public GameBoard? Board { get; set; } = null;
     public Player? PlayerOne { get; set; } = null;
