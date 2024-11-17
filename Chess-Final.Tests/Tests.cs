@@ -106,6 +106,32 @@ public class ChessGame_Tests
     }
 
     [Fact]
+    public void PlayerOneShouldBeAbleToJoinGame()
+    {
+        // Arrange
+        Chess chess = new Chess();
+        // Act
+        Player playerOne = new Player("John");
+        chess.JoinGame(playerOne);
+        // Assert
+        chess.PlayerOne.Name.Should().Be("John");
+    }
+    [Fact]
+    public void PlayerTwoShouldBeAbleToJoinGame()
+    {
+        // Arrange
+        Chess chess = new Chess();
+        // Act
+        Player playerOne = new Player("John");
+        Player playerTwo = new Player("Jane");
+        chess.JoinGame(playerOne);
+        chess.JoinGame(playerTwo);
+        // Assert
+        chess.PlayerOne.Name.Should().Be("John");
+        chess.PlayerTwo.Name.Should().Be("Jane");
+    }
+
+    [Fact]
     public void ChessBoardShouldCreateCorrectLayout()
     {
         // Arrange
