@@ -160,3 +160,47 @@ public class DataManager_Tests
 
     }
 }
+
+public class Lobby_Tests
+{
+    [Fact]
+    public void ShouldHaveAListOfGamesForEachGameType()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+    [Fact]
+    public void ShouldFilterActiveGamesWithCorrectGuid()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+    [Fact]
+    public void ShouldFilterOpenGamesWithCorrectGuid()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+    [Fact]
+    public void ShouldAddANewGameToLobby()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+
+    }
+}
