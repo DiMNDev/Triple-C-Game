@@ -9,6 +9,7 @@ Chess chessGame = new Chess();
 
 chessGame.LayoutGamePieces();
 
+
 // var playerPieces = data.SelectMany(p => p.player
 //                        .SelectMany(g => typeof(PieceGroup).GetProperties()
 //                        .SelectMany(prop =>

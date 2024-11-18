@@ -9,15 +9,19 @@ public static class DataManager
     {
         try
         {
-            var data = JsonSerializer.Deserialize<T>(File.ReadAllText($"{path}"));
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(path);
+            }
+            var data = JsonSerializer.Deserialize<T>(File.ReadAllText(path));
             Console.WriteLine($"Reading data from: {path}");
 
             return data;
         }
-        catch
+        catch(Exception ex)
         {
             Console.WriteLine("ERROR");
-            throw new DataLoadErrorException();
+            throw new DataLoadErrorException("Unable to load file",ex);
         }
     }
 }

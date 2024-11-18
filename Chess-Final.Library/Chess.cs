@@ -69,38 +69,57 @@ public class Chess : Game
     public GameBoard Board { get; set; }
     public void LayoutGamePieces()
     {
-        var data = DataManager.LoadFile<IEnumerable<PlayerData>>("ChessLayout.json");
+        var data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../../Chess-Final.Library/ChessLayout.json");
 
-        foreach (var player in data.SelectMany(p => p.player))
-        {
+        // foreach (var player in data.SelectMany(p => p.player))
+        // {
 
-            foreach (var pawn in player.pawns)
-            {
-                PlayerOne.GamePieces.Add(new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (pawn.x, pawn.y) });
-            }
-        }
-
-
-
-        if (data != null)
-        {
-
-
-            // GamePiece newPiece = prop.Name switch
-            // {
-            //     "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
-            //     "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-            //     "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-            //     "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-            //     "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-            //     "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
-            // };
-            // return newPiece;
-            // }
+        //     foreach (var pawn in player.pawns)
+        //     {
+        //         PlayerOne.GamePieces.Add(new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (pawn.x, pawn.y) });
+        //     }
+        // }
 
 
 
-        }
+        // if (data != null)
+        // {
+
+        //     var playerPieces = data.SelectMany(p => p.player
+        //                            .SelectMany(g => typeof(PieceGroup).GetProperties()
+        //                            .SelectMany(prop =>
+        //                            (prop.GetValue(g) as IEnumerable<Piece> ?? Enumerable.Empty<Piece>())
+        //                            .Select(piece =>
+        //                             {
+
+        //                                 GamePiece newPiece = prop.Name switch
+        //                                 {
+        //                                     "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
+        //                                     "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
+        //                                     "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
+        //                                     "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
+        //                                     "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
+        //                                     "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+        //                                 };
+        //                                 return newPiece;
+        //                             }
+        //                             ))));
+        //     PlayerOne.GamePieces = playerPieces;
+        //     foreach (var piece in playerPieces)
+        //     {
+        //         if (piece != null)
+        //         {
+        //             Console.WriteLine($"{piece.Name} @ ({piece.CurrentPosition.X},{piece.CurrentPosition.Y})");
+        //         }
+        //         else
+        //         {
+        //             Console.WriteLine("null");
+        //         }
+        //     }
+
+
+
+        // }
 
 
     }
