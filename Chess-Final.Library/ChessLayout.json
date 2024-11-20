@@ -1,8 +1,10 @@
 [
   {
-    "player": [
+    "playerType": "player",
+    "data": [
       {
-        "pawns": [
+        "pieceType": "pawns",
+        "pieces": [
           { "x": "a", "y": 1 },
           { "x": "b", "y": 1 },
           { "x": "c", "y": 1 },
@@ -14,31 +16,42 @@
         ]
       },
       {
-        "rooks": [
+        "pieceType": "rooks",
+        "pieces": [
           { "x": "a", "y": 0 },
           { "x": "h", "y": 0 }
         ]
       },
       {
-        "knights": [
+        "pieceType": "knights",
+        "pieces": [
           { "x": "b", "y": 0 },
           { "x": "g", "y": 0 }
         ]
       },
       {
-        "bishops": [
+        "pieceType": "bishops",
+        "pieces": [
           { "x": "c", "y": 0 },
           { "x": "f", "y": 0 }
         ]
       },
-      { "queen": [{ "x": "e", "y": 0 }] },
-      { "king": [{ "x": "d", "y": 0 }] }
+      {
+        "pieceType": "queen",
+        "pieces": [{ "x": "e", "y": 0 }]
+      },
+      {
+        "pieceType": "king",
+        "pieces": [{ "x": "d", "y": 0 }]
+      }
     ]
   },
   {
-    "opponent": [
+    "playerType": "opponent",
+    "data": [
       {
-        "pawns": [
+        "pieceType": "pawns",
+        "pieces": [
           { "x": "a", "y": 6 },
           { "x": "b", "y": 6 },
           { "x": "c", "y": 6 },
@@ -50,25 +63,34 @@
         ]
       },
       {
-        "rooks": [
+        "pieceType": "rooks",
+        "pieces": [
           { "x": "a", "y": 7 },
           { "x": "h", "y": 7 }
         ]
       },
       {
-        "knights": [
+        "pieceType": "knights",
+        "pieces": [
           { "x": "b", "y": 7 },
           { "x": "g", "y": 7 }
         ]
       },
       {
-        "bishops": [
+        "pieceType": "bishops",
+        "pieces": [
           { "x": "c", "y": 7 },
           { "x": "f", "y": 7 }
         ]
       },
-      { "queen": [{ "x": "e", "y": 7 }] },
-      { "king": [{ "x": "d", "y": 7 }] }
+      {
+        "pieceType": "queen",
+        "pieces": [{ "x": "e", "y": 7 }]
+      },
+      {
+        "pieceType": "king",
+        "pieces": [{ "x": "d", "y": 7 }]
+      }
     ]
   }
 ]
