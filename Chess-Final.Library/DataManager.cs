@@ -18,27 +18,24 @@ public static class DataManager
 
             return data;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("ERROR");
-            throw new DataLoadErrorException("Unable to load file",ex);
+            throw new DataLoadErrorException("Unable to load file", ex);
         }
     }
 }
 public class PlayerData
 {
-    public List<PieceGroup> player { get; set; }
-    public List<PieceGroup> opponent { get; set; }
+    public string playerType { get; set; }
+
+    public IEnumerable<PieceType> data { get; set; }
 }
 
-public class PieceGroup
+public class PieceType
 {
-    public List<Piece> pawns { get; set; }
-    public List<Piece> rooks { get; set; }
-    public List<Piece> knights { get; set; }
-    public List<Piece> bishops { get; set; }
-    public List<Piece> queen { get; set; }
-    public List<Piece> king { get; set; }
+    public string pieceType { get; set; }
+    public IEnumerable<Piece> pieces { get; set; }
 }
 
 public class Piece
