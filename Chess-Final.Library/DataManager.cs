@@ -7,6 +7,8 @@ public static class DataManager
 {
     public static T? LoadFile<T>(string path)
     {
+        string CWD = Directory.GetCurrentDirectory();
+
         try
         {
             if (!File.Exists(path))
@@ -20,8 +22,9 @@ public static class DataManager
         }
         catch (Exception ex)
         {
+            CWD = Directory.GetCurrentDirectory();
             Console.WriteLine("ERROR");
-            throw new DataLoadErrorException("Unable to load file", ex);
+            throw new DataLoadErrorException($"Unable to load file {ex} in {CWD}");
         }
     }
 }

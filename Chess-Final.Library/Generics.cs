@@ -52,7 +52,6 @@ public abstract class Game
     {
         Type = game;
         Board = new GameBoard(Type);
-
     }
 
 }
@@ -67,4 +66,11 @@ public enum GameType
 public enum ChessCoordinate
 {
     A, B, C, D, E, F, G, H
+}
+
+public class FilePaths
+{
+    public string Tests { get; } = "../../../../Chess-Final.Library/ChessLayout.json";
+    public string Blazor { get; } = "";
+    public string Console { get; } = "";
 }

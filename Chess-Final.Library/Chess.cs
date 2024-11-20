@@ -98,6 +98,10 @@ public class Chess : Game
 
             PlayerOne.GamePieces = playerPieces;
 
+            foreach (var piece in PlayerOne.GamePieces)
+            {
+                Console.WriteLine($"{piece.Name} @ ({piece.CurrentPosition.X},{piece.CurrentPosition.Y})");
+            }
         }
     }
 

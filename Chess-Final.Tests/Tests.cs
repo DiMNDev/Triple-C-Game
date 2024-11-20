@@ -139,7 +139,18 @@ public class ChessGame_Tests
         // Act
         chess.LayoutGamePieces();
         // Assert
-        chess.Board.Matrix![((int)ChessCoordinate.B), 0].Should().BeAssignableTo<ChessPieces.Pawn>();
+        chess.PlayerOne.GamePieces[0].CurrentPosition.Should().Be((0, 0));
+    }
+
+    [Fact]
+    public void PlayerOnePieceShouldHaveCorrectPosition()
+    {
+        // Arrange
+        Chess chess = new Chess();
+        // Act
+        chess.LayoutGamePieces();
+        // Assert
+        chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((0, 1));
     }
 }
 
