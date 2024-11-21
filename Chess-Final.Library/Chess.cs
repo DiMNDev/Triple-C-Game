@@ -13,7 +13,7 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-        public (string X, int Y) CurrentPosition { get; set; }
+
 
     }
     public class Rook : GamePiece
@@ -21,7 +21,7 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-        public (string X, int Y) CurrentPosition { get; set; }
+
 
     }
     public class Knight : GamePiece
@@ -29,7 +29,7 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-        public (string X, int Y) CurrentPosition { get; set; }
+
 
     }
     public class Bishop : GamePiece
@@ -37,7 +37,7 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-        public (string X, int Y) CurrentPosition { get; set; }
+
 
     }
     public class Queen : GamePiece
@@ -45,7 +45,7 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-        public (string X, int Y) CurrentPosition { get; set; }
+
 
     }
     public class King : GamePiece
@@ -53,7 +53,7 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-        public (string X, int Y) CurrentPosition { get; set; }
+
 
     }
 }
@@ -71,8 +71,8 @@ public class Chess : Game
     public GameBoard Board { get; set; }
     public void LayoutGamePieces()
     {
-        // var data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../../Chess-Final.Library/ChessLayout.json");
-        IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../ChessLayout.json");
+        IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../../Chess-Final.Library/ChessLayout.json");
+        // IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../ChessLayout.json");
 
         if (data != null)
         {
@@ -91,12 +91,13 @@ public class Chess : Game
                 "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
                 "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
             };
+            PlayerOne.GamePieces.Add(newPiece);
             return newPiece;
         }
             )
              ).ToList();
 
-            PlayerOne.GamePieces = playerPieces;
+            // PlayerOne.GamePieces = playerPieces;
 
             foreach (var piece in PlayerOne.GamePieces)
             {

@@ -3,7 +3,7 @@ using Generics;
 
 public class Player : IPlayer
 {
-    public List<GamePiece>? GamePieces { get; set; } = null;
+    public List<GamePiece> GamePieces { get; set; } = new();
     public string Name { get; init; }
     public int Wins { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public int Losses { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

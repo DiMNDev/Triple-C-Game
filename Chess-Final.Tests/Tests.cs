@@ -139,7 +139,7 @@ public class ChessGame_Tests
         // Act
         chess.LayoutGamePieces();
         // Assert
-        chess.PlayerOne.GamePieces[0].CurrentPosition.Should().Be((0, 0));
+        chess.PlayerOne.GamePieces[0].CurrentPosition.Should().Be(("A", 0));
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class ChessGame_Tests
         // Act
         chess.LayoutGamePieces();
         // Assert
-        chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((0, 1));
+        chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((ChessCoordinate.B.ToString(), 1));
     }
 }
 

@@ -5,7 +5,7 @@ using Player;
 public interface IPlayer
 {
     public string Name { get; init; }
-    public List<GamePiece>? GamePieces { get; set; }
+    public List<GamePiece> GamePieces { get; }
     public int Wins { get; set; }
     public int Losses { get; set; }
 
@@ -15,7 +15,7 @@ public abstract class GamePiece
     public string Name { get; set; }
     public (int X, int Y) AllowedMovement { get; set; }
     public bool CanMove { get; set; }
-    public (int X, int Y) CurrentPosition { get; set; }
+    public (string X, int Y) CurrentPosition { get; set; } = ("X", -1);
 
 }
 
