@@ -3,6 +3,7 @@ using Player;
 using FluentAssertions;
 using Chess_Final.Generics;
 using Chess_Final.Chess;
+using Lobby;
 using TC_DataManagerException;
 using TC_DataManager;
 
@@ -189,12 +190,12 @@ public class Lobby_Tests
     public void ShouldAddANewGameToLobby()
     {
         // Arrange
+        Lobby lobby = new Lobby();
         Player player = new Player("John");
-         Game newGame = Lobby.Lobby.CreateGame(player, GameType.Chess);
+        Game newGame = Lobby.Instance.CreateGame(player, GameType.Chess);
         // Act
-       Guid gameGuid = newGame.UUID;
+        Guid gameGuid = newGame.UUID;
         // Assert
-        
-
+        lobby.ChessGames.FirstOrDefault(g => g.Key == gameGuid).Should().NotBeNull();
     }
 }
