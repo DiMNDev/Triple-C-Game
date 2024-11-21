@@ -3,7 +3,6 @@ namespace Chess_Final.Chess;
 using Player;
 using Generics;
 using TC_DataManager;
-using System.Runtime.CompilerServices;
 
 public class ChessPieces
 {
@@ -63,66 +62,80 @@ public class Chess : Game
     public static Chess CurrentGame { get; set; } = new Chess();
     public Chess() : base(GameType.Chess)
     {
-        PlayerOne = new Player("PlayerOne");
-        PlayerTwo = new Player("PlayerTwo");
+
     }
 
     public string Name { get; private set; } = "Chess";
     public GameBoard Board { get; set; }
-    public void LayoutGamePieces()
+    private void LayoutGamePieces(Player player)
     {
         IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../../Chess-Final.Library/ChessLayout.json");
         // IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../ChessLayout.json");
-
         if (data != null)
-        {
-
-            var playerPieces = data.Where(p => p.playerType == "player")
-            .Select(d => d.data)
-            .SelectMany(p => p)
-            .SelectMany(g => g.pieces.Select(piece =>
-        {
-            GamePiece newPiece = g.pieceType switch
+            if (player == PlayerOne)
             {
-                "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
-                "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-                "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-                "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-                "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-                "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
-            };
-            PlayerOne.GamePieces.Add(newPiece);
-            return newPiece;
-        }
-            )
-             ).ToList();
-
-            // PlayerOne.GamePieces = playerPieces;
-
-            foreach (var piece in PlayerOne.GamePieces)
+                {
+                    var playerPieces = data.Where(p => p.playerType == "player")
+                    .Select(d => d.data)
+                    .SelectMany(p => p)
+                    .SelectMany(g => g.pieces.Select(piece =>
+                {
+                    GamePiece newPiece = g.pieceType switch
+                    {
+                        "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
+                        "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
+                        "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
+                        "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
+                        "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
+                        "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+                    };
+                    PlayerOne.GamePieces.Add(newPiece);
+                    // Janky
+                    return newPiece;
+                }
+                    )
+                     ).ToList();
+                }
+            }
+        if (player == PlayerTwo)
+        {
             {
-                Console.WriteLine($"{piece.Name} @ ({piece.CurrentPosition.X},{piece.CurrentPosition.Y})");
+                var opponentPieces = data.Where(p => p.playerType == "opponent")
+                .Select(d => d.data)
+                .SelectMany(p => p)
+                .SelectMany(g => g.pieces.Select(piece =>
+            {
+                GamePiece newPiece = g.pieceType switch
+                {
+                    "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
+                    "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
+                    "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
+                    "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
+                    "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
+                    "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+                };
+                PlayerTwo.GamePieces.Add(newPiece);
+                // Janky
+                return newPiece;
+            }
+                )
+                 ).ToList();
             }
         }
     }
 
-    private GamePiece CreateGamePiece(string pieceType, (string x, int y) piece)
-    {
-        GamePiece newPiece = pieceType switch
-        {
-            "pawns" => new ChessPieces.Pawn { Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
-            "rooks" => new ChessPieces.Rook { Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-            "knights" => new ChessPieces.Knight { Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-            "bishops" => new ChessPieces.Bishop { Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-            "queen" => new ChessPieces.Queen { Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-            "king" => new ChessPieces.King { Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
-        };
-        return newPiece;
-    }
-
     public void JoinGame(Player player)
     {
-
+        if (PlayerOne == null)
+        {
+            PlayerOne = player;
+            LayoutGamePieces(player);
+        }
+        else if (PlayerTwo == null)
+        {
+            PlayerTwo = player;
+            LayoutGamePieces(player);
+        }
     }
 }
 

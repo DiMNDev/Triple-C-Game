@@ -46,6 +46,7 @@ public abstract class Game
     public GameBoard? Board { get; set; } = null;
     public Player? PlayerOne { get; set; } = null;
     public Player? PlayerTwo { get; set; } = null;
+    public List<Player> Spectators { get; set; } = new();
     public Player? Winner { get; set; } = null;
     public bool GameOver { get; set; } = false;
     protected Game(GameType game)

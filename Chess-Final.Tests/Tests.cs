@@ -30,17 +30,6 @@ public class Player_Tests
         player.Name.Should().Be(newPlayerName);
     }
 
-    [Fact]
-    public void ShouldNotHaveAnyGamePieces()
-    {
-        // Arrange
-        Player player = new Player("P1");
-        // Act
-        var result = player.GamePieces;
-        // Assert
-        result.Should().BeNull();
-
-    }
 }
 
 public class GamePiece_Tests
@@ -132,14 +121,21 @@ public class ChessGame_Tests
     }
 
     [Fact]
-    public void ChessBoardShouldCreateCorrectLayout()
+    public void ShouldAddSpectatorIfPlayerSeatsAreFull()
     {
+
         // Arrange
         Chess chess = new Chess();
         // Act
-        chess.LayoutGamePieces();
+        Player playerOne = new Player("John");
+        Player playerTwo = new Player("Jane");
+        Player SpectatorOne = new Player("Jack");
+        chess.JoinGame(playerOne);
+        chess.JoinGame(playerTwo);
+        chess.JoinGame(SpectatorOne);
         // Assert
-        chess.PlayerOne.GamePieces[0].CurrentPosition.Should().Be(("A", 0));
+        chess.Spectators[1].Should().Be(SpectatorOne);
+
     }
 
     [Fact]
@@ -148,10 +144,27 @@ public class ChessGame_Tests
         // Arrange
         Chess chess = new Chess();
         // Act
-        chess.LayoutGamePieces();
+        Player playerOne = new Player("John");
+        chess.JoinGame(playerOne);
         // Assert
         chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((ChessCoordinate.B.ToString(), 1));
     }
+
+    [Fact]
+    public void PlayerTwoPieceShouldHaveCorrectPosition()
+    {
+        // Arrange
+        Chess chess = new Chess();
+        // Act
+        Player playerOne = new Player("John");
+        Player playerTwo = new Player("Jane");
+        chess.JoinGame(playerOne);
+        chess.JoinGame(playerTwo);
+
+        // Assert
+        chess.PlayerTwo.GamePieces[0].CurrentPosition.Should().Be(("A", 6));
+    }
+
 }
 
 public class DataManager_Tests
