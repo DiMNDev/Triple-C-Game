@@ -203,10 +203,13 @@ public class Lobby_Tests
         Guid g1 = lobby.CreateGame(playerOne, GameType.Chess);
         Guid g2 = lobby.CreateGame(playerTwo, GameType.Chess);
         Game gameOne = Lobby.Instance.GetGame(GameType.Chess, g1);
+        Game gameTwo = Lobby.Instance.GetGame(GameType.Chess, g2);
+        gameTwo.JoinGame(playerThree);
         // Act
         var OpenGames = lobby.FilterByOpen(GameType.Chess);
         // Assert
         OpenGames.Contains((false, true, gameOne)).Should().BeTrue();
+        OpenGames.Count().Should().Be(1);
     }
     [Fact]
     public void ShouldAddANewGameToLobby()
