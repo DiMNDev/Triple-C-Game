@@ -4,6 +4,7 @@ using Player;
 
 public interface IPlayer
 {
+    public Guid PlayerID { get; set; }
     public string Name { get; init; }
     public List<GamePiece> GamePieces { get; }
     public int Wins { get; set; }
@@ -53,6 +54,24 @@ public abstract class Game
     {
         Type = game;
         Board = new GameBoard(Type);
+    }
+    public void JoinGame(Player player)
+    {
+        if (PlayerOne == null)
+        {
+            PlayerOne = player;
+            // LayoutGamePieces(player);
+        }
+        else if (PlayerTwo == null)
+        {
+            PlayerTwo = player;
+            // LayoutGamePieces(player);
+        }
+        else
+        {
+            Spectators.Add(player);
+        }
+
     }
 
 }

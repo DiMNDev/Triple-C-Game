@@ -7,9 +7,11 @@ public class Player : IPlayer
     public string Name { get; init; }
     public int Wins { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public int Losses { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public Guid PlayerID { get; set; }
 
-    public Player(string name)
+    public Player(string name, Guid? guid = null)
     {
         Name = name;
+        PlayerID = guid ?? Guid.NewGuid();
     }
 }
