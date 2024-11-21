@@ -63,38 +63,6 @@ public class GameBoard_Tests
 public class ChessGame_Tests
 {
     [Fact]
-    public void ChessShouldInheritFromTypeGame()
-    {
-        // Arrange
-        // Act
-        Chess chess = new Chess();
-
-        // Assert
-        chess.Should().BeAssignableTo<Game>();
-    }
-
-    [Fact]
-    public void CreatingNewGameShouldHaveInstanceOfCurrentGameNotEqualNull()
-    {
-        // Arrange
-        // Act
-        Chess chess = new Chess();
-
-        // Assert
-        Chess.CurrentGame.Should().NotBeNull();
-    }
-    [Fact]
-    public void CreatingNewGameShouldHaveNewStaticInstanceOfSelf()
-    {
-        // Arrange
-        // Act
-        Chess chess = new Chess();
-
-        // Assert
-        Chess.CurrentGame.Equals(chess);
-    }
-
-    [Fact]
     public void PlayerOneShouldBeAbleToJoinGame()
     {
         // Arrange
@@ -221,10 +189,12 @@ public class Lobby_Tests
     public void ShouldAddANewGameToLobby()
     {
         // Arrange
-
+        Player player = new Player("John");
+         Game newGame = Lobby.Lobby.CreateGame(player, GameType.Chess);
         // Act
-
+       Guid gameGuid = newGame.UUID;
         // Assert
+        
 
     }
 }

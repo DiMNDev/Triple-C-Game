@@ -7,7 +7,7 @@ Console.Clear();
 
 Chess chessGame = new Chess();
 
-chessGame.LayoutGamePieces();
+// chessGame.LayoutGamePieces();
 
 
 // var playerPieces = data.SelectMany(p => p.player
