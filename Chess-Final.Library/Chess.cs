@@ -59,6 +59,7 @@ public class ChessPieces
 
 public class Chess : Game
 {
+    public static Chess Instance { get; set; } = new Chess();
     public Chess() : base(GameType.Chess)
     {
 
