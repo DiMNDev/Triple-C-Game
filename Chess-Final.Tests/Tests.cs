@@ -31,6 +31,22 @@ public class Player_Tests
         player.Name.Should().Be(newPlayerName);
     }
 
+    [Fact]
+    public void PlayerShouldHaveGuid()
+    {
+        // Arrange
+        var newPlayerName = "John";
+        // Act
+        Player player = new Player(newPlayerName);
+        var id = player.PlayerID;
+
+        // Assert
+        player.PlayerID.Should().Be(id);
+        player.PlayerID.Should().NotBeEmpty();
+    }
+
+
+
 }
 
 public class GamePiece_Tests
@@ -180,11 +196,17 @@ public class Lobby_Tests
     public void ShouldFilterOpenGamesWithCorrectGuid()
     {
         // Arrange
-
+        Lobby lobby = new Lobby();
+        Player playerOne = new("P1");
+        Player playerTwo = new("P2");
+        Player playerThree = new("P3");
+        Guid g1 = lobby.CreateGame(playerOne, GameType.Chess);
+        Guid g2 = lobby.CreateGame(playerTwo, GameType.Chess);
+        Game gameOne = Lobby.Instance.GetGame(GameType.Chess, g1);
         // Act
-
+        var OpenGames = lobby.FilterByOpen(GameType.Chess);
         // Assert
-
+        OpenGames.Contains((false, true, gameOne)).Should().BeTrue();
     }
     [Fact]
     public void ShouldAddANewGameToLobby()
@@ -192,10 +214,9 @@ public class Lobby_Tests
         // Arrange
         Lobby lobby = new Lobby();
         Player player = new Player("John");
-        Game newGame = Lobby.Instance.CreateGame(player, GameType.Chess);
+        Guid newGameGuid = lobby.CreateGame(player, GameType.Chess);
         // Act
-        Guid gameGuid = newGame.UUID;
         // Assert
-        lobby.ChessGames.FirstOrDefault(g => g.Key == gameGuid).Should().NotBeNull();
+        lobby.ChessGames.FirstOrDefault(g => g.Key == newGameGuid).Should().NotBeNull();
     }
 }
