@@ -1,5 +1,6 @@
 @page "/{GameName}/lobby/"
-@using Chess_Final.Generics
+@using Chess
+@inject NavigationManager Nav
 <link rel="stylesheet" href="Lobby.css">
 <link rel="stylesheet" href="Generic.css">
 
@@ -22,6 +23,9 @@
 
     void CreateNewGame()
     {
-        //Create a new game(GameName as type) w/ player name as playerOne
+    //Create a new game(GameName as type) w/ player name as playerOne
+
+
+        @* Nav.NavigateTo($"/{newGame.UUID}"); *@
     }
 }

@@ -134,7 +134,7 @@ public class ChessGame_Tests
         chess.JoinGame(playerTwo);
         chess.JoinGame(SpectatorOne);
         // Assert
-        chess.Spectators[1].Should().Be(SpectatorOne);
+        chess.Spectators[0].Should().Be(SpectatorOne);
 
     }
 

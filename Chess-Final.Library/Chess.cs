@@ -136,6 +136,11 @@ public class Chess : Game
             PlayerTwo = player;
             LayoutGamePieces(player);
         }
+        else
+        {
+            Spectators.Add(player);
+        }
+
     }
 }
 

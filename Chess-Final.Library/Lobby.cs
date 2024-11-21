@@ -1,7 +1,7 @@
+namespace Chess_Final.Lobby;
 using Chess_Final.Chess;
 using Chess_Final.Generics;
 
-namespace Chess_Final.Lobby;
 
 public static class Lobby
 {
@@ -10,8 +10,15 @@ public static class Lobby
     public static Dictionary<Guid, (bool active, bool open, Game game)> CheckersGames = new();
     public static Dictionary<Guid, (bool active, bool open, Game game)> ConnectFourGames = new();
 
-    public static void CreateGame()
+    public static void CreateGame(GameType gameType)
     {
+        switch (gameType)
+        {
+            case GameType.Chess:
+                Chess chess = new();
+                ChessGames.Add(chess.UUID, (false, true, chess));
+                break;
+        }
         // create new game
         // pull Guid -> add to respective dictionary
     }
