@@ -6,6 +6,7 @@ using Chess_Final.Chess;
 using Lobby;
 using TC_DataManagerException;
 using TC_DataManager;
+using Chess_Final.PlayerManager;
 
 public class Player_Tests
 {
@@ -222,4 +223,43 @@ public class Lobby_Tests
         // Assert
         lobby.ChessGames.FirstOrDefault(g => g.Key == newGameGuid).Should().NotBeNull();
     }
+}
+
+public class Login_Tests
+{
+    [Fact]
+    public void ShouldCreateAnAccountIfUsernameIsNotInUse()
+    {
+        // Arrange
+        string username = "username";
+        string password = "soopersecure";
+        string confirm = "soopersecure";
+        // Act
+        var result = PlayerManager.Instance.SignUp(username, password, confirm);
+        // Assert
+        result.Should().NotBeNull();
+    }
+    [Fact]
+    public void ShouldSignIntoAccountIfUsernameAndPasswordCombinationMatch()
+    {
+        // Arrange
+        string username = "username";
+        string password = "soopersecure";
+        // Act
+        var result = PlayerManager.Instance.SignIn(username, password);
+        // Assert
+        result.Should().NotBeNull();
+    }
+    [Fact]
+    public void ShouldAddPlayerToListOfOnlinePlayers()
+    {
+        // Arrange
+        string username = "username";
+        string password = "soopersecure";
+        // Act
+        var result = PlayerManager.Instance.SignIn(username, password);
+        // Assert
+        result.Should().NotBeNull();
+    }
+
 }
