@@ -1,0 +1,55 @@
+@page "/"
+@using Chess_Final.PlayerManager
+@using Chess_Final.Generics
+@inject NavigationManager NavManager
+<link rel="stylesheet" href="Login.css">
+
+<PageTitle>Triple C</PageTitle>
+
+<h1>Welcome</h1>
+<p>Login or create an account to play!</p>
+
+<form class="LoginContainer" onsubmit="handleForm">
+    <label> Username <input type="text" @bind=Username></label>
+    <label> Password <input type="password" @bind=Password></label>
+    @if (create)
+    {
+        <label> Confirm <input type="password" @bind=Confirm></label>
+    }
+    <button type="submit">@(create == true ? "Sign Up" : "Sign In")</button>
+    <div class="newAccount" @onclick="()=>create=!create">Need an account?</div>
+</form>
+
+@code
+{
+    [Parameter]
+    public string? Username { get; set; }
+    public string? Password { get; set; }
+    public string? Confirm { get; set; }
+    private bool create = false;
+    public Guid? ID { get; set; }
+
+    protected override void OnParametersSet()
+    {
+
+    }
+
+    void handleForm()
+    {
+        if (create)
+        {
+            if (PlayerManager.Instance.SignUp(Username, Password, Confirm) != null)
+            {
+                NavManager.NavigateTo("/Home");
+            };
+        }
+        else
+        {
+
+            if (PlayerManager.Instance.SignIn(Username, Password) != null)
+            {
+                NavManager.NavigateTo("/Home");
+            };
+        }
+    }
+}

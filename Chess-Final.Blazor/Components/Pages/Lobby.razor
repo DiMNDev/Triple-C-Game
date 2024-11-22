@@ -1,12 +1,15 @@
-@page "/{GameName}/lobby/"
+@page "/{gameType}/lobby{PlayerID:guid}"
 @using Chess
+@using Chess_Final.Generics
+@using Chess_Final.Player
+@using Chess_Final.Lobby
 @inject NavigationManager Nav
 <link rel="stylesheet" href="Lobby.css">
 <link rel="stylesheet" href="Generic.css">
 
 <PageTitle>Triple C</PageTitle>
 
-<h1>@GameName Lobby</h1>
+<h1>@gameType Lobby</h1>
 
 <div class="LobbyCard">
     @* ForEach this *@
@@ -19,13 +22,32 @@
 @code
 {
     [Parameter]
-    public string? GameName { get; set; }
+    public string? gameType { get; set; }
+    private GameType lobbyType { get; set; }
+    [Parameter]
+    public Player? currentPlayer { get; set; }
+    [Parameter]
+    public Guid PlayerID { get; set; }
+    public Chess_Final.Lobby.Lobby currentLobby = new();
+
+    override protected void OnParametersSet()
+    {
+        lobbyType = gameType switch
+        {
+            "Chess" => GameType.Chess,
+            "Checkers" => GameType.Checkers,
+            "ConnectFour" => GameType.ConnectFour,
+        };
+
+        @* Load player from DB *@
+    }
 
     void CreateNewGame()
     {
-    //Create a new game(GameName as type) w/ player name as playerOne
+        //Create a new game(GameName as type) w/ player name as playerOne
+        Guid newGameID = currentLobby.CreateGame(currentPlayer, lobbyType);
+        @* Console.WriteLine(currentLobby.ChessGames.All(k => k.Key != null)); *@
 
-
-        @* Nav.NavigateTo($"/{newGame.UUID}"); *@
+        Nav.NavigateTo($"/{gameType}/lobby/Play?ID={newGameID}");
     }
 }
