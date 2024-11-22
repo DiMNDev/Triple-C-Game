@@ -263,3 +263,18 @@ public class Login_Tests
     }
 
 }
+
+public class DB_Tests {
+    [Fact]
+    public void ShouldInsertANewRecord()
+    {
+        // Arrange
+        string username = "username";
+        string password = "soopersecure";
+        // Act
+        var result = PlayerManager.Instance.SignIn(username, password);
+        // Assert
+        result.Should().NotBeNull();
+    }
+    
+}

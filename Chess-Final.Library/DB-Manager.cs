@@ -6,7 +6,7 @@ using Player;
 
 public class DB_Connect
 {
-    SQLiteConnection _connection;
+    SQLiteConnection? _connection;
 
     public string ConnectionString { get; private set; } = "TC_DB.sqlite3";
 
@@ -14,13 +14,16 @@ public class DB_Connect
     {
         SQLiteConnectionString options = new SQLiteConnectionString(ConnectionString, false);
         _connection = new SQLiteConnection(options);
+        _connection.CreateTable<PD_Table>();
     }
 
-    public void InsertRecord()
+    public bool InsertRecord(Player player)
     {
         // create a new record
+        var result = _connection.Insert(player);
+        return result;
     }
-    public void VerifyAccount()
+    public bool VerifyAccount()
     {
         // check username and password match in database
     }
