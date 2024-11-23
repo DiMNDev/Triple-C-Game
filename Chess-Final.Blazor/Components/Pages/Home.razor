@@ -1,4 +1,4 @@
-﻿@page "/Home"
+﻿@page "/Home/{PlayerID:guid}"
 @using Chess_Final.Generics
 @using Chess_Final.Player
 <link rel="stylesheet" href="Home.css">
@@ -8,14 +8,10 @@
 <h1>Hello, @(PlayerName ?? "World")!</h1>
 <h3>@currentPlayer?.PlayerID</h3>
 
-<div class="playerLogin">
-    <label>Enter your name:<input @bind=PlayerName type="text"></label>
-    <button @onclick="LoginMethod">Login</button>
-</div>
 <div class="SelectionContainer">
     @foreach (GameType type in gameTypes)
     {
-        <a href="/@type/lobby/{@playerID}">
+        <a href="/@type/lobby/{@PlayerID}">
             <div class="GameCard">
                 <h1>Play @type</h1>
             </div>
@@ -26,23 +22,16 @@
 
 @code
 {
+
     public Player? currentPlayer { get; set; } = null;
-    public Guid playerID { get; set; }
+    [Parameter]
+    public Guid PlayerID { get; set; }
     string? PlayerName { get; set; } = null;
     List<GameType> gameTypes = [GameType.Checkers, GameType.Chess, GameType.ConnectFour];
 
-    void LoginMethod()
+    protected override void OnInitialized()
     {
-        if (PlayerName != null)
-        {
-            currentPlayer = new Player(PlayerName);
-            playerID = currentPlayer.PlayerID;
-            Console.WriteLine(currentPlayer.Name);
-            StateHasChanged();
-        }
-        else
-        {
-            Console.WriteLine("Display Err: Must provide a name");
-        }
+        // Load username
     }
+
 }

@@ -1,4 +1,5 @@
 @page "/"
+@using Chess_Final.Player
 @using Chess_Final.PlayerManager
 @using Chess_Final.Generics
 @inject NavigationManager NavManager
@@ -9,7 +10,7 @@
 <h1>Welcome</h1>
 <p>Login or create an account to play!</p>
 
-<form class="LoginContainer" onsubmit="handleForm">
+<form class="LoginContainer" @onsubmit="handleForm" @onsubmit:preventDefault>
     <label> Username <input type="text" @bind=Username></label>
     <label> Password <input type="password" @bind=Password></label>
     @if (create)
@@ -31,25 +32,42 @@
 
     protected override void OnParametersSet()
     {
-
     }
 
     void handleForm()
     {
-        if (create)
+        PlayerManager playerManager = new();
+        try
         {
-            if (PlayerManager.Instance.SignUp(Username, Password, Confirm) != null)
+            if (create)
             {
-                NavManager.NavigateTo("/Home");
-            };
+                if (Username != null && Password != null && Confirm != null)
+                {
+                    Player? newPlayer = PlayerManager.SignUp(Username, Password, Confirm);
+                    if (newPlayer != null)
+                    {
+                        ID = newPlayer.PlayerID;
+                        NavManager.NavigateTo($"/Home/{ID}");
+                    }
+                };
+            }
+            else
+            {
+                if (Username != null && Password != null)
+                {
+                    Player? newPlayer = PlayerManager.SignIn(Username, Password);
+                    if (newPlayer != null)
+                    {
+                        ID = newPlayer.PlayerID;
+                        NavManager.NavigateTo($"/Home/{ID}");
+                    }
+                }
+            }
         }
-        else
+        catch (Exception err)
         {
+            Console.WriteLine(err);
+        }
 
-            if (PlayerManager.Instance.SignIn(Username, Password) != null)
-            {
-                NavManager.NavigateTo("/Home");
-            };
-        }
     }
 }
