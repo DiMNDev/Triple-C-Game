@@ -5,6 +5,7 @@
 
 # my ignored files
 Chess-Final.Console/Program.cs
+*.sqlite3
 
 # dotenv files
 .env
