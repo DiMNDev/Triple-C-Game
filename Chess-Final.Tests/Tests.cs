@@ -29,7 +29,7 @@ public class Player_Tests
         Player player = new Player(newPlayerName);
 
         // Assert
-        player.Name.Should().Be(newPlayerName);
+        player.Username.Should().Be(newPlayerName);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class ChessGame_Tests
         Player playerOne = new Player("John");
         chess.JoinGame(playerOne);
         // Assert
-        chess.PlayerOne.Name.Should().Be("John");
+        chess.PlayerOne.Username.Should().Be("John");
     }
     [Fact]
     public void PlayerTwoShouldBeAbleToJoinGame()
@@ -102,8 +102,8 @@ public class ChessGame_Tests
         chess.JoinGame(playerOne);
         chess.JoinGame(playerTwo);
         // Assert
-        chess.PlayerOne.Name.Should().Be("John");
-        chess.PlayerTwo.Name.Should().Be("Jane");
+        chess.PlayerOne.Username.Should().Be("John");
+        chess.PlayerTwo.Username.Should().Be("Jane");
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class Login_Tests
         string password = "soopersecure";
         string confirm = "soopersecure";
         // Act
-        var result = PlayerManager.Instance.SignUp(username, password, confirm);
+        var result = PlayerManager.SignUp(username, password, confirm);
         // Assert
         result.Should().NotBeNull();
     }
@@ -246,7 +246,7 @@ public class Login_Tests
         string username = "username";
         string password = "soopersecure";
         // Act
-        var result = PlayerManager.Instance.SignIn(username, password);
+        var result = PlayerManager.SignIn(username, password);
         // Assert
         result.Should().NotBeNull();
     }
@@ -257,14 +257,15 @@ public class Login_Tests
         string username = "username";
         string password = "soopersecure";
         // Act
-        var result = PlayerManager.Instance.SignIn(username, password);
+        var result = PlayerManager.SignIn(username, password);
         // Assert
         result.Should().NotBeNull();
     }
 
 }
 
-public class DB_Tests {
+public class DB_Tests
+{
     [Fact]
     public void ShouldInsertANewRecord()
     {
@@ -272,9 +273,9 @@ public class DB_Tests {
         string username = "username";
         string password = "soopersecure";
         // Act
-        var result = PlayerManager.Instance.SignIn(username, password);
+        var result = PlayerManager.SignIn(username, password);
         // Assert
         result.Should().NotBeNull();
     }
-    
+
 }

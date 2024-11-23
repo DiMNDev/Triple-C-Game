@@ -4,14 +4,14 @@ using Generics;
 public class Player : IPlayer
 {
     public List<GamePiece> GamePieces { get; set; } = new();
-    public string Name { get; init; }
-    public int Wins { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public int Losses { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public string Username { get; init; }
+    public int Wins { get; set; } = 0;
+    public int Losses { get; set; } = 0;
     public Guid PlayerID { get; set; }
 
     public Player(string name, Guid? guid = null)
     {
-        Name = name;
+        Username = name;
         PlayerID = guid ?? Guid.NewGuid();
     }
 }
