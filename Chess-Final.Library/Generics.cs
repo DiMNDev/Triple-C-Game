@@ -88,9 +88,9 @@ public enum ChessCoordinate
     A, B, C, D, E, F, G, H
 }
 
-public class FilePaths
+public static class FilePaths
 {
-    public string Tests { get; } = "../../../../Chess-Final.Library/ChessLayout.json";
-    public string Blazor { get; } = "";
-    public string Console { get; } = "";
+    public static string Tests { get; } = "../../../../Chess-Final.Library/ChessLayout.json";
+    public static string Blazor { get; } = "../Chess-Final.Library/ChessLayout.json";
+    public static string Console { get; } = "";
 }
