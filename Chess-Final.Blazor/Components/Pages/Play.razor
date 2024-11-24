@@ -1,23 +1,71 @@
-@page "/{GameName}/lobby/Play"
+@page "/{GameName}/lobby/Play/{GameID:guid}/{PlayerID:guid}"
 @using Chess_Final.Generics
+@using Chess
+@using Chess_Final.Lobby
+@using Chess_Final.PlayerManager
+@using Chess_Final.Player
 <link rel="stylesheet" href="Play.css">
 
 <PageTitle>Triple C</PageTitle>
 
 <h1>@GameName</h1>
+<h3>@(game?.PlayerOne?.Username ?? "waiting") vs. @(game?.PlayerTwo?.Username ?? "waiting")</h3>
+<div class="MainContainer">
+    <div class="GameSide">
+        @* Create a seperate component for each game? *@
+        <div class="GameBoard">
 
-<div class="LobbyContainer">
+            @for (int y = 0; y < game?.Board?.Matrix?.GetLength(0); y++)
+            {
+                <div style="display: grid; grid-template-columns: repeat(8, 1fr);">
 
+                    @for (int x = 0; x < game?.Board.Matrix.GetLength(0); x++)
+                    {
+                        <div class="GridCell"
+                            style="@(y%2 == 0 ? x%2 == 0  ? "background-color: black; color: white;" : "background-color: white; color: black;" : x%2!=0 ? "background-color: black; color: white;": "background-color: white; color: black;") ">
+                            (@x, @y)
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
+        <div class="PlayerDash">
+            @if (game?.PlayerOne != null)
+            {
+                <h2>@(game?.PlayerOne?.Username ?? "Loading")</h2>
+            }
+        </div>
+    </div>
+    <div class="SpecSection">
+
+    </div>
 </div>
 
 @code
 {
     [Parameter]
-    public string? GameName { get; set; }
-    public Guid? ID { get; set; }
+    public string GameName { get; set; }
+    [Parameter]
+    public Guid GameID { get; set; }
+    [Parameter]
+    public Guid PlayerID { get; set; }
+    public Player? player { get; set; }
+    public GameType gameType { get; set; }
+    private Game? game { get; set; } = null;
+    private bool Ready = false;
 
     protected override void OnParametersSet()
     {
+        try
+        {
 
+            gameType = LobbyManager.ConvertStringToGameType(GameName);
+            game = LobbyManager.GetGame(gameType, GameID);
+            player = PlayerManager.GetPlayer(PlayerID);
+            game?.JoinGame(player);
+
+        }
+        catch (Exception err) { Console.WriteLine(err); };
     }
 }
