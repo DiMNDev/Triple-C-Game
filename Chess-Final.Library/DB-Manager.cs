@@ -3,6 +3,7 @@ using Chess_Final.Generics;
 using SQLite;
 using Player;
 using Chess_Final.PasswordManager;
+using SQLitePCL;
 
 public class DB_Connect
 {
@@ -10,6 +11,7 @@ public class DB_Connect
 
     public string ConnectionString { get; private set; } = "TC_DB.sqlite3";
 
+    // Consider returning status(string) tuple from all methods
     public DB_Connect()
     {
         IntializeConnection();
@@ -32,17 +34,52 @@ public class DB_Connect
         Auth_Table auth = new() { PlayerID = UUID, Password = hash };
         _connection?.Insert(auth);
     }
-    public bool InsertRecord(Player player, string password)
+    public bool AccountExists(string username)
     {
-        // create a new record
-        CreateAuthForUser(player.PlayerID, player.Username, password);
-        PD_Table newRecord = new() { PlayerID = player.PlayerID, Username = player.Username, Losses = player.Losses, Wins = player.Wins };
-        var result = _connection?.Insert(newRecord);
-        if (result == 1)
+        PD_Table user = _connection?.Table<PD_Table>().FirstOrDefault(p => p.Username == username);
+        Console.WriteLine(user);
+        if (user != null)
         {
             return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
+    }
+    public bool InsertRecord(Player player, string password)
+    {
+        // create a new record
+        if (AccountExists(player.Username))
+        {
+            return false;
+        }
+        CreateAuthForUser(player.PlayerID, player.Username, password);
+        PD_Table newRecord = new() { PlayerID = player.PlayerID, Username = player.Username, Losses = player.Losses, Wins = player.Wins };
+        try
+        {
+            var result = _connection?.Insert(newRecord);
+            if (result != null && result == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine(err);
+            return false;
+        }
+    }
+
+    public void DeleteRecord(string username)
+    {
+        // Get Player UUID
+        // Delete from PD_Table
+        // Delete from Auth_Table
     }
     private Guid? GetPlayerUUID(string username)
     {
@@ -78,7 +115,7 @@ public class DB_Connect
         }
 
     }
-    public Player? LoadUserData((string username, string password) formData)
+    internal Player? AuthenticateUser((string username, string password) formData)
     {
         // if guid matches create new player
         bool valid = VerifyAccount(formData.username, formData.password);
@@ -98,7 +135,17 @@ public class DB_Connect
         Auth_Table? data = _connection?.Table<Auth_Table>().FirstOrDefault(id => id.PlayerID == UUID);
         return data.Password;
     }
-
+    internal string? GetUsernameFromUUID(Guid UUID)
+    {
+        PD_Table? data = _connection?.Table<PD_Table>().FirstOrDefault(p => p.PlayerID == UUID);
+        return data?.Username ?? "Unreal";
+    }
+    internal Player? GetUserData(Guid UUID)
+    {
+        PD_Table? data = _connection?.Table<PD_Table>().FirstOrDefault(p => p.PlayerID == UUID);
+        Player? player = new(data.Username) { PlayerID = data.PlayerID, Wins = data.Wins, Losses = data.Losses };
+        return player ?? null;
+    }
 }
 
 [Table("Player_Data")]
