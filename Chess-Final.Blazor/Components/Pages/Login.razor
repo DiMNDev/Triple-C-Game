@@ -17,6 +17,7 @@
     {
         <label> Confirm <input type="password" @bind=Confirm></label>
     }
+    <p>@StatusMessage</p>
     <button type="submit">@(create == true ? "Sign Up" : "Sign In")</button>
     <div class="newAccount" @onclick="()=>create=!create">Need an account?</div>
 </form>
@@ -29,6 +30,7 @@
     public string? Confirm { get; set; }
     private bool create = false;
     public Guid? ID { get; set; }
+    public string StatusMessage { get; set; } = "";
 
     protected override void OnParametersSet()
     {
@@ -49,6 +51,12 @@
                         ID = newPlayer.PlayerID;
                         NavManager.NavigateTo($"/Home/{ID}");
                     }
+                    else
+                    {
+                        Password = "";
+                        StatusMessage = "Oopsie Daisy!";
+                        ResetStatusMessage();
+                    }
                 };
             }
             else
@@ -61,6 +69,13 @@
                         ID = newPlayer.PlayerID;
                         NavManager.NavigateTo($"/Home/{ID}");
                     }
+                    else
+                    {
+                        Password = "";
+                        StatusMessage = "Oopsie Daisy!";
+                        create = true;
+                        ResetStatusMessage();
+                    }
                 }
             }
         }
@@ -68,6 +83,12 @@
         {
             Console.WriteLine(err);
         }
+    }
 
+    async void ResetStatusMessage()
+    {
+        await Task.Delay(1500);
+        StatusMessage = "";
+        StateHasChanged();
     }
 }

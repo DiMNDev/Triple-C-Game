@@ -44,10 +44,18 @@ public class DB_Connect
         }
         return false;
     }
-    private Guid GetPlayerUUID(string username)
+    private Guid? GetPlayerUUID(string username)
     {
-        PD_Table record = GetRecord(username);
-        return record.PlayerID;
+        try
+        {
+            PD_Table record = GetRecord(username);
+            return record.PlayerID;
+        }
+        catch (Exception)
+        {
+
+            return null;
+        }
     }
     public PD_Table? GetRecord(string username)
     {
@@ -57,10 +65,17 @@ public class DB_Connect
     public bool VerifyAccount(string username, string password)
     {
         // get hash from player record for verification
-        Guid UUID = GetPlayerUUID(username);
-        string hash = GetUserAuth(UUID);
-        // verify hass
-        return PasswordManager.VerifyPassword(password, hash);
+        Guid? UUID = GetPlayerUUID(username);
+        if (UUID != null)
+        {
+            string hash = GetUserAuth(UUID!);
+            // verify hash
+            return PasswordManager.VerifyPassword(password, hash);
+        }
+        else
+        {
+            return false;
+        }
 
     }
     public Player? LoadUserData((string username, string password) formData)
@@ -78,7 +93,7 @@ public class DB_Connect
             return null;
         }
     }
-    private string GetUserAuth(Guid UUID)
+    private string GetUserAuth(Guid? UUID)
     {
         Auth_Table? data = _connection?.Table<Auth_Table>().FirstOrDefault(id => id.PlayerID == UUID);
         return data.Password;
