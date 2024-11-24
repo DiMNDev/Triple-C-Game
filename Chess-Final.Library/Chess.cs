@@ -69,8 +69,11 @@ public class Chess : Game
     public GameBoard Board { get; set; }
     private void LayoutGamePieces(Player player)
     {
-        IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../../Chess-Final.Library/ChessLayout.json");
-        // IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>("../../../ChessLayout.json");
+        // Check CWD for use with different projects
+        string CWD = Directory.GetCurrentDirectory();
+        Console.WriteLine(CWD);
+
+        IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>(FilePaths.Tests);
         if (data != null)
             if (player == PlayerOne)
             {
@@ -124,21 +127,24 @@ public class Chess : Game
         }
     }
 
-    public void JoinGame(Player player)
+    public bool JoinGame(Player player)
     {
         if (PlayerOne == null)
         {
             PlayerOne = player;
             LayoutGamePieces(player);
+            return true;
         }
         else if (PlayerTwo == null)
         {
             PlayerTwo = player;
             LayoutGamePieces(player);
+            return true;
         }
         else
         {
             Spectators.Add(player);
+            return true;
         }
 
     }
