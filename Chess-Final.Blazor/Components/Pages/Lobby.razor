@@ -1,4 +1,4 @@
-@page "/{gameType}/lobby{PlayerID:guid}"
+@page "/{gameType}/lobby/{PlayerID:guid}"
 @using Chess
 @using Chess_Final.Generics
 @using Chess_Final.Player
@@ -12,9 +12,18 @@
 <h1>@gameType Lobby</h1>
 
 <div class="LobbyCard">
-    @* ForEach this *@
-    <LobbyCard PlayerOne="PlayerOne" />
-    <LobbyCard PlayerOne="PlayerOne" PlayerTwo="PlayerTwo" />
+    @if (Games?.Count > 0)
+        @foreach (var game in Games!)
+        {
+            {
+                <LobbyCard PlayerOne=@game.Value.game.PlayerOne?.Username PlayerTwo=@game.Value.game.PlayerTwo?.Username />
+            }
+        }
+    else
+    {
+        <div>No Games?</div>
+        <div>Create a new one</div>
+    }
 
 </div>
 <button @onclick=CreateNewGame>Create New Game</button>
@@ -28,26 +37,23 @@
     public Player? currentPlayer { get; set; }
     [Parameter]
     public Guid PlayerID { get; set; }
-    public Chess_Final.Lobby.Lobby currentLobby = new();
+    public Dictionary<Guid, (bool open, bool active, Game game)>? Games;
+
+    override protected void OnInitialized()
+    {
+        lobbyType = LobbyManager.ConvertStringToGameType(gameType);
+        Games = LobbyManager.GetCurrentLobby(lobbyType);
+    }
 
     override protected void OnParametersSet()
     {
-        lobbyType = gameType switch
-        {
-            "Chess" => GameType.Chess,
-            "Checkers" => GameType.Checkers,
-            "ConnectFour" => GameType.ConnectFour,
-        };
-
-        @* Load player from DB *@
     }
 
     void CreateNewGame()
     {
         //Create a new game(GameName as type) w/ player name as playerOne
-        Guid newGameID = currentLobby.CreateGame(currentPlayer, lobbyType);
-        @* Console.WriteLine(currentLobby.ChessGames.All(k => k.Key != null)); *@
+        Guid newGameID = LobbyManager.CreateGame(lobbyType);
 
-        Nav.NavigateTo($"/{gameType}/lobby/Play?ID={newGameID}");
+        Nav.NavigateTo($"/{gameType}/lobby/Play/{newGameID}/{PlayerID}");
     }
 }
