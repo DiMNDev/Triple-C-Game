@@ -1,6 +1,7 @@
 ﻿@page "/Home/{PlayerID:guid}"
 @using Chess_Final.Generics
 @using Chess_Final.Player
+@using PlayerManager
 <link rel="stylesheet" href="Home.css">
 <PageTitle>Triple C</PageTitle>
 
@@ -19,10 +20,9 @@
     }
 </div>
 
-
 @code
 {
-
+    public PlayerManager playerManager = new();
     public Player? currentPlayer { get; set; } = null;
     [Parameter]
     public Guid PlayerID { get; set; }
@@ -31,7 +31,8 @@
 
     protected override void OnInitialized()
     {
-        // Load username
+        PlayerName = PlayerManager.GetUsername(PlayerID);
+
     }
 
 }
