@@ -3,10 +3,11 @@ using Player;
 using FluentAssertions;
 using Chess_Final.Generics;
 using Chess_Final.Chess;
-using Lobby;
+using Chess_Final.Lobby;
 using TC_DataManagerException;
 using TC_DataManager;
 using Chess_Final.PlayerManager;
+using Chess_Final.DB_Manager;
 
 public class Player_Tests
 {
@@ -80,6 +81,7 @@ public class GameBoard_Tests
 
 public class ChessGame_Tests
 {
+    // Requires path: "FilePaths.Tests" in LayoutGamePieces 
     [Fact]
     public void PlayerOneShouldBeAbleToJoinGame()
     {
@@ -91,6 +93,7 @@ public class ChessGame_Tests
         // Assert
         chess.PlayerOne.Username.Should().Be("John");
     }
+    // Requires path: "FilePaths.Tests" in LayoutGamePieces 
     [Fact]
     public void PlayerTwoShouldBeAbleToJoinGame()
     {
@@ -106,10 +109,10 @@ public class ChessGame_Tests
         chess.PlayerTwo.Username.Should().Be("Jane");
     }
 
+    // Requires path: "FilePaths.Tests" in LayoutGamePieces 
     [Fact]
     public void ShouldAddSpectatorIfPlayerSeatsAreFull()
     {
-
         // Arrange
         Chess chess = new Chess();
         // Act
@@ -123,7 +126,7 @@ public class ChessGame_Tests
         chess.Spectators[0].Should().Be(SpectatorOne);
 
     }
-
+    // Requires path: "FilePaths.Tests" in LayoutGamePieces 
     [Fact]
     public void PlayerOnePieceShouldHaveCorrectPosition()
     {
@@ -136,6 +139,7 @@ public class ChessGame_Tests
         chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((ChessCoordinate.B.ToString(), 1));
     }
 
+    // Requires path: "FilePaths.Tests" in LayoutGamePieces 
     [Fact]
     public void PlayerTwoPieceShouldHaveCorrectPosition()
     {
@@ -166,8 +170,6 @@ public class DataManager_Tests
         // Act
         FluentActions.Invoking(Load).Should().Throw<DataLoadErrorException>();
         // Assert
-
-
     }
 }
 
@@ -197,34 +199,83 @@ public class Lobby_Tests
     public void ShouldFilterOpenGamesWithCorrectGuid()
     {
         // Arrange
-        Lobby lobby = new Lobby();
         Player playerOne = new("P1");
         Player playerTwo = new("P2");
         Player playerThree = new("P3");
-        Guid g1 = lobby.CreateGame(playerOne, GameType.Chess);
-        Guid g2 = lobby.CreateGame(playerTwo, GameType.Chess);
-        Game gameOne = Lobby.Instance.GetGame(GameType.Chess, g1);
-        Game gameTwo = Lobby.Instance.GetGame(GameType.Chess, g2);
+        int previousGameCount = LobbyManager.ChessGames.Select(d => d.Value.open == true).ToList().Count();
+        Guid g1 = LobbyManager.CreateGame(GameType.Chess);
+        Guid g2 = LobbyManager.CreateGame(GameType.Chess);
+        Game gameOne = LobbyManager.GetGame(GameType.Chess, g1);
+        Game gameTwo = LobbyManager.GetGame(GameType.Chess, g2);
         gameTwo.JoinGame(playerThree);
         // Act
-        var OpenGames = lobby.FilterByOpen(GameType.Chess);
+        var OpenGames = LobbyManager.FilterByOpen(GameType.Chess);
         // Assert
         OpenGames.Contains((false, true, gameOne)).Should().BeTrue();
-        OpenGames.Count().Should().Be(1);
+        OpenGames.Count().Should().Be(previousGameCount + 1);
     }
     [Fact]
     public void ShouldAddANewGameToLobby()
     {
         // Arrange
-        Lobby lobby = new Lobby();
+
         Player player = new Player("John");
-        Guid newGameGuid = lobby.CreateGame(player, GameType.Chess);
+        Guid newGameGuid = LobbyManager.CreateGame(GameType.Chess);
         // Act
         // Assert
-        lobby.ChessGames.FirstOrDefault(g => g.Key == newGameGuid).Should().NotBeNull();
+        LobbyManager.ChessGames.FirstOrDefault(g => g.Key == newGameGuid).Should().NotBeNull();
     }
 }
 
+public class DB_Tests
+{
+    [Fact]
+    public void ShouldInsertANewRecordAndReturnTrue()
+    {
+        // Arrange
+        DB_Connect dB_Connect = new();
+        string username = "Test";
+        string password = "SooperSecret";
+        // Act
+        Player TestPlayer = new(username);
+        bool result = dB_Connect.InsertRecord(TestPlayer, password);
+        // Assert
+        result.Should().BeTrue();
+    }
+    [Fact]
+    public void ShouldReturnTrueIfUserExists()
+    {
+        // Arrange
+        DB_Connect dB_Connect = new();
+        // Act
+        bool UserExists = dB_Connect.AccountExists("Test");
+        // Assert
+        UserExists.Should().BeTrue();
+    }
+    [Fact]
+    public void ShouldDeleteAnExistingRecord()
+    {
+        // Arrange
+        DB_Connect dB_Connect = new();
+        string username = "Test";
+        // Act
+        dB_Connect.DeleteRecord(username);
+        bool StillExists = dB_Connect.AccountExists(username);
+        // Assert
+        StillExists.Should().BeFalse();
+    }
+    [Fact]
+    public void ShouldReturnFalseIfUserExists()
+    {
+        // Arrange
+        DB_Connect dB_Connect = new();
+        // Act
+        bool UserExists = dB_Connect.AccountExists("Test1");
+        // Assert
+        UserExists.Should().BeFalse();
+    }
+
+}
 public class Login_Tests
 {
     [Fact]
@@ -252,22 +303,6 @@ public class Login_Tests
     }
     [Fact]
     public void ShouldAddPlayerToListOfOnlinePlayers()
-    {
-        // Arrange
-        string username = "username";
-        string password = "soopersecure";
-        // Act
-        var result = PlayerManager.SignIn(username, password);
-        // Assert
-        result.Should().NotBeNull();
-    }
-
-}
-
-public class DB_Tests
-{
-    [Fact]
-    public void ShouldInsertANewRecord()
     {
         // Arrange
         string username = "username";
