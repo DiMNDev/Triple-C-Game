@@ -1,18 +1,41 @@
+@using Chess_Final.Generics
+@using Chess_Final.Lobby
+@using Chess_Final.Player
+@using Chess_Final.PlayerManager
+@inject NavigationManager Nav
 <link rel="stylesheet" href="LobbyCard.css">
 <div class="container">
-    <div class="cell">@PlayerOne</div>
+    <div class="cell">@(game?.PlayerOne?.Username ?? "Waiting")</div>
     <div class="cell">vs</div>
-    <div class="cell">@PlayerTwo</div>
-    <button class="cell" disabled=@Playable>Join</button>
+    <div class="cell">@(game?.PlayerTwo?.Username ?? "Waiting")</div>
+    <button class="cell" disabled=@Playable @onclick=JoinGame>Join</button>
     <button class="cell">Watch</button>
 </div>
 
 @code
 {
-    [Parameter] public string? PlayerOne { get; set; }
-    [Parameter] public string? PlayerTwo { get; set; }
-    [Parameter] public Guid GameId { get; set; }
-    public bool Playable => PlayerTwo != null ? true : false; // Event on toggle for filter
+    [Parameter] public Guid PlayerID { get; set; }
+    [Parameter] public Guid GameID { get; set; }
+    [Parameter] public GameType gameType { get; set; }
 
+    public Player? player { get; set; }
+
+    public Game? game { get; set; }
+    public bool Playable => game?.PlayerTwo != null ? true : false; // Event on toggle for filter
+
+    protected override void OnInitialized()
+    {
+        Game.GameChanged += () => InvokeAsync(StateHasChanged);
+    }
+    protected override void OnParametersSet()
+    {
+        game = LobbyManager.GetGame(gameType, GameID);
+        player = PlayerManager.GetPlayer(PlayerID);
+    }
+    public void JoinGame()
+    {
+        game?.JoinGame(player);
+        Nav.NavigateTo($"/{gameType}/lobby/Play/{GameID}/{PlayerID}");
+    }
 
 }
