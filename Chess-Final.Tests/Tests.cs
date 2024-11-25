@@ -202,16 +202,19 @@ public class Lobby_Tests
         Player playerOne = new("P1");
         Player playerTwo = new("P2");
         Player playerThree = new("P3");
-        int previousGameCount = LobbyManager.ChessGames.Select(d => d.Value.open == true).ToList().Count();
+        int previousGameCount = LobbyManager.ChessGames.Select(d => d.Value.Open == true).ToList().Count();
         Guid g1 = LobbyManager.CreateGame(GameType.Chess);
         Guid g2 = LobbyManager.CreateGame(GameType.Chess);
         Game gameOne = LobbyManager.GetGame(GameType.Chess, g1);
         Game gameTwo = LobbyManager.GetGame(GameType.Chess, g2);
+        gameOne.JoinGame(playerOne);
+        gameOne.JoinGame(playerTwo);
         gameTwo.JoinGame(playerThree);
         // Act
         var OpenGames = LobbyManager.FilterByOpen(GameType.Chess);
+
         // Assert
-        OpenGames.Contains((false, true, gameOne)).Should().BeTrue();
+        OpenGames.ContainsKey(gameTwo.UUID).Should().BeTrue();
         OpenGames.Count().Should().Be(previousGameCount + 1);
     }
     [Fact]
@@ -285,10 +288,15 @@ public class Login_Tests
         string username = "username";
         string password = "soopersecure";
         string confirm = "soopersecure";
+        DB_Connect dB_Connect = new();
+        if (dB_Connect.AccountExists(username))
+        {
+            dB_Connect.DeleteRecord(username);
+        }
         // Act
-        var result = PlayerManager.SignUp(username, password, confirm);
+        Player player = PlayerManager.SignUp(username, password, confirm);
         // Assert
-        result.Should().NotBeNull();
+        player.Username.Should().Be(username);
     }
     [Fact]
     public void ShouldSignIntoAccountIfUsernameAndPasswordCombinationMatch()
