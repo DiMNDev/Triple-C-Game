@@ -47,31 +47,46 @@ public abstract class Game
     public GameBoard? Board { get; set; } = null;
     public Player? PlayerOne { get; set; } = null;
     public Player? PlayerTwo { get; set; } = null;
+    public bool Active = false;
+    public bool Open = true;
     public List<Player> Spectators { get; set; } = new();
     public Player? Winner { get; set; } = null;
     public bool GameOver { get; set; } = false;
+    public static event Action GameFull;
     protected Game(GameType game)
     {
         Type = game;
         Board = new GameBoard(Type);
     }
-    public void JoinGame(Player player)
+    private void IsGameReady()
+    {
+        if (PlayerOne != null && PlayerTwo != null)
+        {
+            Open = false;
+        }
+    }
+    public abstract void LayoutGamePieces(Player player);
+    public bool JoinGame(Player player)
     {
         if (PlayerOne == null)
         {
             PlayerOne = player;
-            // LayoutGamePieces(player);
+            LayoutGamePieces(player);
+            IsGameReady();
+            return true;
         }
         else if (PlayerTwo == null)
         {
             PlayerTwo = player;
-            // LayoutGamePieces(player);
+            LayoutGamePieces(player);
+            IsGameReady();
+            return true;
         }
         else
         {
             Spectators.Add(player);
+            return true;
         }
-
     }
 
 }

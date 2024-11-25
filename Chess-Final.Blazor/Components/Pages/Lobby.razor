@@ -16,7 +16,7 @@
         @foreach (var game in Games!)
         {
             {
-                <LobbyCard PlayerOne=@game.Value.game.PlayerOne?.Username PlayerTwo=@game.Value.game.PlayerTwo?.Username />
+                <LobbyCard PlayerOne=@game.Value.PlayerOne?.Username PlayerTwo=@game.Value.PlayerTwo?.Username />
             }
         }
     else
@@ -37,7 +37,7 @@
     public Player? currentPlayer { get; set; }
     [Parameter]
     public Guid PlayerID { get; set; }
-    public Dictionary<Guid, (bool open, bool active, Game game)>? Games;
+    public Dictionary<Guid, Game>? Games;
 
     override protected void OnInitialized()
     {

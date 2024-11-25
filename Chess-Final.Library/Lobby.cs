@@ -1,14 +1,17 @@
 namespace Chess_Final.Lobby;
 using Chess_Final.Chess;
 using Chess_Final.Generics;
+using Microsoft.VisualBasic;
 
 public static class LobbyManager
 {
     // UUID, Game
     // public static Lobby Instance { get; } = new();
-    public static Dictionary<Guid, (bool active, bool open, Game game)> ChessGames = new();
-    public static Dictionary<Guid, (bool active, bool open, Game game)> CheckersGames = new();
-    public static Dictionary<Guid, (bool active, bool open, Game game)> ConnectFourGames = new();
+    public static Dictionary<Guid, Game> ChessGames = new();
+    public static Dictionary<Guid, Game> CheckersGames = new();
+    public static Dictionary<Guid, Game> ConnectFourGames = new();
+    public static event Action LobbyChanged;
+
     public static Guid CreateGame(GameType gameType)
     {
         switch (gameType)
@@ -16,7 +19,7 @@ public static class LobbyManager
             case GameType.Chess:
                 Chess chess = new Chess();
                 // chess.JoinGame(player);
-                ChessGames.Add(chess.UUID, (false, true, chess));
+                ChessGames.Add(chess.UUID, chess);
                 return chess.UUID;
             case GameType.Checkers: throw new NotImplementedException("Game logic does not exist");
             case GameType.ConnectFour: throw new NotImplementedException("Game logic does not exist");
@@ -26,29 +29,30 @@ public static class LobbyManager
     }
     // create new game
     // pull Guid -> add to respective dictionary
+
     public static Game? GetGame(GameType gameType, Guid id)
     {
         // get game by type, search by uuid?
         return gameType switch
         {
-            GameType.Chess => ChessGames.Select(g => g.Value.game).FirstOrDefault(i => i.UUID == id),
-            GameType.Checkers => CheckersGames.Select(g => g.Value.game).FirstOrDefault(i => i.UUID == id),
-            GameType.ConnectFour => ConnectFourGames.Select(g => g.Value.game).FirstOrDefault(i => i.UUID == id),
+            GameType.Chess => ChessGames.FirstOrDefault(UUID => UUID.Key == id).Value,
+            GameType.Checkers => CheckersGames.FirstOrDefault(UUID => UUID.Key == id).Value,
+            GameType.ConnectFour => ConnectFourGames.FirstOrDefault(UUID => UUID.Key == id).Value,
             _ => throw new GameNotFoundException("Game not found. Does it Exist?")
         };
     }
 
-    public static List<(bool active, bool open, Game game)> FilterByOpen(GameType gameType)
+    public static Dictionary<Guid, Game> FilterByOpen(GameType gameType)
     {
         return gameType switch
         {
-            GameType.Chess => ChessGames.Where(dv => dv.Value.open == true).Select(g => g.Value).ToList(),
-            GameType.Checkers => CheckersGames.Where(dv => dv.Value.open == true).Select(g => g.Value).ToList(),
-            GameType.ConnectFour => ConnectFourGames.Where(dv => dv.Value.open == true).Select(g => g.Value).ToList(),
+            GameType.Chess => ChessGames.Where(g => g.Value.Open == true).ToDictionary(k => k.Key, v => v.Value),
+            GameType.Checkers => CheckersGames.Where(g => g.Value.Open == true).ToDictionary(k => k.Key, v => v.Value),
+            GameType.ConnectFour => ConnectFourGames.Where(g => g.Value.Open == true).ToDictionary(k => k.Key, v => v.Value),
         };
     }
 
-    public static Dictionary<Guid, (bool active, bool open, Game game)> GetCurrentLobby(GameType gameType)
+    public static Dictionary<Guid, Game> GetCurrentLobby(GameType gameType)
     {
         return gameType switch
         {
