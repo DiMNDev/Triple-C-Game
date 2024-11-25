@@ -52,7 +52,7 @@ public abstract class Game
     public List<Player> Spectators { get; set; } = new();
     public Player? Winner { get; set; } = null;
     public bool GameOver { get; set; } = false;
-    public static event Action GameFull;
+    public static event Action GameChanged;
     protected Game(GameType game)
     {
         Type = game;
@@ -66,26 +66,25 @@ public abstract class Game
         }
     }
     public abstract void LayoutGamePieces(Player player);
-    public bool JoinGame(Player player)
+    public void JoinGame(Player player)
     {
         if (PlayerOne == null)
         {
             PlayerOne = player;
             LayoutGamePieces(player);
             IsGameReady();
-            return true;
+            GameChanged?.Invoke();
         }
         else if (PlayerTwo == null)
         {
             PlayerTwo = player;
             LayoutGamePieces(player);
             IsGameReady();
-            return true;
+            GameChanged?.Invoke();
         }
         else
         {
             Spectators.Add(player);
-            return true;
         }
     }
 

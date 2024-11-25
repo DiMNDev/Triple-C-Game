@@ -20,6 +20,7 @@ public static class LobbyManager
                 Chess chess = new Chess();
                 // chess.JoinGame(player);
                 ChessGames.Add(chess.UUID, chess);
+                LobbyChanged?.Invoke();
                 return chess.UUID;
             case GameType.Checkers: throw new NotImplementedException("Game logic does not exist");
             case GameType.ConnectFour: throw new NotImplementedException("Game logic does not exist");

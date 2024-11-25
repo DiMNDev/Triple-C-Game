@@ -16,7 +16,7 @@
         @foreach (var game in Games!)
         {
             {
-                <LobbyCard PlayerOne=@game.Value.PlayerOne?.Username PlayerTwo=@game.Value.PlayerTwo?.Username />
+                <LobbyCard GameId=@game.Key PlayerID=@PlayerID />
             }
         }
     else
@@ -43,6 +43,8 @@
     {
         lobbyType = LobbyManager.ConvertStringToGameType(gameType);
         Games = LobbyManager.GetCurrentLobby(lobbyType);
+        LobbyManager.LobbyChanged += () => InvokeAsync(StateHasChanged);
+        Game.GameChanged += () => InvokeAsync(StateHasChanged);
     }
 
     override protected void OnParametersSet()

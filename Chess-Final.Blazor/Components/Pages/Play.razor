@@ -24,6 +24,7 @@
                         <div class="GridCell"
                             style="@(y%2 == 0 ? x%2 == 0  ? "background-color: black; color: white;" : "background-color: white; color: black;" : x%2!=0 ? "background-color: black; color: white;": "background-color: white; color: black;") ">
                             (@x, @y)
+                            @if (true) { }
                         </div>
                     }
                 </div>
@@ -55,6 +56,10 @@
     private Game? game { get; set; } = null;
     private bool Ready = false;
 
+    protected override void OnInitialized()
+    {
+        Game.GameChanged += () => InvokeAsync(StateHasChanged);
+    }
     protected override void OnParametersSet()
     {
         try
@@ -63,7 +68,10 @@
             gameType = LobbyManager.ConvertStringToGameType(GameName);
             game = LobbyManager.GetGame(gameType, GameID);
             player = PlayerManager.GetPlayer(PlayerID);
-            game?.JoinGame(player);
+            if (game?.PlayerOne?.Username != player.Username)
+            {
+                game?.JoinGame(player);
+            }
 
         }
         catch (Exception err) { Console.WriteLine(err); };
