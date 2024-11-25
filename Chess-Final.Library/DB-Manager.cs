@@ -78,8 +78,11 @@ public class DB_Connect
     public void DeleteRecord(string username)
     {
         // Get Player UUID
+        Guid UserToDelete = GetRecord(username).PlayerID;
         // Delete from PD_Table
+        _connection.Delete<PD_Table>(UserToDelete);
         // Delete from Auth_Table
+        _connection.Delete<Auth_Table>(UserToDelete);
     }
     private Guid? GetPlayerUUID(string username)
     {
