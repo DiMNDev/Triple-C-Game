@@ -12,6 +12,52 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public bool FirstMove { get; private set; } = true;
         public bool CanMove { get; set; }
+        public override (string X, int Y) CurrentPosition { get; set; }
+        public override Owner owner { get; init; }
+
+        public Pawn(Owner owner, (string X, int Y) currentPosition)
+        {
+            this.owner = owner;
+            CurrentPosition = (currentPosition.X, currentPosition.Y);
+            CalculateValidMoves();
+
+        }
+        public override void CalculateValidMoves()
+        {
+            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
+            int CurrentX = (int)ParsedX;
+            int CurrentY = this.CurrentPosition.Y;
+
+            if (this.owner == Owner.Player)
+            {
+                if (FirstMove)
+                {
+                    var ValidMove01 = (CurrentX, CurrentY - 2);
+                    AllowedMovement.Add(ValidMove01);
+                }
+                else
+                {
+                    var ValidMove02 = ((int)ParsedX, CurrentPosition.Y - 1);
+                    AllowedMovement.Add(ValidMove02);
+                }
+
+            }
+            else if (this.owner == Owner.Opponent)
+            {
+
+                if (FirstMove)
+                {
+                    var ValidMove01 = (CurrentX, CurrentY + 2);
+                    AllowedMovement.Add(ValidMove01);
+                }
+                else
+                {
+                    var ValidMove02 = (CurrentX, CurrentY + 1);
+                    AllowedMovement.Add(ValidMove02);
+                }
+            }
+
+        }
 
         public override void MovePiece(Game game, Player player)
         {
@@ -50,7 +96,12 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
-
+        public override (string X, int Y) CurrentPosition { get; set; }
+        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+        public override void CalculateValidMoves()
+        {
+            throw new NotImplementedException();
+        }
 
         public override void MovePiece(Game game, Player player)
         {
@@ -62,6 +113,12 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
+        public override (string X, int Y) CurrentPosition { get; set; }
+        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+        public override void CalculateValidMoves()
+        {
+            throw new NotImplementedException();
+        }
 
         public override void MovePiece(Game game, Player player)
         {
@@ -73,6 +130,13 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
+        public override (string X, int Y) CurrentPosition { get; set; }
+        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+        public override void CalculateValidMoves()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void MovePiece(Game game, Player player)
         {
             throw new NotImplementedException();
@@ -83,6 +147,13 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
+        public override (string X, int Y) CurrentPosition { get; set; }
+        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+        public override void CalculateValidMoves()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void MovePiece(Game game, Player player)
         {
             throw new NotImplementedException();
@@ -93,6 +164,12 @@ public class ChessPieces
         public PieceType Type { get; set; }
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
+        public override (string X, int Y) CurrentPosition { get; set; }
+        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+        public override void CalculateValidMoves()
+        {
+            throw new NotImplementedException();
+        }
 
         public override void MovePiece(Game game, Player player)
         {
@@ -128,7 +205,7 @@ public class Chess : Game
                 {
                     GamePiece newPiece = g.pieceType switch
                     {
-                        "pawns" => new ChessPieces.Pawn { Name = "Pawn", Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
+                        "pawns" => new ChessPieces.Pawn(Owner.Player, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn },
                         "rooks" => new ChessPieces.Rook { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
                         "knights" => new ChessPieces.Knight { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
                         "bishops" => new ChessPieces.Bishop { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
@@ -153,7 +230,7 @@ public class Chess : Game
             {
                 GamePiece newPiece = g.pieceType switch
                 {
-                    "pawns" => new ChessPieces.Pawn { Name = "Pawn", Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
+                    "pawns" => new ChessPieces.Pawn(Owner.Opponent, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
                     "rooks" => new ChessPieces.Rook { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
                     "knights" => new ChessPieces.Knight { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
                     "bishops" => new ChessPieces.Bishop { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
@@ -181,8 +258,8 @@ public class Chess : Game
                 Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate result);
                 Board.Matrix[(int)result, piece.CurrentPosition.Y] = piece;
                 Console.WriteLine(Board.Matrix[(int)result, piece.CurrentPosition.Y]);
-
             }
+
         }
         if (PlayerTwo != null)
         {
@@ -193,6 +270,14 @@ public class Chess : Game
             }
         }
         UpdateGame();
+        foreach (var piece in PlayerOne.GamePieces)
+        {
+            piece.CalculateValidMoves();
+        }
+        foreach (var piece in PlayerTwo.GamePieces)
+        {
+            piece.CalculateValidMoves();
+        }
     }
 
     public override GamePiece? PlaceGamePiece(int x, int y)
@@ -210,7 +295,6 @@ public class Chess : Game
 
     public bool MoveGamePiece(Game game, Player player, GamePiece piece, (ChessCoordinate X, int Y) moveTo)
     {
-        piece.MovePiece(game, player);
         Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate ParsedX);
         int movement = (int)moveTo.X + (int)ParsedX;
         if (Board.Matrix[movement, moveTo.Y] == null)

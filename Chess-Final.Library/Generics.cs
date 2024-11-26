@@ -14,9 +14,12 @@ public interface IPlayer
 public abstract class GamePiece
 {
     public string Name { get; set; }
+    public abstract Owner owner { get; init; }
     public List<(int X, int Y)> AllowedMovement { get; set; } = new();
     public bool CanMove { get; set; }
-    public (string X, int Y) CurrentPosition { get; set; } = ("X", -1);
+    // On set run CalculateValidMoves instead of solely constructor?
+    public abstract (string X, int Y) CurrentPosition { get; set; }
+    public abstract void CalculateValidMoves();
     public abstract void MovePiece(Game game, Player player);
 
 }
@@ -109,6 +112,11 @@ public enum GameType
 public enum ChessCoordinate
 {
     A, B, C, D, E, F, G, H
+}
+public enum Owner
+{
+    Player,
+    Opponent
 }
 
 public static class FilePaths
