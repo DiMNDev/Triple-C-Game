@@ -64,10 +64,8 @@ public class GamePiece_Tests
         game.JoinGame(PlayerTwo);
         // Act
         GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
-        PlayerOnePawn!.MovePiece(game, PlayerOne);
         var PlayerOneFirstMove = (0, 4);
         GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
-        PlayerTwoPawn!.MovePiece(game, PlayerTwo);
         var PlayerTwoFirstMove = (0, 3);
         // Assert
         PlayerOnePawn!.AllowedMovement.Count().Should().Be(1);
