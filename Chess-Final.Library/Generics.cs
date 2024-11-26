@@ -14,9 +14,10 @@ public interface IPlayer
 public abstract class GamePiece
 {
     public string Name { get; set; }
-    public (int X, int Y) AllowedMovement { get; set; }
+    public List<(int X, int Y)> AllowedMovement { get; set; } = new();
     public bool CanMove { get; set; }
     public (string X, int Y) CurrentPosition { get; set; } = ("X", -1);
+    public abstract void MovePiece(Game game, Player player);
 
 }
 
@@ -24,7 +25,7 @@ public class GameBoard
 {
     public GameType Type { get; init; }
     public (int X, int Y)? BoardSize { get; private set; }
-    public GamePiece[,]? Matrix { get; private set; } = null;
+    public GamePiece[,]? Matrix { get; private set; }
 
     public GameBoard(GameType gameType)
     {
@@ -45,6 +46,7 @@ public abstract class Game
     public Guid UUID { get; set; } = Guid.NewGuid();
     public GameType Type { get; init; }
     public GameBoard? Board { get; set; } = null;
+    public Player? CurrentPlayer { get; set; } = null;
     public Player? PlayerOne { get; set; } = null;
     public Player? PlayerTwo { get; set; } = null;
     public bool Active = false;
@@ -63,6 +65,8 @@ public abstract class Game
         if (PlayerOne != null && PlayerTwo != null)
         {
             Open = false;
+            CurrentPlayer = PlayerOne;
+            GameChanged?.Invoke();
         }
     }
     public abstract void LayoutGamePieces(Player player);
@@ -87,7 +91,12 @@ public abstract class Game
             Spectators.Add(player);
         }
     }
-
+    public abstract GamePiece? PlaceGamePiece(int x, int y);
+    public abstract void PlaceInMatrix();
+    protected void UpdateGame()
+    {
+        GameChanged?.Invoke();
+    }
 }
 
 public enum GameType
