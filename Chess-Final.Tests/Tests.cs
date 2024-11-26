@@ -57,10 +57,23 @@ public class GamePiece_Tests
     public void ShouldHaveValidMove()
     {
         // Arrange
-
+        Chess game = new();
+        Player PlayerOne = new("P1");
+        Player PlayerTwo = new("P2");
+        game.JoinGame(PlayerOne);
+        game.JoinGame(PlayerTwo);
         // Act
-
+        GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        PlayerOnePawn!.MovePiece(game, PlayerOne);
+        var PlayerOneFirstMove = (0, 4);
+        GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        PlayerTwoPawn!.MovePiece(game, PlayerTwo);
+        var PlayerTwoFirstMove = (0, 3);
         // Assert
+        PlayerOnePawn!.AllowedMovement.Count().Should().Be(1);
+        PlayerOnePawn!.AllowedMovement[0].Should().Be(PlayerOneFirstMove);
+        PlayerTwoPawn!.AllowedMovement.Count().Should().Be(1);
+        PlayerTwoPawn!.AllowedMovement[0].Should().Be(PlayerTwoFirstMove);
 
     }
 }
@@ -136,7 +149,7 @@ public class ChessGame_Tests
         Player playerOne = new Player("John");
         chess.JoinGame(playerOne);
         // Assert
-        chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((ChessCoordinate.B.ToString(), 1));
+        chess.PlayerOne.GamePieces[1].CurrentPosition.Should().Be((ChessCoordinate.B.ToString(), 6));
     }
 
     // Requires path: "FilePaths.Tests" in LayoutGamePieces 
@@ -152,7 +165,7 @@ public class ChessGame_Tests
         chess.JoinGame(playerTwo);
 
         // Assert
-        chess.PlayerTwo.GamePieces[0].CurrentPosition.Should().Be(("A", 6));
+        chess.PlayerTwo.GamePieces[0].CurrentPosition.Should().Be((ChessCoordinate.A.ToString(), 1));
     }
 
 }
