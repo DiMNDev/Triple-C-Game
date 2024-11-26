@@ -1,6 +1,6 @@
 [
   {
-    "playerType": "player",
+    "playerType": "opponent",
     "data": [
       {
         "pieceType": "pawns",
@@ -47,7 +47,7 @@
     ]
   },
   {
-    "playerType": "opponent",
+    "playerType": "player",
     "data": [
       {
         "pieceType": "pawns",
