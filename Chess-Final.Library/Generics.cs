@@ -15,15 +15,14 @@ public abstract class GamePiece
 {
     public string Name { get; set; }
     public abstract Owner owner { get; init; }
+    public bool FirstMove { get; set; } = true;
     public List<(int X, int Y)> AllowedMovement { get; set; } = new();
     public bool CanMove { get; set; }
     // On set run CalculateValidMoves instead of solely constructor?
     public abstract (string X, int Y) CurrentPosition { get; set; }
-    public abstract void CalculateValidMoves();
-    public abstract void MovePiece(Game game, Player player);
+    public abstract void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent);
 
 }
-
 public class GameBoard
 {
     public GameType Type { get; init; }
@@ -43,13 +42,33 @@ public class GameBoard
         BoardSize = Size;
         Matrix = new GamePiece[Size.X, Size.Y];
     }
+
+    public GamePiece? GetPieceFromMatrix(int x, int y)
+    {
+        if (x < Matrix.GetLength(0) && x > 0 && y < Matrix.GetLength(1) && y > 0)
+        {
+            return Matrix[x, y];
+        }
+        else { return null; }
+    }
+
+    public void resetMatrix()
+    {
+        for (int y = 0; y < Matrix.GetLength(0); y++)
+        {
+            for (int x = 0; x < Matrix.GetLength(1); x++)
+            {
+                Matrix[x, y] = null;
+            }
+        }
+    }
 }
 public abstract class Game
 {
     public Guid UUID { get; set; } = Guid.NewGuid();
     public GameType Type { get; init; }
     public GameBoard? Board { get; set; } = null;
-    public Player? CurrentPlayer { get; set; } = null;
+    public abstract Player? CurrentPlayer { get; set; }
     public Player? PlayerOne { get; set; } = null;
     public Player? PlayerTwo { get; set; } = null;
     public bool Active = false;
@@ -58,6 +77,11 @@ public abstract class Game
     public Player? Winner { get; set; } = null;
     public bool GameOver { get; set; } = false;
     public static event Action GameChanged;
+    public void NewTurn()
+    {
+        _ = CurrentPlayer == PlayerOne ? CurrentPlayer = PlayerTwo : CurrentPlayer = PlayerOne;
+        GameChanged?.Invoke();
+    }
     protected Game(GameType game)
     {
         Type = game;
