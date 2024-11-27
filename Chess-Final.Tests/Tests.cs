@@ -64,13 +64,22 @@ public class GamePiece_Tests
         game.JoinGame(PlayerTwo);
         // Act
         GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        Enum.TryParse<ChessCoordinate>(PlayerOnePawn.CurrentPosition.X, out ChessCoordinate X1);
+        int Y1 = PlayerOnePawn.CurrentPosition.Y;
         var PlayerOneFirstMove = (0, 4);
+        game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
+
+        game.NewTurn();
+
         GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        Enum.TryParse<ChessCoordinate>(PlayerTwoPawn.CurrentPosition.X, out ChessCoordinate X2);
+        int Y2 = PlayerTwoPawn.CurrentPosition.Y;
+        game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
         var PlayerTwoFirstMove = (0, 3);
         // Assert
-        PlayerOnePawn!.AllowedMovement.Count().Should().Be(1);
+        PlayerOnePawn!.AllowedMovement.Count().Should().Be(2);
         PlayerOnePawn!.AllowedMovement[0].Should().Be(PlayerOneFirstMove);
-        PlayerTwoPawn!.AllowedMovement.Count().Should().Be(1);
+        PlayerTwoPawn!.AllowedMovement.Count().Should().Be(2);
         PlayerTwoPawn!.AllowedMovement[0].Should().Be(PlayerTwoFirstMove);
 
     }
@@ -89,7 +98,7 @@ public class GamePiece_Tests
         int Y = PlayerOnePawn.CurrentPosition.Y;
 
         // Act
-        PlayerOne.SetSelected((int)X, Y, game, PlayerOne);
+        PlayerOne.Select((int)X, Y, game, PlayerOne);
         PlayerOne.MovePiece(0, 4, game);
 
         // Assert
@@ -117,10 +126,10 @@ public class GamePiece_Tests
         int Y2 = PlayerTwoPawn.CurrentPosition.Y;
 
         // Act
-        PlayerOne.SetSelected((int)X, Y, game, PlayerOne);
+        PlayerOne.Select((int)X, Y, game, PlayerOne);
         PlayerOne.MovePiece(0, 4, game);
         game.CurrentPlayer = PlayerTwo;
-        PlayerTwo.SetSelected((int)X2, Y2, game, PlayerTwo);
+        PlayerTwo.Select((int)X2, Y2, game, PlayerTwo);
         PlayerTwo.MovePiece(0, 3, game);
 
         // Assert
