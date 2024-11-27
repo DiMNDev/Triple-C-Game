@@ -4,6 +4,7 @@
 @using Chess_Final.Lobby
 @using Chess_Final.PlayerManager
 @using Chess_Final.Player
+@using Chess_Final.UI_Manager
 <link rel="stylesheet" href="Play.css">
 
 <PageTitle>Triple C</PageTitle>
@@ -12,19 +13,33 @@
 <h3>@(game?.PlayerOne?.Username ?? "waiting") vs. @(game?.PlayerTwo?.Username ?? "waiting")</h3>
 <div class="MainContainer">
     <div class="GameSide">
-        @* Create a seperate component for each game? *@
+        <div class="PlayerDash">
+            @if (game?.PlayerTwo != null)
+            {
+                <h2>@(game?.PlayerTwo?.Username ?? "Loading")</h2>
+            }
+        </div>
+        @* Create a seperate GameBoard component for each game? *@
         <div class="GameBoard">
 
             @for (int y = 0; y < game?.Board?.Matrix?.GetLength(0); y++)
             {
                 <div style="display: grid; grid-template-columns: repeat(8, 1fr);">
 
-                    @for (int x = 0; x < game?.Board.Matrix.GetLength(0); x++)
+                    @for (int x = 0; x < game?.Board?.Matrix?.GetLength(1); x++)
                     {
-                        <div class="GridCell"
-                            style="@(y%2 == 0 ? x%2 == 0  ? "background-color: black; color: white;" : "background-color: white; color: black;" : x%2!=0 ? "background-color: black; color: white;": "background-color: white; color: black;") ">
-                            (@x, @y)
-                            @if (true) { }
+                        var LocalY = y;
+                        var LocalX = x;
+
+                        <div id="cell-@x-@y"
+                            class="GridCell @(player == game?.PlayerOne ? UI_Manager.CSS_ClassSelector(player!,"Selected", LocalX, LocalY, game!) : player == game?.PlayerTwo ?  UI_Manager.CSS_ClassSelector(player!,"Selected", LocalX, LocalY, game!) : "") @(UI_Manager.CSS_ClassSelector(player!,"Valid", LocalX, LocalY,  game))"
+                            @onclick="()=>HandleCellSelection(LocalX,LocalY)"
+                            style="@UI_Manager.CSS_ClassSelector(player!, "Chess_BG", LocalX, LocalY, game)">
+                            @if (game.Board.Matrix[x, y] != null)
+                            {
+                                @(game?.Board?.Matrix[x, y].Name)
+                            }
+
                         </div>
                     }
                 </div>
@@ -38,15 +53,21 @@
             }
         </div>
     </div>
+    <div class="GameDetails">
+        <h1>Details</h1>
+        <div class="CurrentTurn">
+            <h3>Current Turn: @(game?.CurrentPlayer?.Username ?? "waiting")</h3>
+        </div>
+    </div>
     <div class="SpecSection">
-
+        <h1>Spectators</h1>
     </div>
 </div>
 
 @code
 {
     [Parameter]
-    public string GameName { get; set; }
+    public string? GameName { get; set; }
     [Parameter]
     public Guid GameID { get; set; }
     [Parameter]
@@ -54,7 +75,7 @@
     public Player? player { get; set; }
     public GameType gameType { get; set; }
     private Game? game { get; set; } = null;
-    private bool Ready = false;
+
 
     protected override void OnInitialized()
     {
@@ -64,16 +85,43 @@
     {
         try
         {
-
             gameType = LobbyManager.ConvertStringToGameType(GameName);
             game = LobbyManager.GetGame(gameType, GameID);
             player = PlayerManager.GetPlayer(PlayerID);
             if (game?.PlayerOne?.Username != player.Username)
             {
                 game?.JoinGame(player);
+                game?.PlaceInMatrix();
+            }
+            if (game?.PlayerOne != null && game.PlayerTwo != null)
+            {
+                game.PlayerOne.TurnOver += () => InvokeAsync(game.NewTurn);
+                game.PlayerTwo.TurnOver += () => InvokeAsync(game.NewTurn);
+                game.PlayerTwo.GameHasChanged += () => InvokeAsync(VerifyStateChange);
+                game.PlayerOne.GameHasChanged += () => InvokeAsync(VerifyStateChange);
+
             }
 
         }
         catch (Exception err) { Console.WriteLine(err); };
+    }
+
+    void HandleCellSelection(int x, int y)
+    {
+        try
+        {
+            Console.WriteLine($"Play: {((ChessCoordinate)x).ToString()},{y}");
+            game?.CurrentPlayer.Select(x, y, game, player);
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine(err);
+        }
+    }
+
+    void VerifyStateChange()
+    {
+        StateHasChanged();
+        Console.WriteLine("Event Triggered");
     }
 }

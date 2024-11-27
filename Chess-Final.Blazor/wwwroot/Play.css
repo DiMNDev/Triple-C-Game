@@ -1,8 +1,10 @@
 .MainContainer {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  width: 100vw;
+  grid-template-columns: 2fr 1fr 1fr;
+  width: 100%;
   height: 100vh;
+  gap: 0.5rem;
+  margin: 2rem;
 }
 .GameSide {
   display: flex;
@@ -12,8 +14,8 @@
 }
 .GameBoard {
   display: grid;
-  height: 40rem;
-  width: 40rem;
+  height: 60%;
+  aspect-ratio: 1;
   background-color: purple;
   box-shadow: 0.2rem 0.2rem 4rem black;
   padding: 2rem;
@@ -23,7 +25,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.25s;
 }
+.GridCell:hover {
+  /* background-color: rgba(128, 0, 128, 0.538) !important; */
+  box-shadow: inset 0rem 0rem 4rem rgb(128, 0, 128);
+}
+.GridCell:active {
+  box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(128, 0, 128);
+}
+
+.selected {
+  box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(128, 0, 128);
+}
+.validMove {
+  box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(66, 0, 128);
+}
+
 .PlayerDash {
   width: 75%;
+}
+
+.GameDetails,
+.SpecSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid rebeccapurple;
 }
