@@ -10,7 +10,6 @@ public class ChessPieces
     public class Pawn : GamePiece
     {
         public PieceType Type { get; set; }
-        public bool FirstMove { get; private set; } = true;
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
@@ -19,77 +18,92 @@ public class ChessPieces
         {
             this.owner = owner;
             CurrentPosition = (currentPosition.X, currentPosition.Y);
-            CalculateValidMoves();
-
         }
-        public override void CalculateValidMoves()
+        public override void CalculateValidMoves(Func<int, int, GamePiece?> FindOpponent)
         {
+            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Parse CurrentPosition
             Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
             int CurrentX = (int)ParsedX;
             int CurrentY = this.CurrentPosition.Y;
-
+            // If Piece is PlayerOne Piece
             if (this.owner == Owner.Player)
             {
+                // On First move can move 2 spacese
                 if (FirstMove)
                 {
-                    var ValidMove01 = (CurrentX, CurrentY - 2);
-                    AllowedMovement.Add(ValidMove01);
+                    // Set AllowedMove to move 2 spaces
+                    AllowedMovement.Add((CurrentX, CurrentY - 2));
+                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y - 1));
                 }
                 else
                 {
-                    var ValidMove02 = ((int)ParsedX, CurrentPosition.Y - 1);
-                    AllowedMovement.Add(ValidMove02);
+                    // Regular move -- Can move 1 space forward                    
+                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y - 1));
                 }
-
+                // If FindOpponent method is not null check if can attack (x+-1,y-1)
+                if (FindOpponent != null)
+                {
+                    // Check if piece to right is opponent
+                    var pieceToRight = FindOpponent(CurrentX + 1, CurrentY - 1);
+                    // Check if piece to left is opponent
+                    var pieceToLeft = FindOpponent(CurrentX - 1, CurrentY - 1);
+                    Console.WriteLine(pieceToLeft);
+                    Console.WriteLine(pieceToRight);
+                    // Set allowed movement if opponent piece to right exists
+                    if (pieceToRight != null)
+                    {
+                        AllowedMovement.Add((CurrentX + 1, CurrentY - 1));
+                    }
+                    // Set allowed movement if opponent piece to left exists
+                    if (pieceToLeft != null)
+                    {
+                        AllowedMovement.Add((CurrentX - 1, CurrentY - 1));
+                    }
+                }
             }
             else if (this.owner == Owner.Opponent)
             {
 
+                // On First move can move 2 spacese
                 if (FirstMove)
                 {
-                    var ValidMove01 = (CurrentX, CurrentY + 2);
-                    AllowedMovement.Add(ValidMove01);
+                    // Set AllowedMove to move 2 spaces
+                    AllowedMovement.Add((CurrentX, CurrentY + 2));
+                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y + 1));
                 }
                 else
                 {
-                    var ValidMove02 = (CurrentX, CurrentY + 1);
-                    AllowedMovement.Add(ValidMove02);
+                    // Regular move -- Can move 1 space forward                    
+                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y + 1));
+                }
+                // If FindOpponent method is not null check if can attack (x+-1,y-1)
+                if (FindOpponent != null)
+                {
+                    // Check if piece to right is opponent
+                    var pieceToRight = FindOpponent(CurrentX + 1, CurrentY + 1);
+                    // Check if piece to left is opponent
+                    var pieceToLeft = FindOpponent(CurrentX - 1, CurrentY + 1);
+
+
+                    Console.WriteLine(pieceToLeft);
+                    Console.WriteLine(pieceToRight);
+
+                    // Set allowed movement if opponent piece to right exists
+                    if (pieceToRight != null)
+                    {
+                        AllowedMovement.Add((CurrentX + 1, CurrentY + 1));
+                    }
+                    // Set allowed movement if opponent piece to left exists
+                    if (pieceToLeft != null)
+                    {
+                        AllowedMovement.Add((CurrentX - 1, CurrentY + 1));
+                    }
                 }
             }
-
+            Console.WriteLine($"Allowed: {string.Join(",", AllowedMovement)}");
         }
 
-        public override void MovePiece(Game game, Player player)
-        {
-            Enum.TryParse<ChessCoordinate>(CurrentPosition.X, out ChessCoordinate result);
-            if (player == game.PlayerOne)
-            {
-
-                if (FirstMove)
-                {
-                    AllowedMovement.Add(((int)result, CurrentPosition.Y - 2));
-                }
-                else
-                {
-                    AllowedMovement.Add(((int)result, CurrentPosition.Y - 1));
-                    AllowedMovement.Remove(((int)result, CurrentPosition.Y - 2));
-                }
-            }
-            else if (player == game.PlayerTwo)
-            {
-
-                if (FirstMove)
-                {
-                    AllowedMovement.Add(((int)result, CurrentPosition.Y + 2));
-                }
-                else
-                {
-                    AllowedMovement.Add(((int)result, CurrentPosition.Y + 1));
-                    AllowedMovement.Remove(((int)result, CurrentPosition.Y + 2));
-                }
-            }
-            // If player piece is (x+1,y+1) or (x-1,y-1) then allow that movement
-        }
     }
     public class Rook : GamePiece
     {
@@ -97,15 +111,11 @@ public class ChessPieces
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
-        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
-        public override void CalculateValidMoves()
-        {
-            throw new NotImplementedException();
-        }
+        public override Owner owner { get; init; }
 
-        public override void MovePiece(Game game, Player player)
+        public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            throw new NotImplementedException();
+
         }
     }
     public class Knight : GamePiece
@@ -114,15 +124,11 @@ public class ChessPieces
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
-        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
-        public override void CalculateValidMoves()
-        {
-            throw new NotImplementedException();
-        }
+        public override Owner owner { get; init; }
 
-        public override void MovePiece(Game game, Player player)
+        public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            throw new NotImplementedException();
+
         }
     }
     public class Bishop : GamePiece
@@ -131,15 +137,11 @@ public class ChessPieces
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
-        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
-        public override void CalculateValidMoves()
-        {
-            throw new NotImplementedException();
-        }
+        public override Owner owner { get; init; }
 
-        public override void MovePiece(Game game, Player player)
+        public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            throw new NotImplementedException();
+
         }
     }
     public class Queen : GamePiece
@@ -148,15 +150,11 @@ public class ChessPieces
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
-        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
-        public override void CalculateValidMoves()
-        {
-            throw new NotImplementedException();
-        }
+        public override Owner owner { get; init; }
 
-        public override void MovePiece(Game game, Player player)
+        public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            throw new NotImplementedException();
+
         }
     }
     public class King : GamePiece
@@ -165,15 +163,11 @@ public class ChessPieces
         public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
-        public override Owner owner { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
-        public override void CalculateValidMoves()
-        {
-            throw new NotImplementedException();
-        }
+        public override Owner owner { get; init; }
 
-        public override void MovePiece(Game game, Player player)
+        public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            throw new NotImplementedException();
+
         }
     }
 }
@@ -185,8 +179,9 @@ public class Chess : Game
     {
         Board = new(GameType.Chess);
     }
-
     public string Name { get; private set; } = "Chess";
+    public override Player? CurrentPlayer { get; set; }
+
     public override void LayoutGamePieces(Player player)
     {
         // Check CWD for use with different projects
@@ -250,36 +245,25 @@ public class Chess : Game
     // Should run when both players are in game
     public override void PlaceInMatrix()
     {
-
         if (PlayerOne != null)
         {
             foreach (var piece in PlayerOne.GamePieces)
             {
-                Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate result);
-                Board.Matrix[(int)result, piece.CurrentPosition.Y] = piece;
-                Console.WriteLine(Board.Matrix[(int)result, piece.CurrentPosition.Y]);
-            }
+                Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate X);
+                Board.Matrix[(int)X, piece.CurrentPosition.Y] = piece;
 
-        }
-        if (PlayerTwo != null)
-        {
-            foreach (var piece in PlayerTwo.GamePieces)
-            {
-                Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate result);
-                Board.Matrix[(int)result, piece.CurrentPosition.Y] = piece;
             }
-        }
-        UpdateGame();
-        foreach (var piece in PlayerOne.GamePieces)
-        {
-            piece.CalculateValidMoves();
-        }
-        foreach (var piece in PlayerTwo.GamePieces)
-        {
-            piece.CalculateValidMoves();
+            if (PlayerTwo != null)
+            {
+                foreach (var piece in PlayerTwo.GamePieces)
+                {
+                    Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate X);
+                    Board.Matrix[(int)X, piece.CurrentPosition.Y] = piece;
+                }
+            }
+            UpdateGame();
         }
     }
-
     public override GamePiece? PlaceGamePiece(int x, int y)
     {
         var piece = PlayerOne.GamePieces.Where(p => p.CurrentPosition == (((ChessCoordinate)x).ToString(), y)).FirstOrDefault();
