@@ -74,6 +74,60 @@ public class GamePiece_Tests
         PlayerTwoPawn!.AllowedMovement[0].Should().Be(PlayerTwoFirstMove);
 
     }
+    [Fact]
+    public void ShouldMovePlayerOnePieceToValidPosition()
+    {
+        // Arrange
+        Chess game = new();
+        Player PlayerOne = new("P1");
+        Player PlayerTwo = new("P2");
+        game.JoinGame(PlayerOne);
+        game.JoinGame(PlayerTwo);
+        game.PlaceInMatrix();
+        GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        Enum.TryParse<ChessCoordinate>(PlayerOnePawn.CurrentPosition.X, out ChessCoordinate X);
+        int Y = PlayerOnePawn.CurrentPosition.Y;
+
+        // Act
+        PlayerOne.SetSelected((int)X, Y, game, PlayerOne);
+        PlayerOne.MovePiece(0, 4, game);
+
+        // Assert
+        PlayerOnePawn.CurrentPosition.Should().Be(("A", 4));
+        game.Board.Matrix[0, 4].Should().Be(PlayerOnePawn);
+        game.Board.Matrix[(int)X, Y].Should().BeNull();
+    }
+    [Fact]
+    public void ShouldMovePlayerTwoPieceToValidPosition()
+    {
+        // Arrange
+        Chess game = new();
+        Player PlayerOne = new("P1");
+        Player PlayerTwo = new("P2");
+        game.JoinGame(PlayerOne);
+        game.JoinGame(PlayerTwo);
+        game.PlaceInMatrix();
+
+        GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        Enum.TryParse<ChessCoordinate>(PlayerOnePawn.CurrentPosition.X, out ChessCoordinate X);
+        int Y = PlayerOnePawn.CurrentPosition.Y;
+
+        GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
+        Enum.TryParse<ChessCoordinate>(PlayerTwoPawn.CurrentPosition.X, out ChessCoordinate X2);
+        int Y2 = PlayerTwoPawn.CurrentPosition.Y;
+
+        // Act
+        PlayerOne.SetSelected((int)X, Y, game, PlayerOne);
+        PlayerOne.MovePiece(0, 4, game);
+        game.CurrentPlayer = PlayerTwo;
+        PlayerTwo.SetSelected((int)X2, Y2, game, PlayerTwo);
+        PlayerTwo.MovePiece(0, 3, game);
+
+        // Assert
+        PlayerOnePawn.CurrentPosition.Should().Be(("A", 4));
+        game.Board.Matrix[0, 4].Should().Be(PlayerOnePawn);
+        game.Board.Matrix[(int)X, Y].Should().BeNull();
+    }
 }
 
 public class GameBoard_Tests
