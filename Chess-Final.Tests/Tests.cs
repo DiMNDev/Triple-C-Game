@@ -746,7 +746,7 @@ public class GamePiece_Tests
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
             GamePiece? PlayerOneQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 7)).FirstOrDefault();
-            GamePiece? PlayerTwoQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
+            GamePiece? PlayerTwoQueen = PlayerTwo!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
             game.PlaceInMatrix();
 
             // Act            
@@ -800,20 +800,21 @@ public class GamePiece_Tests
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
 
-            GamePiece? PlayerOneQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
+            GamePiece? PlayerTwoQueen = PlayerTwo!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
 
             // Move pawn @ (E,1) -> (F,2)
-            GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.CurrentPosition == ("E", 6)).FirstOrDefault();
-            PlayerOnePawn.CurrentPosition = ("F", 5);
+            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("E", 1)).FirstOrDefault();
+            PlayerTwoPawn.CurrentPosition = ("F", 2);
             game.PlaceInMatrix();
+            game.CurrentPlayer = PlayerTwo;
 
             // Act            
-            Enum.TryParse<ChessCoordinate>(PlayerOneQueen.CurrentPosition.X, out ChessCoordinate X2);
-            int Y2 = PlayerOneQueen.CurrentPosition.Y;
-            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerOne);
+            Enum.TryParse<ChessCoordinate>(PlayerTwoQueen.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerTwoQueen.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
 
             // Assert
-            PlayerOneQueen.AllowedMovement.Count().Should().Be(6);
+            PlayerTwoQueen.AllowedMovement.Count().Should().Be(6);
 
         }
         [Fact]
@@ -923,7 +924,6 @@ public class GamePiece_Tests
     }
 
 }
-
 
 public class GameBoard_Tests
 {

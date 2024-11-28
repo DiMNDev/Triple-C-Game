@@ -536,7 +536,6 @@ public class ChessPieces
     public class Queen : GamePiece
     {
         public PieceType Type { get; set; }
-        public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
@@ -551,6 +550,138 @@ public class ChessPieces
             Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
             int CurrentX = (int)ParsedX;
             int CurrentY = this.CurrentPosition.Y;
+            #region Straight Movement
+            int MaxX = 7;
+            int MaxY = 7;
+            #region Can Move up to -7                
+            for (int i = CurrentY; i >= 0; i--)
+            {
+                if (i == CurrentY) continue;
+                GamePiece pieceInstance = FindOpponent(CurrentX, i);
+                if (pieceInstance != null)
+                {
+                    if (this.owner == Owner.Player)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    if (this.owner == Owner.Opponent)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        else { break; }
+                    }
+                }
+                else
+                {
+                    AllowedMovement.Add((CurrentX, i));
+                }
+            }
+            #endregion
+            #region Can Move down to +7                     
+            for (int i = CurrentY; i <= MaxY; i++)
+            {
+                if (i == CurrentY) continue;
+                GamePiece pieceInstance = FindOpponent(CurrentX, i);
+                if (pieceInstance != null)
+                {
+                    if (this.owner == Owner.Player)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    if (this.owner == Owner.Opponent)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        else { break; }
+                    }
+                }
+                else
+                {
+                    AllowedMovement.Add((CurrentX, i));
+                }
+            }
+            #endregion
+            #region Can Move right to +7                
+            for (int i = CurrentX; i <= MaxX; i++)
+            {
+                if (i == CurrentX) continue;
+                GamePiece pieceInstance = FindOpponent(i, CurrentY);
+                if (pieceInstance != null)
+                {
+                    if (this.owner == Owner.Player)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    if (this.owner == Owner.Opponent)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        else { break; }
+                    }
+                }
+                else
+                {
+                    AllowedMovement.Add((i, CurrentY));
+                }
+            }
+            #endregion
+            #region Can Move left to -7                
+            for (int i = CurrentX; i >= 0; i--)
+            {
+                if (i == CurrentX) continue;
+                GamePiece pieceInstance = FindOpponent(i, CurrentY);
+                if (pieceInstance != null)
+                {
+                    if (this.owner == Owner.Player)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    if (this.owner == Owner.Opponent)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        else { break; }
+                    }
+                }
+                else
+                {
+                    AllowedMovement.Add((i, CurrentY));
+                }
+            }
+            #endregion
+            #endregion
         }
     }
     public class King : GamePiece
