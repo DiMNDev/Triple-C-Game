@@ -830,7 +830,6 @@ public class ChessPieces
     public class King : GamePiece
     {
         public PieceType Type { get; set; }
-        public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }

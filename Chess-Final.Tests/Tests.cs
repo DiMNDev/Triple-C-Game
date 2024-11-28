@@ -923,6 +923,254 @@ public class GamePiece_Tests
             RemovedFromPlay.Should().BeNull();
         }
     }
+    public class King_Tests
+    {
+        [Fact]
+        public void KingShouldHaveNotHaveAnyMovesForBothPlayers()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X1);
+            int Y1 = PlayerOneKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
+
+            game.CurrentPlayer = PlayerTwo;
+
+            Enum.TryParse<ChessCoordinate>(PlayerTwoKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerOneKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
+
+            // Assert
+            PlayerOneKing.AllowedMovement.Count().Should().Be(0);
+            PlayerTwoKing.AllowedMovement.Count().Should().Be(0);
+        }
+        [Fact]
+        public void KingShouldHaveOneMove()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+
+            // Move pawn @ (E,6) -> (F,5)
+            GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.CurrentPosition == ("D", 6)).FirstOrDefault();
+            PlayerOnePawn.CurrentPosition = ("D", 5);
+
+            GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
+
+            // Move pawn @ (E,6) -> (F,5)
+            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("D", 1)).FirstOrDefault();
+            PlayerTwoPawn.CurrentPosition = ("D", 2);
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X1);
+            int Y1 = PlayerOneKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
+
+            game.CurrentPlayer = PlayerTwo;
+
+            Enum.TryParse<ChessCoordinate>(PlayerTwoKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerTwoKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
+
+            // Assert
+            PlayerOneKing.AllowedMovement.Count().Should().Be(1);
+            PlayerTwoKing.AllowedMovement.Count().Should().Be(1);
+
+        }
+        [Fact]
+        public void KingShouldHaveEightMovesForPlayerOne()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+
+            // Place King @ (D,4) 
+            PlayerOneKing.CurrentPosition = ("D", 4);
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerOneKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select(3, 4, game, PlayerOne);
+            // Assert
+            PlayerOneKing.AllowedMovement.Count().Should().Be(8);
+
+        }
+        [Fact]
+        public void KingShouldHaveEightMovesForPlayerTwo()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
+
+            // Place King @ (D,4) 
+            PlayerTwoKing.CurrentPosition = ("D", 3);
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerTwoKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerTwoKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select(3, 3, game, PlayerTwo);
+            // Assert
+            PlayerTwoKing.AllowedMovement.Count().Should().Be(8);
+        }
+        [Fact]
+        public void KingShouldHaveFiveMovesForPlayerOne()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            // Place King @ (D,4) 
+            PlayerOneKing.CurrentPosition = ("D", 3);
+
+
+            GamePiece? PlayerTwoRook = PlayerTwo!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("A", 0)).FirstOrDefault();
+            PlayerTwoRook.CurrentPosition = ("A", 2);
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerOneKing.CurrentPosition.Y;
+            game.CurrentPlayer.Select(3, 3, game, PlayerOne);
+            // Assert
+            PlayerOneKing.AllowedMovement.Count().Should().Be(5);
+
+        }
+        [Fact]
+        public void KingShouldHaveFiveMovesForPlayerTwo()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
+            // Place King @ (D,4) 
+            PlayerTwoKing.CurrentPosition = ("D", 3);
+
+
+            GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("A", 7)).FirstOrDefault();
+            PlayerOneRook.CurrentPosition = ("A", 2);
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerTwoKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerTwoKing.CurrentPosition.Y;
+
+            game.CurrentPlayer = PlayerTwo;
+            game.CurrentPlayer.Select(3, 3, game, PlayerTwo);
+            // Assert
+            PlayerTwoKing.AllowedMovement.Count().Should().Be(5);
+        }
+        [Fact]
+        public void KingShouldHaveNotHaveMovesAndTriggerGameOver()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            // Place King @ (D,4) 
+            PlayerOneKing.CurrentPosition = ("D", 3);
+
+
+            GamePiece? PlayerTwoRookOne = PlayerTwo!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("A", 0)).FirstOrDefault();
+            PlayerTwoRookOne.CurrentPosition = ("A", 2);
+            GamePiece? PlayerTwoRookTwo = PlayerTwo!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("A", 0)).FirstOrDefault();
+            PlayerTwoRookOne.CurrentPosition = ("A", 4);
+            GamePiece? PlayerTwoKnightOne = PlayerTwo!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 0)).FirstOrDefault();
+            PlayerTwoKnightOne.CurrentPosition = ("B", 5);
+            GamePiece? PlayerTwoKnightTwo = PlayerTwo!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("G", 0)).FirstOrDefault();
+            PlayerTwoKnightOne.CurrentPosition = ("F", 5);
+            game.PlaceInMatrix();
+
+            // Act            
+            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerOneKing.CurrentPosition.Y;
+
+            game.CurrentPlayer.Select(3, 3, game, PlayerOne);
+            // Assert
+            PlayerOneKing.AllowedMovement.Count().Should().Be(5);
+            game.GameOver.Should().BeTrue();
+        }
+
+        [Fact]
+        public void KingShouldAllowKingToAttack()
+        {
+            // Arrange
+
+            // Setup Game
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            // Setup PlayerOne
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            PlayerOneKing.CurrentPosition = ("D", 3);
+            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X);
+            int Y = PlayerOneKing.CurrentPosition.Y;
+
+            // Setup PlayerTwo
+            GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
+            PlayerTwoBishop.CurrentPosition = ("E", 3);
+            Enum.TryParse<ChessCoordinate>(PlayerTwoBishop.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerTwoBishop.CurrentPosition.Y;
+            game.PlaceInMatrix();
+
+            // Act
+            PlayerOne.Select((int)X, Y, game, PlayerOne);
+            PlayerOne.MovePiece(4, 3, game);
+            GamePiece? RemovedFromPlay = null;
+            for (int i = 0; i < game.Board.Matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < game.Board.Matrix.GetLength(0); j++)
+                {
+                    if (game.Board.Matrix[i, j] == PlayerTwoBishop) RemovedFromPlay = game.Board.Matrix[i, j];
+                }
+            }
+            // Assert
+            PlayerOneKing.CurrentPosition.Should().Be(("E", 3));
+            game.Board.Matrix[1, 3].Should().Be(PlayerOneKing);
+            RemovedFromPlay.Should().BeNull();
+        }
+    }
 
 }
 
