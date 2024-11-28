@@ -818,7 +818,7 @@ public class GamePiece_Tests
 
         }
         [Fact]
-        public void QueenShouldHave17MovesForPlayerOne()
+        public void QueenShouldHave20MovesForPlayerOne()
         {
             // Arrange
             Chess game = new();
@@ -840,13 +840,13 @@ public class GamePiece_Tests
             game.CurrentPlayer.Select((int)X2, Y2, game, PlayerOne);
             game.CurrentPlayer.MovePiece(4, 4, game);
             game.CurrentPlayer = PlayerOne;
-            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerOne);
+            game.CurrentPlayer.Select(4, 4, game, PlayerOne);
             // Assert
-            PlayerOneQueen.AllowedMovement.Count().Should().Be(17);
+            PlayerOneQueen.AllowedMovement.Count().Should().Be(20);
 
         }
         [Fact]
-        public void QueenShouldHave17MovesForPlayerTwo()
+        public void QueenShouldHave20MovesForPlayerTwo()
         {
             // Arrange
             Chess game = new();
@@ -857,20 +857,21 @@ public class GamePiece_Tests
 
             GamePiece? PlayerTwoQueen = PlayerTwo!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
 
-            // Move pawn @ (E,6) -> (F,5)
+            // Move pawn @ (E,1) -> (F,2)
             GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("E", 1)).FirstOrDefault();
             PlayerTwoPawn.CurrentPosition = ("F", 2);
             game.PlaceInMatrix();
+            game.CurrentPlayer = PlayerTwo;
 
             // Act            
             Enum.TryParse<ChessCoordinate>(PlayerTwoQueen.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerTwoQueen.CurrentPosition.Y;
             game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
-            game.CurrentPlayer.MovePiece(4, 4, game);
+            game.CurrentPlayer.MovePiece(4, 3, game);
             game.CurrentPlayer = PlayerTwo;
-            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
+            game.CurrentPlayer.Select(4, 3, game, PlayerTwo);
             // Assert
-            PlayerTwoQueen.AllowedMovement.Count().Should().Be(17);
+            PlayerTwoQueen.AllowedMovement.Count().Should().Be(20);
 
         }
 
