@@ -64,6 +64,7 @@ public class GamePiece_Tests
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
+            game.PlaceInMatrix();
             // Act
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
             Enum.TryParse<ChessCoordinate>(PlayerOnePawn.CurrentPosition.X, out ChessCoordinate X1);
@@ -188,7 +189,7 @@ public class GamePiece_Tests
     public class Rook_Tests
     {
         [Fact]
-        public void RookShouldHaveValidMove()
+        public void RookShouldNotHaveAnyValidMoves()
         {
             // Arrange
             Chess game = new();
@@ -196,11 +197,11 @@ public class GamePiece_Tests
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
+            game.PlaceInMatrix();
             // Act
             GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook").FirstOrDefault();
             Enum.TryParse<ChessCoordinate>(PlayerOneRook.CurrentPosition.X, out ChessCoordinate X1);
             int Y1 = PlayerOneRook.CurrentPosition.Y;
-            var PlayerOneFirstMove = (0, 4);
             game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
 
             game.NewTurn();
@@ -209,12 +210,9 @@ public class GamePiece_Tests
             Enum.TryParse<ChessCoordinate>(PlayerTwoRook.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerTwoRook.CurrentPosition.Y;
             game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
-            var PlayerTwoFirstMove = (0, 3);
             // Assert
-            PlayerOneRook!.AllowedMovement.Count().Should().Be(2);
-            PlayerOneRook!.AllowedMovement[0].Should().Be(PlayerOneFirstMove);
-            PlayerTwoRook!.AllowedMovement.Count().Should().Be(2);
-            PlayerTwoRook!.AllowedMovement[0].Should().Be(PlayerTwoFirstMove);
+            PlayerOneRook!.AllowedMovement.Count().Should().Be(0);
+            PlayerTwoRook!.AllowedMovement.Count().Should().Be(0);
 
         }
         [Fact]
