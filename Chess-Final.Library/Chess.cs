@@ -108,14 +108,114 @@ public class ChessPieces
     public class Rook : GamePiece
     {
         public PieceType Type { get; set; }
-        public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
+        public Rook(Owner owner, (string X, int Y) currentPosition)
+        {
+            this.owner = owner;
+            CurrentPosition = (currentPosition.X, currentPosition.Y);
+        }
 
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
+            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Parse CurrentPosition
+            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
+            int CurrentX = (int)ParsedX;
+            int CurrentY = this.CurrentPosition.Y;
 
+            // If Piece is PlayerOne Piece
+            if (this.owner == Owner.Player)
+            {
+                int MaxX = 7;
+                int MaxY = 7;
+                int MinX = 0;
+                int MinY = 0;
+                //#region Can Move up to -7                
+                for (int i = CurrentY; i >= 0; i--)
+                {
+                    if (i == CurrentY) continue;
+                    GamePiece pieceInstance = FindOpponent(CurrentX, i);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX, i));
+                    }
+                }
+                // #endregion
+                // #region Can Move down to +7                     
+                for (int i = CurrentY; i <= MaxY; i++)
+                {
+                    if (i == CurrentY) continue;
+                    GamePiece pieceInstance = FindOpponent(CurrentX, i);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX, i));
+                    }
+                }
+                // #endregion
+                // #region Can Move right to +7                
+                for (int i = CurrentX; i <= MaxX; i++)
+                {
+                    if (i == CurrentX) continue;
+                    GamePiece pieceInstance = FindOpponent(i, CurrentY);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((i, CurrentY));
+                            break;
+                        }
+                        else if (pieceInstance.owner == Owner.Player)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((i, CurrentY));
+                    }
+                }
+                //#endregion
+                // #region Can Move left to +7                
+                for (int i = CurrentX; i >= 0; i--)
+                {
+                    if (i == CurrentX) continue;
+                    GamePiece pieceInstance = FindOpponent(i, CurrentY);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Opponent)
+                        {
+                            AllowedMovement.Add((i, CurrentY));
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((i, CurrentY));
+                    }
+                }
+                // #endregion
+            }
         }
     }
     public class Knight : GamePiece
@@ -125,7 +225,11 @@ public class ChessPieces
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
-
+        public Knight(Owner owner, (string X, int Y) currentPosition)
+        {
+            this.owner = owner;
+            CurrentPosition = (currentPosition.X, currentPosition.Y);
+        }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
 
@@ -138,7 +242,11 @@ public class ChessPieces
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
-
+        public Bishop(Owner owner, (string X, int Y) currentPosition)
+        {
+            this.owner = owner;
+            CurrentPosition = (currentPosition.X, currentPosition.Y);
+        }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
 
@@ -151,7 +259,11 @@ public class ChessPieces
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
-
+        public Queen(Owner owner, (string X, int Y) currentPosition)
+        {
+            this.owner = owner;
+            CurrentPosition = (currentPosition.X, currentPosition.Y);
+        }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
 
@@ -164,7 +276,11 @@ public class ChessPieces
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
-
+        public King(Owner owner, (string X, int Y) currentPosition)
+        {
+            this.owner = owner;
+            CurrentPosition = (currentPosition.X, currentPosition.Y);
+        }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
 
@@ -201,11 +317,11 @@ public class Chess : Game
                     GamePiece newPiece = g.pieceType switch
                     {
                         "pawns" => new ChessPieces.Pawn(Owner.Player, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn },
-                        "rooks" => new ChessPieces.Rook { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-                        "knights" => new ChessPieces.Knight { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-                        "bishops" => new ChessPieces.Bishop { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-                        "queen" => new ChessPieces.Queen { Name = "Queen", Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-                        "king" => new ChessPieces.King { Name = "King", Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+                        "rooks" => new ChessPieces.Rook(Owner.Player, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
+                        "knights" => new ChessPieces.Knight(Owner.Player, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
+                        "bishops" => new ChessPieces.Bishop(Owner.Player, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
+                        "queen" => new ChessPieces.Queen(Owner.Player, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
+                        "king" => new ChessPieces.King(Owner.Player, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
                     };
                     PlayerOne.GamePieces.Add(newPiece);
                     // Janky
@@ -226,11 +342,11 @@ public class Chess : Game
                 GamePiece newPiece = g.pieceType switch
                 {
                     "pawns" => new ChessPieces.Pawn(Owner.Opponent, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
-                    "rooks" => new ChessPieces.Rook { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-                    "knights" => new ChessPieces.Knight { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-                    "bishops" => new ChessPieces.Bishop { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-                    "queen" => new ChessPieces.Queen { Name = "Queen", Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-                    "king" => new ChessPieces.King { Name = "King", Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+                    "rooks" => new ChessPieces.Rook(Owner.Opponent, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
+                    "knights" => new ChessPieces.Knight(Owner.Opponent, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
+                    "bishops" => new ChessPieces.Bishop(Owner.Opponent, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
+                    "queen" => new ChessPieces.Queen(Owner.Opponent, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
+                    "king" => new ChessPieces.King(Owner.Opponent, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
                 };
                 PlayerTwo.GamePieces.Add(newPiece);
                 // Janky

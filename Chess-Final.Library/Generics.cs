@@ -45,7 +45,7 @@ public class GameBoard
 
     public GamePiece? GetPieceFromMatrix(int x, int y)
     {
-        if (x < Matrix.GetLength(0) && x > 0 && y < Matrix.GetLength(1) && y > 0)
+        if (x < Matrix.GetLength(0) && x >= 0 && y < Matrix.GetLength(1) && y >= 0)
         {
             return Matrix[x, y];
         }
