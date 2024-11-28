@@ -124,15 +124,13 @@ public class ChessPieces
             Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
             int CurrentX = (int)ParsedX;
             int CurrentY = this.CurrentPosition.Y;
-
-            // If Piece is PlayerOne Piece
+            // CAN BE SIMPLIFIED BY OWNERSHIP
+            #region PlayerOne
             if (this.owner == Owner.Player)
             {
                 int MaxX = 7;
                 int MaxY = 7;
-                int MinX = 0;
-                int MinY = 0;
-                //#region Can Move up to -7                
+                #region Can Move up to -7                
                 for (int i = CurrentY; i >= 0; i--)
                 {
                     if (i == CurrentY) continue;
@@ -151,8 +149,8 @@ public class ChessPieces
                         AllowedMovement.Add((CurrentX, i));
                     }
                 }
-                // #endregion
-                // #region Can Move down to +7                     
+                #endregion
+                #region Can Move down to +7                     
                 for (int i = CurrentY; i <= MaxY; i++)
                 {
                     if (i == CurrentY) continue;
@@ -171,8 +169,8 @@ public class ChessPieces
                         AllowedMovement.Add((CurrentX, i));
                     }
                 }
-                // #endregion
-                // #region Can Move right to +7                
+                #endregion
+                #region Can Move right to +7                
                 for (int i = CurrentX; i <= MaxX; i++)
                 {
                     if (i == CurrentX) continue;
@@ -194,8 +192,8 @@ public class ChessPieces
                         AllowedMovement.Add((i, CurrentY));
                     }
                 }
-                //#endregion
-                // #region Can Move left to +7                
+                #endregion
+                #region Can Move left to +7                
                 for (int i = CurrentX; i >= 0; i--)
                 {
                     if (i == CurrentX) continue;
@@ -214,14 +212,104 @@ public class ChessPieces
                         AllowedMovement.Add((i, CurrentY));
                     }
                 }
-                // #endregion
+                #endregion
             }
+            #endregion
+            #region PlayerTwo
+            if (this.owner == Owner.Opponent)
+            {
+                int MaxX = 7;
+                int MaxY = 7;
+                #region Can Move up to -7                
+                for (int i = CurrentY; i >= 0; i--)
+                {
+                    if (i == CurrentY) continue;
+                    GamePiece pieceInstance = FindOpponent(CurrentX, i);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX, i));
+                    }
+                }
+                #endregion
+                #region Can Move down to +7                     
+                for (int i = CurrentY; i <= MaxY; i++)
+                {
+                    if (i == CurrentY) continue;
+                    GamePiece pieceInstance = FindOpponent(CurrentX, i);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((CurrentX, i));
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX, i));
+                    }
+                }
+                #endregion
+                #region Can Move right to +7                
+                for (int i = CurrentX; i <= MaxX; i++)
+                {
+                    if (i == CurrentX) continue;
+                    GamePiece pieceInstance = FindOpponent(i, CurrentY);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((i, CurrentY));
+                            break;
+                        }
+                        else if (pieceInstance.owner == Owner.Player)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((i, CurrentY));
+                    }
+                }
+                #endregion
+                #region Can Move left to +7                
+                for (int i = CurrentX; i >= 0; i--)
+                {
+                    if (i == CurrentX) continue;
+                    GamePiece pieceInstance = FindOpponent(i, CurrentY);
+                    if (pieceInstance != null)
+                    {
+                        if (pieceInstance.owner == Owner.Player)
+                        {
+                            AllowedMovement.Add((i, CurrentY));
+                            break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((i, CurrentY));
+                    }
+                }
+                #endregion
+            }
+            #endregion
         }
     }
     public class Knight : GamePiece
     {
         public PieceType Type { get; set; }
-        public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
@@ -232,13 +320,61 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
+            // x + 1 y + 2
+            // x + 1 y - 2
+            // x - 1 y + 2
+            // x - 1 y - 2
+            // y + 1 x + 2
+            // y + 1 x - 2
+            // y - 1 x + 2
+            // y - 1 x - 2
+            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Parse CurrentPosition
+            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
+            int CurrentX = (int)ParsedX;
+            int CurrentY = this.CurrentPosition.Y;
 
+            List<(int vX, int vY)> ValidMoves = [(1, 2), (1, -2), (-1, 2), (-1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1)];
+            foreach (var move in ValidMoves)
+            {
+                if (CurrentX + move.vX >= 0 && CurrentX + move.vX < 8 && CurrentY + move.vY >= 0 && CurrentY + move.vY < 8)
+                {
+                    GamePiece? pieceInstance = FindOpponent(CurrentX + move.vX, CurrentY + move.vY);
+                    if (this.owner == Owner.Player)
+                    {
+                        if (pieceInstance != null)
+                        {
+                            if (pieceInstance.owner == Owner.Opponent)
+                            {
+                                AllowedMovement.Add((CurrentX + move.vX, CurrentY + move.vY));
+                            }
+                        }
+                        else
+                        {
+                            AllowedMovement.Add((CurrentX + move.vX, CurrentY + move.vY));
+                        }
+                    }
+                    else if (this.owner == Owner.Opponent)
+                    {
+                        if (pieceInstance != null)
+                        {
+                            if (pieceInstance.owner == Owner.Player)
+                            {
+                                AllowedMovement.Add((CurrentX + move.vX, CurrentY + move.vY));
+                            }
+                        }
+                        else
+                        {
+                            AllowedMovement.Add((CurrentX + move.vX, CurrentY + move.vY));
+                        }
+                    }
+                }
+            }
         }
     }
     public class Bishop : GamePiece
     {
         public PieceType Type { get; set; }
-        public (int X, int Y) AllowedMovement { get; set; }
         public bool CanMove { get; set; }
         public override (string X, int Y) CurrentPosition { get; set; }
         public override Owner owner { get; init; }
@@ -249,6 +385,151 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
+            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Parse CurrentPosition
+            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
+            int CurrentX = (int)ParsedX;
+            int CurrentY = this.CurrentPosition.Y;
+            int maxXR = 7 - CurrentX;
+            int maxXL = ((CurrentX - 7) * 1) + 7; //??
+
+
+            #region  Right/Up
+            for (int i = 1; i < maxXR + 1; i++)
+            {
+                if (CurrentY - i > 0)
+                {
+                    GamePiece pieceInstance = FindOpponent(CurrentX + i, CurrentY - i);
+                    if (pieceInstance != null)
+                    {
+                        if (this.owner == Owner.Player)
+                        {
+                            if (pieceInstance.owner == Owner.Opponent)
+                            {
+                                AllowedMovement.Add((CurrentX + i, CurrentY - i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                        if (this.owner == Owner.Opponent)
+                        {
+                            if (pieceInstance.owner == Owner.Player)
+                            {
+                                AllowedMovement.Add((CurrentX + i, CurrentY - i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX + i, CurrentY - i));
+                    }
+                }
+            }
+            #endregion
+            #region  Right/Down
+            for (int i = 1; i < maxXR + 1; i++)
+            {
+                if (CurrentY + i < 8)
+                {
+                    GamePiece pieceInstance = FindOpponent(CurrentX + i, CurrentY + i);
+                    if (pieceInstance != null)
+                    {
+                        if (this.owner == Owner.Player)
+                        {
+                            if (pieceInstance.owner == Owner.Opponent)
+                            {
+                                AllowedMovement.Add((CurrentX + i, CurrentY + i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                        if (this.owner == Owner.Opponent)
+                        {
+                            if (pieceInstance.owner == Owner.Player)
+                            {
+                                AllowedMovement.Add((CurrentX + i, CurrentY + i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX + i, CurrentY + i));
+                    }
+                }
+            }
+            #endregion
+            #region  Left/Up                    
+            for (int i = 1; i < maxXL + 1; i++)
+            {
+                if (CurrentY - i > 0)
+                {
+                    GamePiece pieceInstance = FindOpponent(CurrentX - i, CurrentY - i);
+                    if (pieceInstance != null)
+                    {
+                        if (this.owner == Owner.Player)
+                        {
+                            if (pieceInstance.owner == Owner.Opponent)
+                            {
+                                AllowedMovement.Add((CurrentX - i, CurrentY - i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                        if (this.owner == Owner.Opponent)
+                        {
+                            if (pieceInstance.owner == Owner.Player)
+                            {
+                                AllowedMovement.Add((CurrentX - i, CurrentY - i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX - i, CurrentY - i));
+                    }
+                }
+            }
+            #endregion
+            # region Left/Down
+            for (int i = 1; i < maxXL + 1; i++)
+            {
+                if (CurrentY + i < 8)
+                {
+                    GamePiece pieceInstance = FindOpponent(CurrentX - i, CurrentY + i);
+                    if (pieceInstance != null)
+                    {
+                        if (this.owner == Owner.Player)
+                        {
+                            if (pieceInstance.owner == Owner.Opponent)
+                            {
+                                AllowedMovement.Add((CurrentX - i, CurrentY + i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                        if (this.owner == Owner.Opponent)
+                        {
+                            if (pieceInstance.owner == Owner.Player)
+                            {
+                                AllowedMovement.Add((CurrentX - i, CurrentY + i));
+                                break;
+                            }
+                            else { break; }
+                        }
+                    }
+                    else
+                    {
+                        AllowedMovement.Add((CurrentX - i, CurrentY + i));
+                    }
+                }
+            }
+            #endregion
 
         }
     }
