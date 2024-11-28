@@ -547,7 +547,10 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-
+            // Make into a method 🫡
+            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
+            int CurrentX = (int)ParsedX;
+            int CurrentY = this.CurrentPosition.Y;
         }
     }
     public class King : GamePiece
