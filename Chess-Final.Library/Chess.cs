@@ -840,7 +840,35 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
+            // Make into a method 🫡
+            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
+            int CurrentX = (int)ParsedX;
+            int CurrentY = this.CurrentPosition.Y;
 
+            // Possible Moves
+            (int X, int Y) UP = (CurrentX, CurrentY - 1);
+            (int X, int Y) UP_Left = (CurrentX - 1, CurrentY - 1);
+            (int X, int Y) UP_Right = (CurrentX + 1, CurrentY - 1);
+            (int X, int Y) Left = (CurrentX - 1, CurrentY);
+            (int X, int Y) Down_Left = (CurrentX - 1, CurrentY + 1);
+            (int X, int Y) Down = (CurrentX, CurrentY + 1);
+            (int X, int Y) Down_right = (CurrentX + 1, CurrentY + 1);
+            (int X, int Y) Right = (CurrentX + 1, CurrentY);
+
+            // Filter this list to make sure it's all on the board!
+            List<(int X, int Y)> PossibleMoves = [UP, UP_Left, UP_Right, Left, Down_Left, Down, Down_right, Right];
+
+            List<(int X, int Y)> EnemyMoves = this.owner switch
+            {
+                Owner.Player => Chess.GenerateEnemyMoves(Owner.Opponent),
+                Owner.Opponent => Chess.GenerateEnemyMoves(Owner.Player),
+            };
+
+            // LINQ search for matches in EnemyMoves -- If match -> possible move is removed from PossibleMoves -> ValidMoves
+            List<(int X, int Y)> InValidMoves = EnemyMoves.Where(em => PossibleMoves.Any(pm => pm == em)).ToList();
+            // Filter PossibleMoves by InvalidMoves -> ValidMoves
+            List<(int X, int Y)> ValidMoves = PossibleMoves.Where(pm => InValidMoves.Any(im => pm != im)).ToList();
+            AllowedMovement.AddRange(ValidMoves);
         }
     }
 }
@@ -854,7 +882,10 @@ public class Chess : Game
     }
     public string Name { get; private set; } = "Chess";
     public override Player? CurrentPlayer { get; set; }
-
+    public static List<(int X, int Y)> GenerateEnemyMoves(Owner owner)
+    {
+        return [(0, 0)];
+    }
     public override void LayoutGamePieces(Player player)
     {
         // Check CWD for use with different projects
