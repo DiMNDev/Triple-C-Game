@@ -532,7 +532,7 @@ public class GamePiece_Tests
     public class Bishop_Tests
     {
         [Fact]
-        public void BishopShouldHaveTwoMovesForBothPlayers()
+        public void BishopShouldHaveFiveMovesForPlayerOne()
         {
             // Arrange
             Chess game = new();
@@ -540,32 +540,22 @@ public class GamePiece_Tests
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
-            GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop").FirstOrDefault();
-            GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop").FirstOrDefault();
-            // Remove pawn @ (D,6)
+            GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 7)).FirstOrDefault();
+            // Remove pawn @ (D,6) -> (D,5)
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.CurrentPosition == ("D", 6)).FirstOrDefault();
-            PlayerOnePawn.CurrentPosition = ("A", 2);
-            // Remove pawn @ (D,1)
-            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("D", 6)).FirstOrDefault();
-            PlayerOnePawn.CurrentPosition = ("A", 5);
+            PlayerOnePawn.CurrentPosition = ("D", 5);
             game.PlaceInMatrix();
+
             // Act            
             Enum.TryParse<ChessCoordinate>(PlayerOneBishop.CurrentPosition.X, out ChessCoordinate X1);
             int Y1 = PlayerOneBishop.CurrentPosition.Y;
             game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
 
-            game.CurrentPlayer = PlayerTwo;
-
-            Enum.TryParse<ChessCoordinate>(PlayerTwoBishop.CurrentPosition.X, out ChessCoordinate X2);
-            int Y2 = PlayerTwoBishop.CurrentPosition.Y;
-            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
             // Assert
             PlayerOneBishop.AllowedMovement.Count().Should().Be(5);
-            PlayerTwoBishop.AllowedMovement.Count().Should().Be(5);
-
         }
         [Fact]
-        public void BishopShouldHaveEightValidMovesForPlayerOne()
+        public void BishopShouldHaveFiveMovesForPlayerTwo()
         {
             // Arrange
             Chess game = new();
@@ -573,16 +563,49 @@ public class GamePiece_Tests
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
-            GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop").FirstOrDefault();
-            // Act
-            PlayerOneBishop.CurrentPosition = ("D", 3);
+
+            GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
+
+            // Move pawn @ (D,1) -> (D,2)
+            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("D", 1)).FirstOrDefault();
+            PlayerTwoPawn.CurrentPosition = ("D", 2);
             game.PlaceInMatrix();
+            // Act            
+            game.CurrentPlayer = PlayerTwo;
+
+            Enum.TryParse<ChessCoordinate>(PlayerTwoBishop.CurrentPosition.X, out ChessCoordinate X2);
+            int Y2 = PlayerTwoBishop.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
+
+            // Assert
+            PlayerTwoBishop.AllowedMovement.Count().Should().Be(5);
+
+        }
+        [Fact]
+        public void BishopShouldHaveSevenValidMovesForPlayerOne()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+            GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 7)).FirstOrDefault();
+            // Move pawn @ (D,6) -> (D,5)
+            GamePiece? PlayerOnePawnOne = PlayerOne!.GamePieces!.Where(p => p.CurrentPosition == ("D", 6)).FirstOrDefault();
+            PlayerOnePawnOne.CurrentPosition = ("D", 5);
+            // Remove pawn @ (B,6) -> (B,5)
+            GamePiece? PlayerOnePawnTwo = PlayerOne!.GamePieces!.Where(p => p.CurrentPosition == ("B", 6)).FirstOrDefault();
+            PlayerOnePawnTwo.CurrentPosition = ("B", 5);
+            game.PlaceInMatrix();
+
+            // Act            
             Enum.TryParse<ChessCoordinate>(PlayerOneBishop.CurrentPosition.X, out ChessCoordinate X1);
             int Y1 = PlayerOneBishop.CurrentPosition.Y;
             game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
-            // Assert
-            PlayerOneBishop.AllowedMovement.Count().Should().Be(8);
 
+            // Assert
+            PlayerOneBishop.AllowedMovement.Count().Should().Be(7);
         }
         [Fact]
         public void BishopShouldHaveEightValidMovesForPlayerTwo()
@@ -593,17 +616,22 @@ public class GamePiece_Tests
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
-            GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop").FirstOrDefault();
-            // Act
-            PlayerTwoBishop.CurrentPosition = ("D", 4);
+            GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
+            // Remove pawn @ (D,1) -> (D,2)
+            GamePiece? PlayerTwoPawnOne = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("D", 1)).FirstOrDefault();
+            PlayerTwoPawnOne.CurrentPosition = ("D", 2);
+            // Remove pawn @ (B,1) -> (D,2)
+            GamePiece? PlayerTwoPawnTwo = PlayerTwo!.GamePieces!.Where(p => p.CurrentPosition == ("B", 1)).FirstOrDefault();
+            PlayerTwoPawnTwo.CurrentPosition = ("B", 2);
             game.PlaceInMatrix();
+            game.CurrentPlayer = PlayerTwo;
+            // Act            
             Enum.TryParse<ChessCoordinate>(PlayerTwoBishop.CurrentPosition.X, out ChessCoordinate X1);
             int Y1 = PlayerTwoBishop.CurrentPosition.Y;
-            game.CurrentPlayer = PlayerTwo;
             game.CurrentPlayer.Select((int)X1, Y1, game, PlayerTwo);
-            // Assert
-            PlayerTwoBishop.AllowedMovement.Count().Should().Be(8);
 
+            // Assert
+            PlayerTwoBishop.AllowedMovement.Count().Should().Be(7);
         }
         // Unfinished
         [Fact]
