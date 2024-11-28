@@ -215,6 +215,27 @@ public class GamePiece_Tests
             PlayerTwoRook!.AllowedMovement.Count().Should().Be(0);
 
         }
+
+        [Fact]
+        public void RookShouldHaveMultipleValidMoves()
+        {
+            // Arrange
+            Chess game = new();
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+            GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook").FirstOrDefault();
+            // Act
+            PlayerOneRook.CurrentPosition = ("C", 3);
+            game.PlaceInMatrix();
+            Enum.TryParse<ChessCoordinate>(PlayerOneRook.CurrentPosition.X, out ChessCoordinate X1);
+            int Y1 = PlayerOneRook.CurrentPosition.Y;
+            game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
+            // Assert
+            PlayerOneRook.AllowedMovement.Count().Should().Be(11);
+
+        }
         [Fact]
         public void RookShouldMovePlayerOnePieceToValidPosition()
         {
