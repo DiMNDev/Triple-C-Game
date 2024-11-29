@@ -929,7 +929,8 @@ public class GamePiece_Tests
         public void KingShouldHaveNotHaveAnyMovesForBothPlayers()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -957,7 +958,8 @@ public class GamePiece_Tests
         public void KingShouldHaveOneMove()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -996,22 +998,32 @@ public class GamePiece_Tests
         public void KingShouldHaveEightMovesForPlayerOne()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
-
             // Place King @ (D,4) 
-            PlayerOneKing.CurrentPosition = ("D", 4);
+            PlayerOneKing.CurrentPosition = ("D", 5);
+
+            // Move Pawn @ (C,6)
+            GamePiece? PlayerOnePawn01 = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("C", 6)).FirstOrDefault();
+            PlayerOnePawn01.CurrentPosition = ("A", 5);
+            // Move Pawn @ (D,6)
+            GamePiece? PlayerOnePawn02 = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 6)).FirstOrDefault();
+            PlayerOnePawn02.CurrentPosition = ("A", 4);
+            // Move Pawn @ (E,6)
+            GamePiece? PlayerOnePawn03 = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("E", 6)).FirstOrDefault();
+            PlayerOnePawn03.CurrentPosition = ("A", 3);
             game.PlaceInMatrix();
 
             // Act            
             Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerOneKing.CurrentPosition.Y;
-            game.CurrentPlayer.Select(3, 4, game, PlayerOne);
+            game.CurrentPlayer.Select(3, 5, game, PlayerOne);
             // Assert
             PlayerOneKing.AllowedMovement.Count().Should().Be(8);
 
@@ -1020,7 +1032,8 @@ public class GamePiece_Tests
         public void KingShouldHaveEightMovesForPlayerTwo()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -1028,14 +1041,25 @@ public class GamePiece_Tests
 
             GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
 
-            // Place King @ (D,4) 
-            PlayerTwoKing.CurrentPosition = ("D", 3);
+            // Place King @ (D,3) 
+            PlayerTwoKing.CurrentPosition = ("D", 2);
+            // Move Pawn @ (C,1)
+            GamePiece? PlayerTwoPawn01 = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("C", 1)).FirstOrDefault();
+            PlayerTwoPawn01.CurrentPosition = ("A", 5);
+            // Move Pawn @ (D,1)
+            GamePiece? PlayerTwoPawn02 = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 1)).FirstOrDefault();
+            PlayerTwoPawn02.CurrentPosition = ("A", 4);
+            // Move Pawn @ (E,1)
+            GamePiece? PlayerTwoPawn03 = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("E", 1)).FirstOrDefault();
+            PlayerTwoPawn03.CurrentPosition = ("A", 3);
             game.PlaceInMatrix();
+
+            game.CurrentPlayer = PlayerTwo;
 
             // Act            
             Enum.TryParse<ChessCoordinate>(PlayerTwoKing.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerTwoKing.CurrentPosition.Y;
-            game.CurrentPlayer.Select(3, 3, game, PlayerTwo);
+            game.CurrentPlayer.Select(3, 2, game, PlayerTwo);
             // Assert
             PlayerTwoKing.AllowedMovement.Count().Should().Be(8);
         }
@@ -1043,7 +1067,8 @@ public class GamePiece_Tests
         public void KingShouldHaveFiveMovesForPlayerOne()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -1051,17 +1076,17 @@ public class GamePiece_Tests
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             // Place King @ (D,4) 
-            PlayerOneKing.CurrentPosition = ("D", 3);
+            PlayerOneKing.CurrentPosition = ("D", 4);
 
 
             GamePiece? PlayerTwoRook = PlayerTwo!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("A", 0)).FirstOrDefault();
-            PlayerTwoRook.CurrentPosition = ("A", 2);
+            PlayerTwoRook.CurrentPosition = ("A", 3);
             game.PlaceInMatrix();
 
             // Act            
             Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerOneKing.CurrentPosition.Y;
-            game.CurrentPlayer.Select(3, 3, game, PlayerOne);
+            game.CurrentPlayer.Select(3, 4, game, PlayerOne);
             // Assert
             PlayerOneKing.AllowedMovement.Count().Should().Be(5);
 
@@ -1070,7 +1095,8 @@ public class GamePiece_Tests
         public void KingShouldHaveFiveMovesForPlayerTwo()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -1082,7 +1108,7 @@ public class GamePiece_Tests
 
 
             GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("A", 7)).FirstOrDefault();
-            PlayerOneRook.CurrentPosition = ("A", 2);
+            PlayerOneRook.CurrentPosition = ("A", 4);
             game.PlaceInMatrix();
 
             // Act            
@@ -1098,7 +1124,8 @@ public class GamePiece_Tests
         public void KingShouldHaveNotHaveMovesAndTriggerGameOver()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -1125,7 +1152,7 @@ public class GamePiece_Tests
 
             game.CurrentPlayer.Select(3, 3, game, PlayerOne);
             // Assert
-            PlayerOneKing.AllowedMovement.Count().Should().Be(5);
+            PlayerOneKing.AllowedMovement.Count().Should().Be(0);
             game.GameOver.Should().BeTrue();
         }
 
