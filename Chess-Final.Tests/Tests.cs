@@ -1181,7 +1181,9 @@ public class GamePiece_Tests
             // Act            
             Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerOneKing.CurrentPosition.Y;
-
+            game.CurrentPlayer = PlayerTwo;
+            game.CurrentPlayer.Select(1, 5, game, PlayerTwo);
+            game.NewTurn();
             game.CurrentPlayer.Select(3, 3, game, PlayerOne);
             // Assert
             PlayerOneKing.AllowedMovement.Count().Should().Be(0);
