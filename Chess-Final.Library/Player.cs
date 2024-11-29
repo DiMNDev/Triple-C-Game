@@ -31,12 +31,25 @@ public class Player : IPlayer
             {
                 // Set SelectedPiece if selection is a players piece
                 Console.WriteLine($"Clicked: ({X},{Y})");
-                SelectedPiece = GamePieces.Where(p => p.CurrentPosition == (((ChessCoordinate)X).ToString(), Y)).FirstOrDefault();
+                if (Check)
+                {
+                    SelectedPiece = GamePieces.FirstOrDefault(p => p.Name == "King");
+                }
+                else
+                {
+                    SelectedPiece = GamePieces.Where(p => p.CurrentPosition == (((ChessCoordinate)X).ToString(), Y)).FirstOrDefault();
+                }
+
                 // Calculate valid moves if selection is valid
                 if (SelectedPiece != null)
                 {
                     SelectedPiece.AllowedMovement = new();
                     SelectedPiece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
+                    if (Check && SelectedPiece.AllowedMovement.Count == 0)
+                    {
+                        game.Winner = game.CurrentPlayer == game.PlayerOne ? game.PlayerTwo : game.PlayerOne;
+                        game.GameOver = true;
+                    }
                 }
                 Console.WriteLine($"Seletcted: {SelectedPiece}");
             }
