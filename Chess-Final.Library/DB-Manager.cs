@@ -74,7 +74,11 @@ public class DB_Connect
             return false;
         }
     }
-
+    public void UpdateRecord(Player player)
+    {
+        var data = _connection.Find<PD_Table>(player.PlayerID);
+        _connection.Update(data);
+    }
     public void DeleteRecord(string username)
     {
         // Get Player UUID
