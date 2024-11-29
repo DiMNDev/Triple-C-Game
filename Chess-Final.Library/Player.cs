@@ -48,7 +48,7 @@ public class Player : IPlayer
                     if (Check && SelectedPiece.AllowedMovement.Count == 0)
                     {
                         game.Winner = game.CurrentPlayer == game.PlayerOne ? game.PlayerTwo : game.PlayerOne;
-                        game.GameOver = true;
+                        game.GameOverCleanUp();
                     }
                 }
                 Console.WriteLine($"Seletcted: {SelectedPiece}");

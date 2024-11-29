@@ -1,5 +1,6 @@
 namespace Chess_Final.Generics;
 
+using Chess_Final.DB_Manager;
 using Player;
 
 public interface IPlayer
@@ -82,6 +83,17 @@ public abstract class Game
     {
         _ = CurrentPlayer == PlayerOne ? CurrentPlayer = PlayerTwo : CurrentPlayer = PlayerOne;
         GameChanged?.Invoke();
+    }
+    public virtual void GameOverCleanUp()
+    {
+        GameOver = true;
+        Winner.Wins += 1;
+        Player Loser = Winner == PlayerOne ? PlayerTwo : PlayerOne;
+        Loser.Losses += 1;
+        DB_Connect dB_Connect = new();
+        dB_Connect.UpdateRecord(Winner);
+        dB_Connect.UpdateRecord(Loser);
+        GameChanged?.Invoke(); // trigger to update lobbies?        
     }
     protected Game(GameType game)
     {
