@@ -21,16 +21,10 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece?> FindOpponent)
         {
-            // -----------------------------------
-            // !!--Pawns cannot attack forward---!!
-            // !!--Should not allow friendly Fire--!!
-            // --------------------------------------
-
-            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Reset AllowedMoves
+            AllowedMovement = new();
             // Parse CurrentPosition
-            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
-            int CurrentX = (int)ParsedX;
-            int CurrentY = this.CurrentPosition.Y;
+            (int CurrentX, int CurrentY) = Chess.ParsePosition(CurrentPosition);
             // If Piece is PlayerOne Piece
             if (this.owner == Owner.Player)
             {
@@ -39,12 +33,12 @@ public class ChessPieces
                 {
                     // Set AllowedMove to move 2 spaces
                     AllowedMovement.Add((CurrentX, CurrentY - 2));
-                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y - 1));
+                    AllowedMovement.Add((CurrentX, CurrentPosition.Y - 1));
                 }
                 else
                 {
                     // Regular move -- Can move 1 space forward                    
-                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y - 1));
+                    AllowedMovement.Add((CurrentX, CurrentPosition.Y - 1));
                 }
                 // If FindOpponent method is not null check if can attack (x+-1,y-1)
                 if (FindOpponent != null)
@@ -69,18 +63,29 @@ public class ChessPieces
             }
             else if (this.owner == Owner.Opponent)
             {
+                GamePiece Collision1 = FindOpponent(CurrentX, CurrentY + 1);
+                GamePiece Collision2 = FindOpponent(CurrentX, CurrentY + 2);
 
                 // On First move can move 2 spacese
                 if (FirstMove)
                 {
                     // Set AllowedMove to move 2 spaces
-                    AllowedMovement.Add((CurrentX, CurrentY + 2));
-                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y + 1));
+                    if (Collision2 == null)
+                    {
+                        AllowedMovement.Add((CurrentX, CurrentY + 2));
+                    }
+                    if (Collision1 == null)
+                    {
+                        AllowedMovement.Add((CurrentX, CurrentPosition.Y + 1));
+                    }
                 }
                 else
                 {
                     // Regular move -- Can move 1 space forward                    
-                    AllowedMovement.Add(((int)ParsedX, CurrentPosition.Y + 1));
+                    if (Collision1 == null)
+                    {
+                        AllowedMovement.Add((CurrentX, CurrentPosition.Y + 1));
+                    }
                 }
                 // If FindOpponent method is not null check if can attack (x+-1,y-1)
                 if (FindOpponent != null)
@@ -95,18 +100,17 @@ public class ChessPieces
                     Console.WriteLine(pieceToRight);
 
                     // Set allowed movement if opponent piece to right exists
-                    if (pieceToRight != null)
+                    if (pieceToRight != null && pieceToRight.owner != owner)
                     {
                         AllowedMovement.Add((CurrentX + 1, CurrentY + 1));
                     }
                     // Set allowed movement if opponent piece to left exists
-                    if (pieceToLeft != null)
+                    if (pieceToLeft != null && pieceToLeft.owner != owner)
                     {
                         AllowedMovement.Add((CurrentX - 1, CurrentY + 1));
                     }
                 }
             }
-            Console.WriteLine($"Allowed: {string.Join(",", AllowedMovement)}");
         }
 
     }
@@ -124,11 +128,10 @@ public class ChessPieces
 
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Reset AllowedMoves
+            AllowedMovement = new();
             // Parse CurrentPosition
-            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
-            int CurrentX = (int)ParsedX;
-            int CurrentY = this.CurrentPosition.Y;
+            (int CurrentX, int CurrentY) = Chess.ParsePosition(CurrentPosition);
             // CAN BE SIMPLIFIED BY OWNERSHIP
             #region PlayerOne
             if (this.owner == Owner.Player)
@@ -325,19 +328,10 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            // x + 1 y + 2
-            // x + 1 y - 2
-            // x - 1 y + 2
-            // x - 1 y - 2
-            // y + 1 x + 2
-            // y + 1 x - 2
-            // y - 1 x + 2
-            // y - 1 x - 2
-            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Reset AllowedMoves
+            AllowedMovement = new();
             // Parse CurrentPosition
-            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
-            int CurrentX = (int)ParsedX;
-            int CurrentY = this.CurrentPosition.Y;
+            (int CurrentX, int CurrentY) = Chess.ParsePosition(CurrentPosition);
 
             List<(int vX, int vY)> ValidMoves = [(1, 2), (1, -2), (-1, 2), (-1, -2), (2, 1), (2, -1), (-2, 1), (-2, -1)];
             foreach (var move in ValidMoves)
@@ -390,11 +384,10 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
+            // Reset AllowedMoves
+            AllowedMovement = new();
             // Parse CurrentPosition
-            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
-            int CurrentX = (int)ParsedX;
-            int CurrentY = this.CurrentPosition.Y;
+            (int CurrentX, int CurrentY) = Chess.ParsePosition(CurrentPosition);
             int maxXR = 7 - CurrentX;
             int maxXL = ((CurrentX - 7) * 1) + 7; //??
 
@@ -551,10 +544,11 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            // Make into a method 🫡
-            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
-            int CurrentX = (int)ParsedX;
-            int CurrentY = this.CurrentPosition.Y;
+            // 🫡
+            // Reset AllowedMoves
+            AllowedMovement = new();
+            // Parse CurrentPosition
+            (int CurrentX, int CurrentY) = Chess.ParsePosition(CurrentPosition);
             #region Straight Movement
             int MaxX = 7;
             int MaxY = 7;
@@ -845,10 +839,11 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece> FindOpponent)
         {
-            // Make into a method 🫡
-            Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
-            int CurrentX = (int)ParsedX;
-            int CurrentY = this.CurrentPosition.Y;
+            // Reset AllowedMoves
+            AllowedMovement = new();
+            // 🫡
+            // Parse CurrentPosition
+            (int CurrentX, int CurrentY) = Chess.ParsePosition(CurrentPosition);
 
             // Possible Moves
             (int X, int Y) UP = (CurrentX, CurrentY - 1);
