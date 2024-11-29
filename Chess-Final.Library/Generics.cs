@@ -78,7 +78,7 @@ public abstract class Game
     public Player? Winner { get; set; } = null;
     public bool GameOver { get; set; } = false;
     public static event Action GameChanged;
-    public void NewTurn()
+    public virtual void NewTurn()
     {
         _ = CurrentPlayer == PlayerOne ? CurrentPlayer = PlayerTwo : CurrentPlayer = PlayerOne;
         GameChanged?.Invoke();

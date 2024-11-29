@@ -8,6 +8,8 @@ public class Player : IPlayer
     public int Wins { get; set; } = 0;
     public int Losses { get; set; } = 0;
     public Guid PlayerID { get; set; }
+    // Consider making a ChessPlayer class
+    public bool Check { get; set; } = false;
     public GamePiece? SelectedPiece { get; set; } = null;
     public event Action GameHasChanged;
     public event Action TurnOver;

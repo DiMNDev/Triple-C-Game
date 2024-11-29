@@ -7,7 +7,6 @@ using Chess_Final.Lobby;
 
 public class ChessPieces
 {
-
     public class Pawn : GamePiece
     {
         public PieceType Type { get; set; }
@@ -898,6 +897,20 @@ public class Chess : Game
     }
     public string Name { get; private set; } = "Chess";
     public override Player? CurrentPlayer { get; set; }
+    public override void NewTurn()
+    {
+        CheckInCheck();
+        base.NewTurn();
+    }
+    public void CheckInCheck()
+    {
+        Player NextPlayer = CurrentPlayer == PlayerOne ? PlayerTwo : PlayerOne;
+
+        GamePiece King = NextPlayer.GamePieces.FirstOrDefault(gp => gp.Name == "King");
+        (int X, int Y) KingPosition = Chess.ParsePosition(King.CurrentPosition);
+        List<(int X, int Y)> Threats = Chess.GenerateEnemyMoves(King.owner == Owner.Player ? Owner.Opponent : Owner.Player, UUID);
+        NextPlayer.Check = Threats.Where(t => t == KingPosition).ToList().Count() != 0;
+    }
     public static List<(int X, int Y)> GenerateEnemyMoves(Owner owner, Guid gameID)
     {
         List<(int X, int Y)> EnemyMoves = new();
@@ -964,7 +977,6 @@ public class Chess : Game
         return PiecePositions;
 
     }
-
     public static (int X, int Y) ParsePosition((string X, int Y) position)
     {
         Enum.TryParse<ChessCoordinate>(position.X, out ChessCoordinate ParsedX);
@@ -1042,16 +1054,16 @@ public class Chess : Game
                 Board.Matrix[(int)X, piece.CurrentPosition.Y] = piece;
 
             }
-            if (PlayerTwo != null)
-            {
-                foreach (var piece in PlayerTwo.GamePieces)
-                {
-                    Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate X);
-                    Board.Matrix[(int)X, piece.CurrentPosition.Y] = piece;
-                }
-            }
-            UpdateGame();
         }
+        if (PlayerTwo != null)
+        {
+            foreach (var piece in PlayerTwo.GamePieces)
+            {
+                Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate X);
+                Board.Matrix[(int)X, piece.CurrentPosition.Y] = piece;
+            }
+        }
+        UpdateGame();
     }
     public override GamePiece? PlaceGamePiece(int x, int y)
     {
@@ -1066,17 +1078,6 @@ public class Chess : Game
         }
     }
 
-    public bool MoveGamePiece(Game game, Player player, GamePiece piece, (ChessCoordinate X, int Y) moveTo)
-    {
-        Enum.TryParse<ChessCoordinate>(piece.CurrentPosition.X, out ChessCoordinate ParsedX);
-        int movement = (int)moveTo.X + (int)ParsedX;
-        if (Board.Matrix[movement, moveTo.Y] == null)
-        {
-            piece.CurrentPosition = (((ChessCoordinate)movement).ToString(), moveTo.Y);
-            return true;
-        }
-        return false;
-    }
 }
 
 public enum PieceType
