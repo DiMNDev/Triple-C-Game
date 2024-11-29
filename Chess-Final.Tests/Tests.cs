@@ -1121,6 +1121,38 @@ public class GamePiece_Tests
             PlayerTwoKing.AllowedMovement.Count().Should().Be(5);
         }
         [Fact]
+        public void ShouldPutPlayerOneInCheck()
+        {
+            // Arrange
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne);
+            game.JoinGame(PlayerTwo);
+
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            // Place King @ (H,5) 
+            PlayerOneKing.CurrentPosition = ("H", 5);
+
+            GamePiece? PlayerTwoKnight = PlayerTwo!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 0)).FirstOrDefault();
+            // Place Knight @ (E,4) 
+            PlayerTwoKnight.CurrentPosition = ("E", 4);
+            // PlayerOneKing.CurrentPosition = ("G", 3);
+            game.PlaceInMatrix();
+            // Act
+            game.CurrentPlayer.Select(0, 6, game, PlayerOne);
+            game.CurrentPlayer.MovePiece(0, 5, game);
+            game.NewTurn();
+            game.CurrentPlayer.Select(4, 4, game, PlayerTwo);
+            PlayerTwo.MovePiece(6, 3, game);
+            game.NewTurn();
+
+            // Assert
+            PlayerOne.Check.Should().BeTrue();
+        }
+
+        [Fact]
         public void KingShouldHaveNotHaveMovesAndTriggerGameOver()
         {
             // Arrange
