@@ -3,6 +3,7 @@ namespace Chess_Final.Chess;
 using Player;
 using Generics;
 using TC_DataManager;
+using Chess_Final.Lobby;
 
 public class ChessPieces
 {
@@ -21,6 +22,11 @@ public class ChessPieces
         }
         public override void CalculateValidMoves(Func<int, int, GamePiece?> FindOpponent)
         {
+            // -----------------------------------
+            // !!--Pawns cannot attack forward---!!
+            // !!--Should not allow friendly Fire--!!
+            // --------------------------------------
+
             Console.WriteLine($"Calculating Valid move for {owner} : ({CurrentPosition.X}, {CurrentPosition.Y})");
             // Parse CurrentPosition
             Enum.TryParse<ChessCoordinate>(this.CurrentPosition.X, out ChessCoordinate ParsedX);
@@ -855,20 +861,30 @@ public class ChessPieces
             (int X, int Y) Down_right = (CurrentX + 1, CurrentY + 1);
             (int X, int Y) Right = (CurrentX + 1, CurrentY);
 
-            // Filter this list to make sure it's all on the board!
             List<(int X, int Y)> PossibleMoves = [UP, UP_Left, UP_Right, Left, Down_Left, Down, Down_right, Right];
+            // Filter this list to make sure it's all on the board!
+            PossibleMoves = PossibleMoves.Where(mv => mv.X > 0 && mv.X < 7 && mv.Y > 0 && mv.Y < 7).ToList();
 
             List<(int X, int Y)> EnemyMoves = this.owner switch
             {
-                Owner.Player => Chess.GenerateEnemyMoves(Owner.Opponent),
-                Owner.Opponent => Chess.GenerateEnemyMoves(Owner.Player),
+                Owner.Player => Chess.GenerateEnemyMoves(Owner.Opponent, GameID),
+                Owner.Opponent => Chess.GenerateEnemyMoves(Owner.Player, GameID),
             };
 
-            // LINQ search for matches in EnemyMoves -- If match -> possible move is removed from PossibleMoves -> ValidMoves
-            List<(int X, int Y)> InValidMoves = EnemyMoves.Where(em => PossibleMoves.Any(pm => pm == em)).ToList();
-            // Filter PossibleMoves by InvalidMoves -> ValidMoves
-            List<(int X, int Y)> ValidMoves = PossibleMoves.Where(pm => InValidMoves.Any(im => pm != im)).ToList();
-            AllowedMovement.AddRange(ValidMoves);
+            List<(int X, int Y)> PlayerPieces = this.owner switch
+            {
+                Owner.Player => Chess.GetPlayerPiecePositions(Owner.Player, GameID, this),
+                Owner.Opponent => Chess.GetPlayerPiecePositions(Owner.Opponent, GameID, this),
+            };
+
+            // Filter out possible moves that would put the king in check
+            PossibleMoves = PossibleMoves.Where(mv => !EnemyMoves.Contains(mv)).ToList();
+            // Filter out possilbe moves if the players pieces are in the way
+            PossibleMoves = PossibleMoves.Where(mv => !PlayerPieces.Contains(mv)).ToList();
+
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
+
+            AllowedMovement.AddRange(PossibleMoves);
         }
     }
 }
@@ -882,9 +898,78 @@ public class Chess : Game
     }
     public string Name { get; private set; } = "Chess";
     public override Player? CurrentPlayer { get; set; }
-    public static List<(int X, int Y)> GenerateEnemyMoves(Owner owner)
+    public static List<(int X, int Y)> GenerateEnemyMoves(Owner owner, Guid gameID)
     {
-        return [(0, 0)];
+        List<(int X, int Y)> EnemyMoves = new();
+        Game game = LobbyManager.GetGame(GameType.Chess, gameID);
+        if (owner == Owner.Player)
+        {
+            foreach (var piece in game.PlayerOne.GamePieces)
+            {
+                if (piece.Name != "King")
+                {
+                    piece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
+                    foreach (var move in piece.AllowedMovement)
+                    {
+                        EnemyMoves.Add(move);
+                    }
+                }
+            }
+        }
+        if (owner == Owner.Opponent)
+        {
+            foreach (var piece in game.PlayerTwo.GamePieces)
+            {
+                if (piece.Name != "King")
+                {
+                    piece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
+                    foreach (var move in piece.AllowedMovement)
+                    {
+                        EnemyMoves.Add(move);
+                    }
+                }
+            }
+        }
+        return EnemyMoves;
+
+    }
+    public static List<(int X, int Y)> GetPlayerPiecePositions(Owner owner, Guid gameID, GamePiece excluded)
+    {
+        List<(int X, int Y)> PiecePositions = new();
+        Game game = LobbyManager.GetGame(GameType.Chess, gameID);
+        if (owner == Owner.Player)
+        {
+            foreach (var piece in game.PlayerOne.GamePieces)
+            {
+                if (piece != excluded)
+                {
+                    (int, int) ParsedPosition = Chess.ParsePosition(piece.CurrentPosition);
+                    PiecePositions.Add(ParsedPosition);
+                }
+            }
+        }
+        if (owner == Owner.Opponent)
+        {
+            foreach (var piece in game.PlayerTwo.GamePieces)
+            {
+
+                if (piece != excluded)
+                {
+                    (int, int) ParsedPosition = Chess.ParsePosition(piece.CurrentPosition);
+                    PiecePositions.Add(ParsedPosition);
+                }
+
+            }
+        }
+        return PiecePositions;
+
+    }
+
+    public static (int X, int Y) ParsePosition((string X, int Y) position)
+    {
+        Enum.TryParse<ChessCoordinate>(position.X, out ChessCoordinate ParsedX);
+        int CurrentX = (int)ParsedX;
+        return (CurrentX, position.Y);
     }
     public override void LayoutGamePieces(Player player)
     {
@@ -904,12 +989,12 @@ public class Chess : Game
                 {
                     GamePiece newPiece = g.pieceType switch
                     {
-                        "pawns" => new ChessPieces.Pawn(Owner.Player, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn },
-                        "rooks" => new ChessPieces.Rook(Owner.Player, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-                        "knights" => new ChessPieces.Knight(Owner.Player, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-                        "bishops" => new ChessPieces.Bishop(Owner.Player, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-                        "queen" => new ChessPieces.Queen(Owner.Player, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-                        "king" => new ChessPieces.King(Owner.Player, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+                        "pawns" => new ChessPieces.Pawn(Owner.Player, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, GameID = UUID },
+                        "rooks" => new ChessPieces.Rook(Owner.Player, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, GameID = UUID },
+                        "knights" => new ChessPieces.Knight(Owner.Player, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, GameID = UUID },
+                        "bishops" => new ChessPieces.Bishop(Owner.Player, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, GameID = UUID },
+                        "queen" => new ChessPieces.Queen(Owner.Player, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, GameID = UUID },
+                        "king" => new ChessPieces.King(Owner.Player, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, GameID = UUID },
                     };
                     PlayerOne.GamePieces.Add(newPiece);
                     // Janky
@@ -929,12 +1014,12 @@ public class Chess : Game
             {
                 GamePiece newPiece = g.pieceType switch
                 {
-                    "pawns" => new ChessPieces.Pawn(Owner.Opponent, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, CurrentPosition = (piece.x, piece.y) },
-                    "rooks" => new ChessPieces.Rook(Owner.Opponent, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, CurrentPosition = (piece.x, piece.y) },
-                    "knights" => new ChessPieces.Knight(Owner.Opponent, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, CurrentPosition = (piece.x, piece.y) },
-                    "bishops" => new ChessPieces.Bishop(Owner.Opponent, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, CurrentPosition = (piece.x, piece.y) },
-                    "queen" => new ChessPieces.Queen(Owner.Opponent, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, CurrentPosition = (piece.x, piece.y) },
-                    "king" => new ChessPieces.King(Owner.Opponent, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, CurrentPosition = (piece.x, piece.y) },
+                    "pawns" => new ChessPieces.Pawn(Owner.Opponent, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, GameID = UUID },
+                    "rooks" => new ChessPieces.Rook(Owner.Opponent, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, GameID = UUID },
+                    "knights" => new ChessPieces.Knight(Owner.Opponent, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, GameID = UUID },
+                    "bishops" => new ChessPieces.Bishop(Owner.Opponent, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, GameID = UUID },
+                    "queen" => new ChessPieces.Queen(Owner.Opponent, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, GameID = UUID },
+                    "king" => new ChessPieces.King(Owner.Opponent, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, GameID = UUID },
                 };
                 PlayerTwo.GamePieces.Add(newPiece);
                 // Janky
