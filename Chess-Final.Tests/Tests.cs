@@ -59,26 +59,25 @@ public class GamePiece_Tests
         public void ShouldHaveValidMove()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
             game.JoinGame(PlayerTwo);
             game.PlaceInMatrix();
             // Act
-            GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
-            Enum.TryParse<ChessCoordinate>(PlayerOnePawn.CurrentPosition.X, out ChessCoordinate X1);
-            int Y1 = PlayerOnePawn.CurrentPosition.Y;
+            GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
+            (int X, int Y) P1Pawn = Chess.ParsePosition(PlayerOnePawn.CurrentPosition);
             var PlayerOneFirstMove = (0, 4);
-            game.CurrentPlayer.Select((int)X1, Y1, game, PlayerOne);
+            game.CurrentPlayer.Select(P1Pawn.X, P1Pawn.Y, game, PlayerOne);
 
             game.NewTurn();
 
-            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn").FirstOrDefault();
-            Enum.TryParse<ChessCoordinate>(PlayerTwoPawn.CurrentPosition.X, out ChessCoordinate X2);
-            int Y2 = PlayerTwoPawn.CurrentPosition.Y;
-            game.CurrentPlayer.Select((int)X2, Y2, game, PlayerTwo);
-            var PlayerTwoFirstMove = (0, 3);
+            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("H", 1)).FirstOrDefault();
+            (int X, int Y) P2Pawn = Chess.ParsePosition(PlayerTwoPawn.CurrentPosition);
+            game.CurrentPlayer.Select(P2Pawn.X, P2Pawn.Y, game, PlayerTwo);
+            var PlayerTwoFirstMove = (7, 3);
             // Assert
             PlayerOnePawn!.AllowedMovement.Count().Should().Be(2);
             PlayerOnePawn!.AllowedMovement[0].Should().Be(PlayerOneFirstMove);
@@ -90,7 +89,8 @@ public class GamePiece_Tests
         public void ShouldMovePlayerOnePieceToValidPosition()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -113,7 +113,8 @@ public class GamePiece_Tests
         public void ShouldMovePlayerTwoPieceToValidPosition()
         {
             // Arrange
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -146,7 +147,8 @@ public class GamePiece_Tests
             // Arrange
 
             // Setup Game
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -1188,6 +1190,8 @@ public class GamePiece_Tests
             // Assert
             PlayerOneKing.AllowedMovement.Count().Should().Be(0);
             game.GameOver.Should().BeTrue();
+            PlayerOne.Losses.Should().Be(1);
+            PlayerTwo.Wins.Should().Be(1);
         }
 
         [Fact]
@@ -1196,7 +1200,8 @@ public class GamePiece_Tests
             // Arrange
 
             // Setup Game
-            Chess game = new();
+            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
             Player PlayerOne = new("P1");
             Player PlayerTwo = new("P2");
             game.JoinGame(PlayerOne);
@@ -1204,20 +1209,20 @@ public class GamePiece_Tests
 
             // Setup PlayerOne
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
-            PlayerOneKing.CurrentPosition = ("D", 3);
+            PlayerOneKing.CurrentPosition = ("D", 4);
             Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X);
             int Y = PlayerOneKing.CurrentPosition.Y;
 
             // Setup PlayerTwo
             GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
-            PlayerTwoBishop.CurrentPosition = ("E", 3);
+            PlayerTwoBishop.CurrentPosition = ("E", 4);
             Enum.TryParse<ChessCoordinate>(PlayerTwoBishop.CurrentPosition.X, out ChessCoordinate X2);
             int Y2 = PlayerTwoBishop.CurrentPosition.Y;
             game.PlaceInMatrix();
 
             // Act
             PlayerOne.Select((int)X, Y, game, PlayerOne);
-            PlayerOne.MovePiece(4, 3, game);
+            PlayerOne.MovePiece(4, 4, game);
             GamePiece? RemovedFromPlay = null;
             for (int i = 0; i < game.Board.Matrix.GetLength(0); i++)
             {
@@ -1227,8 +1232,8 @@ public class GamePiece_Tests
                 }
             }
             // Assert
-            PlayerOneKing.CurrentPosition.Should().Be(("E", 3));
-            game.Board.Matrix[1, 3].Should().Be(PlayerOneKing);
+            PlayerOneKing.CurrentPosition.Should().Be(("E", 4));
+            game.Board.Matrix[4, 4].Should().Be(PlayerOneKing);
             RemovedFromPlay.Should().BeNull();
         }
     }
