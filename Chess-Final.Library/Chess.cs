@@ -875,6 +875,9 @@ public class ChessPieces
             PossibleMoves = PossibleMoves.Where(mv => !EnemyMoves.Contains(mv)).ToList();
             // Filter out possilbe moves if the players pieces are in the way
             PossibleMoves = PossibleMoves.Where(mv => !PlayerPieces.Contains(mv)).ToList();
+            // Include attacks that would put the king in check
+            List<(int X, int Y)> AltThreats = Chess.ValidateSafeMovesForKing(owner, PossibleMoves, GameID);
+            PossibleMoves = PossibleMoves.Where(mv => AltThreats.Contains(mv)).ToList();
 
             Game game = LobbyManager.GetGame(GameType.Chess, GameID);
 
@@ -895,16 +898,64 @@ public class Chess : Game
     public override void NewTurn()
     {
         CheckInCheck();
+        if (GameOver) GameOverCleanUp();
+        Console.WriteLine($"{CurrentPlayer.Username} Has ended their turn.");
         base.NewTurn();
     }
     public void CheckInCheck()
     {
         Player NextPlayer = CurrentPlayer == PlayerOne ? PlayerTwo : PlayerOne;
 
+        Console.WriteLine($"CurrentPlayer: {CurrentPlayer.Username}");
+        Console.WriteLine($"NextPlayer: {NextPlayer.Username}");
+
         GamePiece King = NextPlayer.GamePieces.FirstOrDefault(gp => gp.Name == "King");
-        (int X, int Y) KingPosition = Chess.ParsePosition(King.CurrentPosition);
-        List<(int X, int Y)> Threats = Chess.GenerateEnemyMoves(King.owner == Owner.Player ? Owner.Opponent : Owner.Player, UUID);
-        NextPlayer.Check = Threats.Where(t => t == KingPosition).ToList().Count() != 0;
+
+        (int X, int Y) KingPosition = ParsePosition(King.CurrentPosition);
+
+        King.CalculateValidMoves(Board.GetPieceFromMatrix);
+
+        List<(int X, int Y)> Threats = GenerateEnemyMoves(King.owner == Owner.Player ? Owner.Opponent : Owner.Player, UUID);
+
+        NextPlayer.Check = Threats.Any(t => t == KingPosition);
+        // if(NextPlayer.Check) GameOver = !Threats.Any(t=> King.AllowedMovement.Any(mv => t == mv));
+        if (NextPlayer.Check && King.AllowedMovement.Count == 0) GameOver = true;
+
+        Console.WriteLine($"{NextPlayer.Username} in check: {NextPlayer.Check}");
+    }
+
+    public static List<(int X, int Y)>? ValidateSafeMovesForKing(Owner owner, List<(int X, int Y)> possibleMoves, Guid gameID)
+    {
+        Game game = LobbyManager.GetGame(GameType.Chess, gameID);
+
+
+        GamePiece King = owner switch
+        {
+            Owner.Player => game.PlayerOne.GamePieces.Where(p => p.Name == "King").FirstOrDefault(),
+            Owner.Opponent => game.PlayerTwo.GamePieces.Where(p => p.Name == "King").FirstOrDefault(),
+
+        };
+        List<(int X, int Y)> returnList = new();
+        foreach (var move in possibleMoves)
+        {
+            GamePiece[,] temp = game.Board.TempMatrix;
+            temp[move.X, move.Y] = King;
+            for (int Y = 0; Y < temp.GetLength(0); Y++)
+            {
+                for (int X = 0; X < temp.GetLength(1); X++)
+                {
+                    if (temp[X, Y] != null)
+                    {
+                        if (temp[X, Y].Name != "King")
+                        {
+                            temp[X, Y].CalculateValidMoves(game.Board.GetPieceFromMatrix);
+                            returnList.AddRange(temp[X, Y].AllowedMovement);
+                        }
+                    }
+                }
+            }
+        }
+        return returnList;
     }
     public static List<(int X, int Y)> GenerateEnemyMoves(Owner owner, Guid gameID)
     {
@@ -1060,19 +1111,6 @@ public class Chess : Game
         }
         UpdateGame();
     }
-    public override GamePiece? PlaceGamePiece(int x, int y)
-    {
-        var piece = PlayerOne.GamePieces.Where(p => p.CurrentPosition == (((ChessCoordinate)x).ToString(), y)).FirstOrDefault();
-        if (piece != null)
-        {
-            return piece;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
 }
 
 public enum PieceType

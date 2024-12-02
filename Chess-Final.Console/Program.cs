@@ -1,11 +1,25 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Chess_Final.Chess;
+using Chess_Final.DB_Manager;
+using Chess_Final.Generics;
 Console.WriteLine("Hello, World!");
 
 
 Console.Clear();
 
-Chess chessGame = new Chess();
+Console.WriteLine(ChessCoordinate.A);
+var value = (ChessCoordinate)0;
+string val = value.ToString();
+Console.WriteLine(value);
+Console.WriteLine(val);
+
+// DB_Connect dB_Connect = new();
+
+// dB_Connect.AccountExists("Test");
+
+// Chess chessGame = new Chess();
+
+
 
 // chessGame.LayoutGamePieces();
 

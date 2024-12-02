@@ -1,0 +1,31 @@
+        @* <div class="GameBoard">
+
+    @for (int y = 0; y < game?.Board?.Matrix?.GetLength(0); y++)
+    {
+                    <div style="display: grid; grid-template-columns: repeat(8, 1fr);">
+
+            @for (int x = 0; x < game?.Board.Matrix.GetLength(0); x++)
+            {
+                                <div class="GridCell"
+                                    style="@(y%2 == 0 ? x%2 == 0  ? "background-color: black; color: white;" : "background-color: white; color: black;" : x%2!=0 ? "background-color: black; color: white;": "background-color: white; color: black;") ">
+                    @if (game.PlaceGamePiece(x, y) != null && y > 5)
+                    {
+                        var piece = game?.PlayerOne?.GamePieces.Where(p => p.CurrentPosition ==
+                        (((ChessCoordinate)x).ToString(), y)).FirstOrDefault();
+                                            <div>@(piece?.Name)</div>
+                    }
+                    @if (game.PlaceGamePiece(x, y) != null && y > 2)
+                    {
+                        var piece = game?.PlayerTwo?.GamePieces.Where(p => p.CurrentPosition ==
+                        (((ChessCoordinate)x).ToString(), y)).FirstOrDefault();
+                                            <div>@(piece?.Name)</div>
+                    }
+                    else
+                    {
+                        @($"{(ChessCoordinate)x}, {y}")
+                        ;
+                    }
+
+                                </div>
+            }
+                    </div> *@

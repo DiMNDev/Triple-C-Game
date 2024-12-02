@@ -2,6 +2,7 @@
 @using Chess_Final.Player
 @using Chess_Final.PlayerManager
 @using Chess_Final.Generics
+@using Chess_Final.Lobby
 @inject NavigationManager NavManager
 <link rel="stylesheet" href="Login.css">
 
@@ -32,13 +33,13 @@
     public Guid? ID { get; set; }
     public string StatusMessage { get; set; } = "";
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
+        PlayerManager.NewSignIn += LobbyManager.ReloadLobby;
     }
 
     void handleForm()
     {
-        PlayerManager playerManager = new();
         try
         {
             if (create)

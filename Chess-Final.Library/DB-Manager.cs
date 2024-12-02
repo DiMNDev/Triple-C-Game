@@ -4,6 +4,7 @@ using SQLite;
 using Player;
 using Chess_Final.PasswordManager;
 using SQLitePCL;
+using System.Data;
 
 public class DB_Connect
 {
@@ -20,6 +21,7 @@ public class DB_Connect
     {
         _connection?.CreateTable<PD_Table>();
         _connection?.CreateTable<Auth_Table>();
+        _connection?.CreateTable<Game_Scores>();
     }
     public void IntializeConnection()
     {
@@ -76,8 +78,13 @@ public class DB_Connect
     }
     public void UpdateRecord(Player player)
     {
-        var data = _connection.Find<PD_Table>(player.PlayerID);
-        _connection.Update(data);
+        var data = _connection?.Find<PD_Table>(player.PlayerID);
+        if (data != null)
+        {
+            data.Wins = player.Wins;
+            data.Losses = player.Losses;
+            _connection?.Update(data);
+        }
     }
     public void DeleteRecord(string username)
     {
@@ -153,6 +160,43 @@ public class DB_Connect
         Player? player = new(data.Username) { PlayerID = data.PlayerID, Wins = data.Wins, Losses = data.Losses };
         return player ?? null;
     }
+    public void InsertGameScore(Player player, GameType gameType)
+    {
+        Game_Scores existing = _connection?.Find<Game_Scores>(player.PlayerID);
+        if (existing != null)
+        {
+            existing.Wins += 1;
+            _connection?.Insert(existing);
+        }
+        else
+        {
+            Game_Scores data = new() { ID = player.PlayerID, Game = gameType, Wins = 1 };
+            _connection?.Insert(data);
+        }
+    }
+    public List<Display_Scores>? GetHighScoresFor(GameType gameType)
+    {
+        List<Game_Scores>? scores = _connection?.Table<Game_Scores>().Where(g => g.Game == gameType).OrderByDescending(s => s.Wins).Take(3).ToList();
+
+        List<Display_Scores> display_Scores;
+        display_Scores = new();
+        foreach (var score in scores)
+        {
+            string playerName = GetUsernameFromUUID(score.ID);
+            Display_Scores DIS = new() { PlayerName = playerName, Game = score.Game, Wins = score.Wins };
+            display_Scores.Add(DIS);
+        }
+        if (display_Scores.Count < 3)
+        {
+            int addNull = display_Scores.Count;
+            for (int i = 0; i < 3 - addNull; i++)
+            {
+                display_Scores.Add(new() { PlayerName = "No One", Game = gameType, Wins = 0 });
+            }
+        };
+        return display_Scores;
+
+    }
 }
 
 [Table("Player_Data")]
@@ -185,4 +229,27 @@ public interface AuthData
     public Guid PlayerID { get; set; }
     public string Password { get; set; }
 
+}
+
+[Table("Game_Scores")]
+public class Game_Scores
+{
+    [PrimaryKey]
+    [Column("ID")]
+    public Guid ID { get; set; }
+    [Column("GameType")]
+    public GameType Game { get; set; }
+    [Column("Score")]
+    public int Wins { get; set; }
+}
+public class Display_Scores
+{
+    public string PlayerName { get; set; }
+    public GameType Game { get; set; }
+    public int Wins { get; set; }
+}
+
+public class AllScores
+{
+    public List<List<Game_Scores>> scores { get; set; }
 }

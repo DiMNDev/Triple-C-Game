@@ -1,0 +1,26 @@
+@using Chess_Final.PlayerManager
+@using Chess_Final.Player
+<link rel="stylesheet" href="Online.css">
+<div class="OnlineContainer">
+    <h1>Online Players</h1>
+    <ul class="PlayerList">
+        @foreach (var Player in onlinePlayers)
+        {
+            <div class="PlayerCard">
+                <div class="cell cellName">@Player.Username</div>
+                <div class="cell cellOnline">is online</div>
+                <div class="GreenDot"></div>
+            </div>
+        }
+    </ul>
+</div>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        PlayerManager.NewSignIn += () => InvokeAsync(StateHasChanged);
+    }
+    List<Player> onlinePlayers = PlayerManager.OnlinePlayers;
+
+}

@@ -3,6 +3,7 @@
 @using Chess_Final.Generics
 @using Chess_Final.Player
 @using Chess_Final.Lobby
+@using Chess_Final.PlayerManager
 @inject NavigationManager Nav
 <link rel="stylesheet" href="Lobby.css">
 <link rel="stylesheet" href="Generic.css">
@@ -11,22 +12,27 @@
 
 <h1>@gameType Lobby</h1>
 
-<div class="LobbyCard">
-    @if (Games?.Count > 0)
-        @foreach (var game in Games!)
-        {
-            {
-                <LobbyCard GameId=@game.Key PlayerID=@PlayerID />
-            }
-        }
-    else
-    {
-        <div>No Games?</div>
-        <div>Create a new one</div>
-    }
+<div class="LobbyContainer">
 
+    <OnlinePlayers />
+
+    <div class="LobbyCard">
+        @if (Games?.Count > 0)
+            @foreach (var game in Games!)
+            {
+                {
+                    <LobbyCard GameId=@game.Key PlayerID=@PlayerID />
+                }
+            }
+        else
+        {
+            <div>No Games?</div>
+            <div>Create a new one</div>
+        }
+
+    </div>
 </div>
-<button @onclick=CreateNewGame>Create New Game</button>
+<button class="createButton" @onclick=CreateNewGame>Create New Game</button>
 
 @code
 {
@@ -44,6 +50,7 @@
         lobbyType = LobbyManager.ConvertStringToGameType(gameType);
         Games = LobbyManager.GetCurrentLobby(lobbyType);
         LobbyManager.LobbyChanged += () => InvokeAsync(StateHasChanged);
+        PlayerManager.NewSignIn += () => InvokeAsync(StateHasChanged);
         Game.GameChanged += () => InvokeAsync(StateHasChanged);
     }
 

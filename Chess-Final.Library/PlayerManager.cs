@@ -1,10 +1,12 @@
 namespace Chess_Final.PlayerManager;
 
 using Chess_Final.DB_Manager;
+using Chess_Final.Lobby;
 using Player;
 
-public class PlayerManager
+public static class PlayerManager
 {
+    public static event Action NewSignIn;
     public static List<Player> OnlinePlayers { get; set; } = [];
 
     public static Player? SignIn(string username, string password)
@@ -18,6 +20,7 @@ public class PlayerManager
             {
                 Console.WriteLine($"SignIn: {player.Username}");
                 OnlinePlayers.Add(player);
+                NewSignIn?.Invoke();
                 return player;
             }
             else { return null; }
@@ -33,6 +36,7 @@ public class PlayerManager
             DB_Connect dB_Connect = new();
             dB_Connect.InsertRecord(player, password);
             OnlinePlayers.Add(player);
+            NewSignIn?.Invoke();
             return player;
         }
         return null;

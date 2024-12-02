@@ -12,6 +12,12 @@ public static class LobbyManager
     public static Dictionary<Guid, Game> ConnectFourGames = new();
     public static event Action LobbyChanged;
 
+    public static void ReloadLobby()
+    {
+        Console.WriteLine("UpdateLobby");
+        LobbyChanged?.Invoke();
+    }
+
     public static Guid CreateGame(GameType gameType)
     {
         switch (gameType)

@@ -8,8 +8,8 @@
     <div class="cell">@(game?.PlayerOne?.Username ?? "Waiting")</div>
     <div class="cell">vs</div>
     <div class="cell">@(game?.PlayerTwo?.Username ?? "Waiting")</div>
-    <button class="cell" disabled=@Playable @onclick=JoinGame>Join</button>
-    <button class="cell">Watch</button>
+    <button class="cardButton" disabled=@Playable @onclick=JoinGame>Join</button>
+    <button class="cardButton" @onclick=WatchGame>Watch</button>
 </div>
 
 @code
@@ -34,7 +34,13 @@
     }
     public void JoinGame()
     {
-        game?.JoinGame(player);
+        game?.JoinGame(player, JoinAs.Player);
+        Nav.NavigateTo($"/{gameType}/lobby/Play/{GameID}/{PlayerID}");
+    }
+
+    public void WatchGame()
+    {
+        game?.JoinGame(player, JoinAs.Spectator);
         Nav.NavigateTo($"/{gameType}/lobby/Play/{GameID}/{PlayerID}");
     }
 

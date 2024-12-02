@@ -2,12 +2,14 @@
 @using Chess_Final.Generics
 @using Chess_Final.Player
 @using PlayerManager
+@using Chess_Final.DB_Manager
 <link rel="stylesheet" href="Home.css">
 <PageTitle>Triple C</PageTitle>
 
 
 <h1>Hello, @(PlayerName ?? "World")!</h1>
 <h3>@currentPlayer?.PlayerID</h3>
+<div class="MainContainer">
 
 <div class="SelectionContainer">
     @foreach (GameType type in gameTypes)
@@ -15,24 +17,36 @@
         <a href="/@type/lobby/{@PlayerID}">
             <div class="GameCard">
                 <h1>Play @type</h1>
+                <div class="ScoresCard">
+                    <h3>Top Players</h3>
+                    <ol>                        
+                        @foreach (var score in dB_Connect.GetHighScoresFor(type))
+                        {                                               
+                            <li><p>@(score.PlayerName)</p><p>@score.Wins</p></li>
+                        }
+                                            
+                    </ol>
+
+                </div>
             </div>
         </a>
     }
 </div>
+</div>
 
 @code
 {
-    public PlayerManager playerManager = new();
+        DB_Connect dB_Connect = new();
     public Player? currentPlayer { get; set; } = null;
     [Parameter]
     public Guid PlayerID { get; set; }
     string? PlayerName { get; set; } = null;
     List<GameType> gameTypes = [GameType.Checkers, GameType.Chess, GameType.ConnectFour];
+    Display_Scores? gameScores { get; set; }
 
     protected override void OnInitialized()
     {
-        PlayerName = PlayerManager.GetUsername(PlayerID);
-
+        PlayerName = PlayerManager.GetUsername(PlayerID);        
     }
 
 }

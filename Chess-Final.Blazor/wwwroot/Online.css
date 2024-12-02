@@ -1,0 +1,42 @@
+.OnlineContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #5c145c;
+  border-radius: 2rem;
+  color: white;
+}
+.PlayerList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 80vh;
+}
+
+.PlayerCard {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  font-size: x-large;
+}
+
+.cellName {
+  align-self: end;
+}
+
+.cellOnline {
+  width: max-content;
+}
+
+.GreenDot {
+  width: 1rem;
+  aspect-ratio: 1;
+  background-color: forestgreen;
+  border-radius: 100rem;
+  align-self: center;
+  margin-left: 0.5rem;
+}

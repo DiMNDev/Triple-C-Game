@@ -13,10 +13,18 @@
 <h3>@(game?.PlayerOne?.Username ?? "waiting") vs. @(game?.PlayerTwo?.Username ?? "waiting")</h3>
 <div class="MainContainer">
     <div class="GameSide">
+        <div class="gameOver">
+            @if (game.GameOver)
+            {
+                <div>Checkmate</div>
+                <div>@(game?.Winner) Wins!</div>
+            }
+        </div>
         <div class="PlayerDash">
             @if (game?.PlayerTwo != null)
             {
                 <h2>@(game?.PlayerTwo?.Username ?? "Loading")</h2>
+
             }
         </div>
         @* Create a seperate GameBoard component for each game? *@
@@ -32,12 +40,14 @@
                         var LocalX = x;
 
                         <div id="cell-@x-@y"
-                            class="GridCell @(player == game?.PlayerOne ? UI_Manager.CSS_ClassSelector(player!,"Selected", LocalX, LocalY, game!) : player == game?.PlayerTwo ?  UI_Manager.CSS_ClassSelector(player!,"Selected", LocalX, LocalY, game!) : "") @(UI_Manager.CSS_ClassSelector(player!,"Valid", LocalX, LocalY,  game))"
+                            class="GridCell @UI_Manager.CSS_ClassSelector(PlayerID,"Selected", LocalX, LocalY, game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Selected_Spec", LocalX, LocalY, game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Valid", LocalX, LocalY,  game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Valid_Spec", LocalX, LocalY,  game!)"
                             @onclick="()=>HandleCellSelection(LocalX,LocalY)"
-                            style="@UI_Manager.CSS_ClassSelector(player!, "Chess_BG", LocalX, LocalY, game)">
+                            style="@UI_Manager.CSS_ClassSelector(PlayerID, "Chess_BG", LocalX, LocalY, game!)">
                             @if (game.Board.Matrix[x, y] != null)
                             {
-                                @(game?.Board?.Matrix[x, y].Name)
+                                <div class="@(game?.Board?.Matrix[x,y].owner == Owner.Player ? "P1P" : "P2P")">
+                                    @(game?.Board?.Matrix[x, y].Name)
+                                </div>
                             }
 
                         </div>
@@ -46,7 +56,7 @@
             }
 
         </div>
-        <div class="PlayerDash">
+        <div class=" PlayerDash">
             @if (game?.PlayerOne != null)
             {
                 <h2>@(game?.PlayerOne?.Username ?? "Loading")</h2>
@@ -57,10 +67,22 @@
         <h1>Details</h1>
         <div class="CurrentTurn">
             <h3>Current Turn: @(game?.CurrentPlayer?.Username ?? "waiting")</h3>
+            @if (game?.CurrentPlayer?.Check == true)
+            {
+                <h3>@(game?.CurrentPlayer?.Username) is in Check!</h3>
+            }
         </div>
     </div>
     <div class="SpecSection">
         <h1>Spectators</h1>
+        <ul>
+
+
+            @foreach (var spec in game.Spectators ?? [new("None")])
+            {
+                <li>@spec.Username is watching</li>
+            }
+        </ul>
     </div>
 </div>
 
@@ -76,7 +98,6 @@
     public GameType gameType { get; set; }
     private Game? game { get; set; } = null;
 
-
     protected override void OnInitialized()
     {
         Game.GameChanged += () => InvokeAsync(StateHasChanged);
@@ -88,18 +109,18 @@
             gameType = LobbyManager.ConvertStringToGameType(GameName);
             game = LobbyManager.GetGame(gameType, GameID);
             player = PlayerManager.GetPlayer(PlayerID);
-            if (game?.PlayerOne?.Username != player.Username)
-            {
-                game?.JoinGame(player);
-                game?.PlaceInMatrix();
-            }
-            if (game?.PlayerOne != null && game.PlayerTwo != null)
+            game?.JoinGame(player, JoinAs.Player);
+            game?.PlaceInMatrix();
+
+            @* if (game?.PlayerTwo == null)
             {
                 game.PlayerOne.TurnOver += () => InvokeAsync(game.NewTurn);
-                game.PlayerTwo.TurnOver += () => InvokeAsync(game.NewTurn);
+            } *@
+
+            if (game?.PlayerOne != null && game.PlayerTwo != null)
+            {
                 game.PlayerTwo.GameHasChanged += () => InvokeAsync(VerifyStateChange);
                 game.PlayerOne.GameHasChanged += () => InvokeAsync(VerifyStateChange);
-
             }
 
         }
@@ -110,7 +131,7 @@
     {
         try
         {
-            Console.WriteLine($"Play: {((ChessCoordinate)x).ToString()},{y}");
+            @* Console.WriteLine($"Play: {((ChessCoordinate)x).ToString()},{y}"); *@
             game?.CurrentPlayer.Select(x, y, game, player);
         }
         catch (Exception err)
@@ -123,5 +144,6 @@
     {
         StateHasChanged();
         Console.WriteLine("Event Triggered");
+        Console.WriteLine(PlayerID);
     }
 }

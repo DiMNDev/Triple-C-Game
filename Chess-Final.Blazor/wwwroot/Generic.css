@@ -1,13 +1,13 @@
 button {
-  font-size: larger;
-  color: white;
-  background-color: red;
   padding: 1rem;
+  font-size: larger;
+  transition: all 0.25s;
   border: none;
 }
 
 button:hover:not(:disabled) {
-  scale: 105%;
+  scale: 110%;
   transition: all 0.25s;
   cursor: pointer;
+  box-shadow: inset 0rem 0rem 4rem 2rem #711971;
 }

@@ -16,7 +16,7 @@
   display: grid;
   height: 60%;
   aspect-ratio: 1;
-  background-color: purple;
+  background-color: #5c145c;
   box-shadow: 0.2rem 0.2rem 4rem black;
   padding: 2rem;
   border-radius: 2rem;
@@ -24,11 +24,12 @@
 .GridCell {
   display: flex;
   align-items: center;
+  min-height: 1rem;
+  aspect-ratio: 1;
   justify-content: center;
   transition: all 0.25s;
 }
 .GridCell:hover {
-  /* background-color: rgba(128, 0, 128, 0.538) !important; */
   box-shadow: inset 0rem 0rem 4rem rgb(128, 0, 128);
 }
 .GridCell:active {
@@ -41,9 +42,34 @@
 .validMove {
   box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(66, 0, 128);
 }
+.GridCell_Spec:active {
+  box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(128, 0, 128);
+}
+
+.selected_Spec {
+  box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(128, 0, 128);
+}
+.validMove_Spec {
+  box-shadow: inset 0rem 0rem 0rem 0.4rem rgb(66, 0, 128);
+}
 
 .PlayerDash {
   width: 75%;
+}
+
+.gameOver {
+  position: absolute;
+  font-size: xx-large;
+  color: aliceblue;
+  text-shadow: 1rem 1rem 10rem #5c145c;
+}
+
+.P1P {
+  color: blue;
+}
+
+.P2P {
+  color: green;
 }
 
 .GameDetails,

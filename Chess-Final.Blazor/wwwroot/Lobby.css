@@ -1,6 +1,10 @@
 .LobbyContainer {
-  border: solid red 2px;
-  width: 60vw;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  border: solid #5c145c 0.2rem;
+  border-radius: 3rem;
+  padding: 2rem;
+  width: 80vw;
   height: 60vh;
   overflow: scroll;
 }
@@ -8,6 +12,19 @@
 .LobbyCard {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.innerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   gap: 1rem;
+}
+
+.createButton {
+  color: white;
+  background-color: #5c145c;
+  border-radius: 2rem;
 }

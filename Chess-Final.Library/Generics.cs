@@ -30,6 +30,7 @@ public class GameBoard
     public GameType Type { get; init; }
     public (int X, int Y)? BoardSize { get; private set; }
     public GamePiece[,]? Matrix { get; private set; }
+    public GamePiece[,]? TempMatrix { get => HardCopy(); set => _ = value; }
 
     public GameBoard(GameType gameType)
     {
@@ -43,6 +44,18 @@ public class GameBoard
         Type = gameType;
         BoardSize = Size;
         Matrix = new GamePiece[Size.X, Size.Y];
+    }
+    private GamePiece[,] HardCopy()
+    {
+        GamePiece[,] temp = new GamePiece[8, 8];
+        for (int Y = 0; Y < Matrix.GetLength(0); Y++)
+        {
+            for (int X = 0; X < Matrix.GetLength(1); X++)
+            {
+                temp[X, Y] = Matrix[X, Y];
+            }
+        }
+        return temp;
     }
 
     public GamePiece? GetPieceFromMatrix(int x, int y)
@@ -75,18 +88,20 @@ public abstract class Game
     public Player? PlayerTwo { get; set; } = null;
     public bool Active = false;
     public bool Open = true;
-    public List<Player> Spectators { get; set; } = new();
+    public List<Player> Spectators { get; set; } = [];
     public Player? Winner { get; set; } = null;
     public bool GameOver { get; set; } = false;
     public static event Action GameChanged;
     public virtual void NewTurn()
     {
         _ = CurrentPlayer == PlayerOne ? CurrentPlayer = PlayerTwo : CurrentPlayer = PlayerOne;
+        CurrentPlayer!.TurnOver += NewTurn;
         GameChanged?.Invoke();
     }
     public virtual void GameOverCleanUp()
     {
         GameOver = true;
+        Winner = CurrentPlayer;
         Winner.Wins += 1;
         Player Loser = Winner == PlayerOne ? PlayerTwo : PlayerOne;
         Loser.Losses += 1;
@@ -106,46 +121,58 @@ public abstract class Game
         {
             Open = false;
             CurrentPlayer = PlayerOne;
-            GameChanged?.Invoke();
+            CurrentPlayer.TurnOver += NewTurn;
         }
     }
     public abstract void LayoutGamePieces(Player player);
-    public void JoinGame(Player player)
+    public void JoinGame(Player player, JoinAs joinAs)
     {
-        if (PlayerOne == null)
+        if (joinAs == JoinAs.Player)
         {
-            PlayerOne = player;
-            LayoutGamePieces(player);
-            IsGameReady();
-            GameChanged?.Invoke();
+
+            if (PlayerOne == null)
+            {
+                PlayerOne = player;
+                LayoutGamePieces(player);
+                IsGameReady();
+
+            }
+            else if (PlayerTwo == null)
+            {
+                PlayerTwo = player;
+                LayoutGamePieces(player);
+                IsGameReady();
+
+            }
         }
-        else if (PlayerTwo == null)
-        {
-            PlayerTwo = player;
-            LayoutGamePieces(player);
-            IsGameReady();
-            GameChanged?.Invoke();
-        }
-        else
+        else if (joinAs == JoinAs.Spectator)
         {
             Spectators.Add(player);
+
         }
     }
-    public abstract GamePiece? PlaceGamePiece(int x, int y);
     public abstract void PlaceInMatrix();
     protected void UpdateGame()
     {
         GameChanged?.Invoke();
     }
-}
 
+    internal GamePiece[,] HardCopy()
+    {
+        throw new NotImplementedException();
+    }
+}
+public enum JoinAs
+{
+    Player,
+    Spectator
+}
 public enum GameType
 {
     Chess,
     Checkers,
     ConnectFour
 }
-
 public enum ChessCoordinate
 {
     A, B, C, D, E, F, G, H
@@ -155,7 +182,6 @@ public enum Owner
     Player,
     Opponent
 }
-
 public static class FilePaths
 {
     public static string Tests { get; } = "../../../../Chess-Final.Library/ChessLayout.json";

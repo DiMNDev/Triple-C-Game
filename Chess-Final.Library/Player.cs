@@ -11,8 +11,8 @@ public class Player : IPlayer
     // Consider making a ChessPlayer class
     public bool Check { get; set; } = false;
     public GamePiece? SelectedPiece { get; set; } = null;
-    public event Action GameHasChanged;
-    public event Action TurnOver;
+    public event Action? GameHasChanged;
+    public event Action? TurnOver;
 
     public Player(string name, Guid? guid = null)
     {
@@ -34,6 +34,8 @@ public class Player : IPlayer
                 if (Check)
                 {
                     SelectedPiece = GamePieces.FirstOrDefault(p => p.Name == "King");
+                    SelectedPiece.AllowedMovement = new();
+                    SelectedPiece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
                 }
                 else
                 {
@@ -43,13 +45,13 @@ public class Player : IPlayer
                 // Calculate valid moves if selection is valid
                 if (SelectedPiece != null)
                 {
-                    SelectedPiece.AllowedMovement = new();
-                    SelectedPiece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
                     if (Check && SelectedPiece.AllowedMovement.Count == 0)
                     {
                         game.Winner = game.CurrentPlayer == game.PlayerOne ? game.PlayerTwo : game.PlayerOne;
                         game.GameOverCleanUp();
                     }
+                    SelectedPiece.AllowedMovement = new();
+                    SelectedPiece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
                 }
                 Console.WriteLine($"Seletcted: {SelectedPiece}");
             }
@@ -101,7 +103,8 @@ public class Player : IPlayer
             // Set SelectedPiece to null
             SelectedPiece = null;
             // Piece Moved -- Turn Over
-            TurnOver?.Invoke();
         }
+        TurnOver?.Invoke();
+        TurnOver = null;
     }
 }
