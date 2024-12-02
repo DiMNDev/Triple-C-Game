@@ -53,18 +53,22 @@ public class Player_Tests
 
 public class GamePiece_Tests
 {
+    private static (Game,Player,Player) CreateDefaultGame() {
+                Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
+            Player PlayerOne = new("P1");
+            Player PlayerTwo = new("P2");
+            game.JoinGame(PlayerOne, JoinAs.Player);
+            game.JoinGame(PlayerTwo, JoinAs.Player);
+            return (game,PlayerOne,PlayerTwo);
+    }
     public class Pawn_Tests
     {
         [Fact]
         public void ShouldHaveValidMove()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+         (var game, var PlayerOne,var PlayerTwo) = CreateDefaultGame();
             game.PlaceInMatrix();
             // Act
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
