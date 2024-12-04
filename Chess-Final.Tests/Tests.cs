@@ -172,6 +172,9 @@ public class GamePiece_Tests
             game.CurrentPlayer = PlayerOne;
             PlayerOne.Select(2, 4, game, PlayerOne);
             PlayerOne.MovePiece(1, 3, game);
+            game.CurrentPlayer = PlayerTwo;
+            PlayerTwo.Select(1, 3, game, PlayerTwo);
+            PlayerTwo.MovePiece(1, 4, game);
             GamePiece? RemovedFromPlay = null;
             for (int i = 0; i < game.Board.Matrix.GetLength(0); i++)
             {
@@ -183,7 +186,9 @@ public class GamePiece_Tests
             // Assert
             PlayerOnePawn.CurrentPosition.Should().Be(("B", 3));
             game.Board.Matrix[1, 3].Should().Be(PlayerOnePawn);
+            game.Board.Matrix[1, 4].Should().NotBe(PlayerTwoPawn);
             RemovedFromPlay.Should().BeNull();
+            
         }
     }
     public class Rook_Tests
@@ -988,7 +993,7 @@ public class GamePiece_Tests
             game.JoinGame(PlayerOne, JoinAs.Player);
             game.JoinGame(PlayerTwo, JoinAs.Player);
 
-            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.FirstOrDefault(p => p.Name == "King" && p.CurrentPosition == ("D", 7));
             // Place King @ (D,4) 
             PlayerOneKing.CurrentPosition = ("D", 5);
 
