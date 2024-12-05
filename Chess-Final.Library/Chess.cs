@@ -395,7 +395,7 @@ public class ChessPieces
             #region  Right/Up
             for (int i = 1; i < maxXR + 1; i++)
             {
-                if (CurrentY - i > 0)
+                if (CurrentY - i >= 0)
                 {
                     GamePiece pieceInstance = FindOpponent(CurrentX + i, CurrentY - i);
                     if (pieceInstance != null)
@@ -463,7 +463,7 @@ public class ChessPieces
             #region  Left/Up                    
             for (int i = 1; i < maxXL + 1; i++)
             {
-                if (CurrentY - i > 0)
+                if (CurrentY - i >= 0)
                 {
                     GamePiece pieceInstance = FindOpponent(CurrentX - i, CurrentY - i);
                     if (pieceInstance != null)
@@ -877,7 +877,7 @@ public class ChessPieces
             PossibleMoves = PossibleMoves.Where(mv => !PlayerPieces.Contains(mv)).ToList();
             // Include attacks that would put the king in check
             List<(int X, int Y)> AltThreats = Chess.ValidateSafeMovesForKing(owner, PossibleMoves, GameID);
-            PossibleMoves = PossibleMoves.Where(mv => AltThreats.Contains(mv)).ToList();
+            PossibleMoves = PossibleMoves.Where(mv => !AltThreats.Contains(mv)).ToList();
 
             Game game = LobbyManager.GetGame(GameType.Chess, GameID);
 
@@ -949,7 +949,7 @@ public class Chess : Game
                         if (temp[X, Y].Name != "King")
                         {
                             temp[X, Y].CalculateValidMoves(game.Board.GetPieceFromMatrix);
-                            returnList.AddRange(temp[X, Y].AllowedMovement);
+                            returnList.AddRange(temp[X, Y].AllowedMovement.Where(mv => returnList.Contains(mv)));
                         }
                     }
                 }

@@ -39,7 +39,12 @@ public class Player : IPlayer
                 }
                 else
                 {
+                    // Unable to select pieces that have been removed from play
                     SelectedPiece = GamePieces.Where(p => p.CurrentPosition == (((ChessCoordinate)X).ToString(), Y)).FirstOrDefault();
+                    if (SelectedPiece != null && SelectedPiece.RemovedFromPlay == true)
+                    {
+                        SelectedPiece = null;
+                    }
                 }
 
                 // Calculate valid moves if selection is valid
@@ -82,13 +87,19 @@ public class Player : IPlayer
     public void MovePiece(int X, int Y, Game game)
     {
 
-        if (SelectedPiece.AllowedMovement.Any(m => (m.X, m.Y) == (X, Y)))
+        if (SelectedPiece != null && SelectedPiece.AllowedMovement.Any(m => (m.X, m.Y) == (X, Y)))
         {
             // Parse SelectedPiece Current Location
             Enum.TryParse<ChessCoordinate>(SelectedPiece.CurrentPosition.X, out ChessCoordinate currentX);
             int CurrentY = SelectedPiece.CurrentPosition.Y;
             // Assign Temp: oldPosition
             (ChessCoordinate X, int Y) oldPosition = (currentX, CurrentY);
+            // Check if new position is occupied
+            if (game.Board.Matrix[X, Y] != null)
+            {
+                game.Board.Matrix[X, Y].CurrentPosition = (null, -1);
+                game.Board.Matrix[X, Y].RemovedFromPlay = true;
+            }
             // Set SelectedPiece CurrentPosition to new position
             SelectedPiece.CurrentPosition = (((ChessCoordinate)X).ToString(), Y);
             // Move SelectedPiece in Matrix

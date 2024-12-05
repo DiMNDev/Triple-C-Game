@@ -53,14 +53,15 @@ public class Player_Tests
 
 public class GamePiece_Tests
 {
-    private static (Game,Player,Player) CreateDefaultGame() {
-                Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
-            return (game,PlayerOne,PlayerTwo);
+    private static (Game, Player, Player) CreateDefaultGame()
+    {
+        Guid GameID = LobbyManager.CreateGame(GameType.Chess);
+        Game game = LobbyManager.GetGame(GameType.Chess, GameID);
+        Player PlayerOne = new("P1");
+        Player PlayerTwo = new("P2");
+        game.JoinGame(PlayerOne, JoinAs.Player);
+        game.JoinGame(PlayerTwo, JoinAs.Player);
+        return (game, PlayerOne, PlayerTwo);
     }
     public class Pawn_Tests
     {
@@ -68,7 +69,7 @@ public class GamePiece_Tests
         public void ShouldHaveValidMove()
         {
             // Arrange
-         (var game, var PlayerOne,var PlayerTwo) = CreateDefaultGame();
+            (var game, var PlayerOne, var PlayerTwo) = CreateDefaultGame();
             game.PlaceInMatrix();
             // Act
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
@@ -185,10 +186,11 @@ public class GamePiece_Tests
             }
             // Assert
             PlayerOnePawn.CurrentPosition.Should().Be(("B", 3));
+            PlayerTwoPawn.RemovedFromPlay.Should().BeTrue();
             game.Board.Matrix[1, 3].Should().Be(PlayerOnePawn);
             game.Board.Matrix[1, 4].Should().NotBe(PlayerTwoPawn);
             RemovedFromPlay.Should().BeNull();
-            
+
         }
     }
     public class Rook_Tests
