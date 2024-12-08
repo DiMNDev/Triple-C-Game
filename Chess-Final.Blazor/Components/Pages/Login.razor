@@ -8,20 +8,23 @@
 
 <PageTitle>Triple C</PageTitle>
 
-<h1>Welcome</h1>
-<p>Login or create an account to play!</p>
+<div class="LoginContainer">
 
-<form class="LoginContainer" @onsubmit="handleForm" @onsubmit:preventDefault>
-    <label> Username <input type="text" @bind=Username></label>
-    <label> Password <input type="password" @bind=Password></label>
-    @if (create)
-    {
-        <label> Confirm <input type="password" @bind=Confirm></label>
-    }
-    <p>@StatusMessage</p>
-    <button type="submit">@(create == true ? "Sign Up" : "Sign In")</button>
-    <div class="newAccount" @onclick="()=>create=!create">Need an account?</div>
-</form>
+    <h1>Welcome</h1>
+    <h3>Login or create an account to play!</h3>
+
+    <form @onsubmit="handleForm" @onsubmit:preventDefault>
+        <label> Username <input type="text" @bind=Username></label>
+        <label> Password <input type="password" @bind=Password></label>
+        @if (create)
+        {
+            <label> Confirm <input type="password" @bind=Confirm></label>
+        }
+        <p>@StatusMessage</p>
+        <button type="submit">@(create == true ? "Sign Up" : "Sign In")</button>
+        <div class="newAccount" @onclick="()=>create=!create">Need an account?</div>
+    </form>
+</div>
 
 @code
 {

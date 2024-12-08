@@ -1035,7 +1035,7 @@ public class Chess : Game
         string CWD = Directory.GetCurrentDirectory();
         Console.WriteLine(CWD);
 
-        IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>(FilePaths.Tests);
+        IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>(FilePaths.Blazor);
         if (data != null)
             if (player == PlayerOne)
             {

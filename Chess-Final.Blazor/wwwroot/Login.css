@@ -3,9 +3,49 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  background-color: #5c145c;
+  border-radius: 1rem;
+  padding: 2rem;
+  color: white;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+label {
+  font-size: larger;
+}
+
+input {
+  font-size: large;
+  border-radius: 1rem;
+  padding: 0.5rem;
+}
+
+button {
+  font-size: x-large;
+  color: white;
+  background-color: transparent;
+  border: #721a72;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  transition: all 0.5s;
+}
+
+button:hover {
+  background-color: #721a72;
+  cursor: pointer;
+  scale: 110%;
+}
+.newAccount {
+  transition: all 0.5s;
+}
 .newAccount:hover {
   cursor: pointer;
-  scale: 105%;
+  scale: 110%;
 }
