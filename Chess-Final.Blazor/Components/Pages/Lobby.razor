@@ -9,8 +9,12 @@
 <link rel="stylesheet" href="Generic.css">
 
 <PageTitle>Triple C</PageTitle>
-
-<h1>@gameType Lobby</h1>
+<div class="LobbyHeader">
+    <div class="BackToLobbySelection" @onclick=ReturnToLobbySelection>
+        <p> @("<- Lobby Selection")</p>
+    </div>
+    <h1>@gameType Lobby</h1>
+</div>
 
 <div class="LobbyContainer">
 
@@ -62,7 +66,11 @@
     {
         //Create a new game(GameName as type) w/ player name as playerOne
         Guid newGameID = LobbyManager.CreateGame(lobbyType);
-
         Nav.NavigateTo($"/{gameType}/lobby/Play/{newGameID}/{PlayerID}");
+    }
+
+    void ReturnToLobbySelection()
+    {
+        Nav.NavigateTo($"/Home/{PlayerID}");
     }
 }

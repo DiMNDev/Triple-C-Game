@@ -28,3 +28,25 @@
   background-color: #5c145c;
   border-radius: 2rem;
 }
+
+.BackToLobbySelection {
+  position: absolute;
+  top: 1rem;
+  left: -40vw;
+  padding-inline: 0.5rem;
+  font-size: x-large;
+  font-weight: bold;
+  color: white;
+  background-color: #5c145c;
+  border-radius: 2rem;
+  transition: all 0.2s;
+}
+.BackToLobbySelection:hover {
+  scale: 105%;
+  cursor: pointer;
+}
+
+.LobbyHeader {
+  position: relative;
+  display: flex;
+}
