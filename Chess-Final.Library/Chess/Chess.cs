@@ -164,14 +164,14 @@ public class Chess : Game
                     .SelectMany(p => p)
                     .SelectMany(g => g.pieces.Select(piece =>
                 {
-                    GamePiece newPiece = g.pieceType switch
+                    ChessPiece newPiece = g.pieceType switch
                     {
-                        "pawns" => new Pawn(Owner.Player, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, GameID = UUID },
-                        "rooks" => new Rook(Owner.Player, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, GameID = UUID },
-                        "knights" => new Knight(Owner.Player, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, GameID = UUID },
-                        "bishops" => new Bishop(Owner.Player, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, GameID = UUID },
-                        "queen" => new Queen(Owner.Player, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, GameID = UUID },
-                        "king" => new King(Owner.Player, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, GameID = UUID },
+                        "pawns" => new Pawn(Owner.Player, (piece.x, piece.y)) { Name = "Pawn", GameID = UUID },
+                        "rooks" => new Rook(Owner.Player, (piece.x, piece.y)) { Name = "Rook", GameID = UUID },
+                        "knights" => new Knight(Owner.Player, (piece.x, piece.y)) { Name = "Knight", GameID = UUID },
+                        "bishops" => new Bishop(Owner.Player, (piece.x, piece.y)) { Name = "Bishop", GameID = UUID },
+                        "queen" => new Queen(Owner.Player, (piece.x, piece.y)) { Name = "Queen", GameID = UUID },
+                        "king" => new King(Owner.Player, (piece.x, piece.y)) { Name = "King", GameID = UUID },
                     };
                     PlayerOne.GamePieces.Add(newPiece);
                     // Janky
@@ -189,14 +189,14 @@ public class Chess : Game
                 .SelectMany(p => p)
                 .SelectMany(g => g.pieces.Select(piece =>
             {
-                GamePiece newPiece = g.pieceType switch
+                ChessPiece newPiece = g.pieceType switch
                 {
-                    "pawns" => new Pawn(Owner.Opponent, (piece.x, piece.y)) { Name = "Pawn", Type = PieceType.pawn, GameID = UUID },
-                    "rooks" => new Rook(Owner.Opponent, (piece.x, piece.y)) { Name = "Rook", Type = PieceType.rook, GameID = UUID },
-                    "knights" => new Knight(Owner.Opponent, (piece.x, piece.y)) { Name = "Knight", Type = PieceType.knight, GameID = UUID },
-                    "bishops" => new Bishop(Owner.Opponent, (piece.x, piece.y)) { Name = "Bishop", Type = PieceType.bishop, GameID = UUID },
-                    "queen" => new Queen(Owner.Opponent, (piece.x, piece.y)) { Name = "Queen", Type = PieceType.queen, GameID = UUID },
-                    "king" => new King(Owner.Opponent, (piece.x, piece.y)) { Name = "King", Type = PieceType.king, GameID = UUID },
+                    "pawns" => new Pawn(Owner.Opponent, (piece.x, piece.y)) { Name = "Pawn", GameID = UUID },
+                    "rooks" => new Rook(Owner.Opponent, (piece.x, piece.y)) { Name = "Rook", GameID = UUID },
+                    "knights" => new Knight(Owner.Opponent, (piece.x, piece.y)) { Name = "Knight", GameID = UUID },
+                    "bishops" => new Bishop(Owner.Opponent, (piece.x, piece.y)) { Name = "Bishop", GameID = UUID },
+                    "queen" => new Queen(Owner.Opponent, (piece.x, piece.y)) { Name = "Queen", GameID = UUID },
+                    "king" => new King(Owner.Opponent, (piece.x, piece.y)) { Name = "King", GameID = UUID },
                 };
                 PlayerTwo.GamePieces.Add(newPiece);
                 // Janky
@@ -231,7 +231,10 @@ public class Chess : Game
         UpdateGame();
     }
 }
-
+public abstract class ChessPiece : GamePiece
+{
+    public abstract PieceType Type { get; set; }
+}
 public enum PieceType
 {
     pawn,

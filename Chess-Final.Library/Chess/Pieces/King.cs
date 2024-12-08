@@ -3,10 +3,9 @@ namespace Chess_Final.Chess;
 using Generics;
 using Chess_Final.Lobby;
 
-public class King : GamePiece
+public class King : ChessPiece
 {
-    public PieceType Type { get; set; }
-    public bool CanMove { get; set; }
+    public override PieceType Type { get; set; } = PieceType.king;
     public override (string X, int Y) CurrentPosition { get; set; }
     public override Owner owner { get; init; }
     public King(Owner owner, (string X, int Y) currentPosition)

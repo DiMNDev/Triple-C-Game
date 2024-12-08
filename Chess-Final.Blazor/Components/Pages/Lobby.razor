@@ -44,7 +44,7 @@
     public string? gameType { get; set; }
     private GameType lobbyType { get; set; }
     [Parameter]
-    public Player? currentPlayer { get; set; }
+    public Player? player { get; set; }
     [Parameter]
     public Guid PlayerID { get; set; }
     public Dictionary<Guid, Game>? Games;
@@ -60,13 +60,17 @@
 
     override protected void OnParametersSet()
     {
+        player = PlayerManager.GetPlayer(PlayerID);
     }
 
     void CreateNewGame()
     {
-        //Create a new game(GameName as type) w/ player name as playerOne
-        Guid newGameID = LobbyManager.CreateGame(lobbyType);
-        Nav.NavigateTo($"/{gameType}/lobby/Play/{newGameID}/{PlayerID}");
+        if (player != null)
+        {
+            //Create a new game(GameName as type) w/ player name as playerOne
+            Guid newGameID = LobbyManager.CreateGame(lobbyType, player);
+            Nav.NavigateTo($"/{gameType}/lobby/Play/{newGameID}/{PlayerID}");
+        }
     }
 
     void ReturnToLobbySelection()

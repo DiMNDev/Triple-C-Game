@@ -2,10 +2,9 @@ namespace Chess_Final.Chess;
 
 using Generics;
 
-public class Rook : GamePiece
+public class Rook : ChessPiece
 {
-    public PieceType Type { get; set; }
-    public bool CanMove { get; set; }
+    public override PieceType Type { get; set; } = PieceType.rook;
     public override (string X, int Y) CurrentPosition { get; set; }
     public override Owner owner { get; init; }
     public Rook(Owner owner, (string X, int Y) currentPosition)

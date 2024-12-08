@@ -2,13 +2,11 @@ namespace Chess_Final.Chess;
 
 using Generics;
 
-public class Pawn : GamePiece
+public class Pawn : ChessPiece
 {
-    public PieceType Type { get; set; }
-    public bool CanMove { get; set; }
+    public override PieceType Type { get; set; } = PieceType.pawn;
     public override (string X, int Y) CurrentPosition { get; set; }
     public override Owner owner { get; init; }
-
     public Pawn(Owner owner, (string X, int Y) currentPosition)
     {
         this.owner = owner;
