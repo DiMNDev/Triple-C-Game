@@ -108,3 +108,12 @@ img {
   position: relative;
   display: flex;
 }
+
+.MoveList {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+}
+
+.MoveList:first-child {
+  justify-self: end;
+}

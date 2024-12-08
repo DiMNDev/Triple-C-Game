@@ -1,5 +1,6 @@
 namespace Chess_Final.Generics;
 
+using Chess_Final.Chess;
 using Chess_Final.DB_Manager;
 using Chess_Final.Lobby;
 using Player;
@@ -12,6 +13,7 @@ public abstract class Game
     public abstract Player? CurrentPlayer { get; set; }
     public Player? PlayerOne { get; set; } = null;
     public Player? PlayerTwo { get; set; } = null;
+    public List<(Player player, GamePiece piece, (ChessCoordinate X, int Y) movedTo, bool InCheck)> MoveLog { get; set; } = new();
     public bool Active = false;
     public bool Open = true;
     public List<Player> Spectators { get; set; } = [];
@@ -54,6 +56,7 @@ public abstract class Game
                 break;
         }
     }
+
     private void IsGameReady()
     {
         if (PlayerOne != null && PlayerTwo != null)

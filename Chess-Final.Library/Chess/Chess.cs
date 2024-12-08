@@ -4,6 +4,7 @@ using Player;
 using Generics;
 using TC_DataManager;
 using Chess_Final.Lobby;
+using System.Security.Cryptography.X509Certificates;
 
 public class Chess : Game
 {
@@ -16,10 +17,15 @@ public class Chess : Game
     public override Player? CurrentPlayer { get; set; }
     public override void NewTurn()
     {
-        CheckInCheck();
         if (GameOver) GameOverCleanUp();
         Console.WriteLine($"{CurrentPlayer.Username} Has ended their turn.");
         base.NewTurn();
+    }
+    public void AppendMove(Player player, (ChessCoordinate X, int Y) movedTo)
+    {
+        CheckInCheck();
+        MoveLog.Add((player, player.SelectedPiece, movedTo, player.Check));
+        Console.WriteLine(MoveLog.Count());
     }
     public void CheckInCheck()
     {
@@ -37,7 +43,6 @@ public class Chess : Game
         List<(int X, int Y)> Threats = GenerateEnemyMoves(King.owner == Owner.Player ? Owner.Opponent : Owner.Player, UUID);
 
         NextPlayer.Check = Threats.Any(t => t == KingPosition);
-        // if(NextPlayer.Check) GameOver = !Threats.Any(t=> King.AllowedMovement.Any(mv => t == mv));
         if (NextPlayer.Check && King.AllowedMovement.Count == 0) GameOver = true;
 
         Console.WriteLine($"{NextPlayer.Username} in check: {NextPlayer.Check}");

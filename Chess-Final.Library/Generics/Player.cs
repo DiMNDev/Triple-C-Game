@@ -1,4 +1,6 @@
 ﻿namespace Chess_Final.Player;
+
+using Chess_Final.Chess;
 using Generics;
 
 public class Player : IPlayer
@@ -104,9 +106,16 @@ public class Player : IPlayer
             SelectedPiece.CurrentPosition = (((ChessCoordinate)X).ToString(), Y);
             // Move SelectedPiece in Matrix
             game.Board.Matrix[X, Y] = SelectedPiece;
+            // Add Move to MoveList
+            if (game is Chess)
+            {
+                Console.WriteLine("Made it");
+                Chess chessGame = (Chess)game;
+                chessGame.AppendMove(this, ((ChessCoordinate)X, Y));
+                GameHasChanged?.Invoke();
+            }
             // Assign oldPosition in Matrix to null
             game.Board.Matrix[oldPosition.X.GetHashCode(), oldPosition.Y] = null;
-
             // If FirstMove of SelectedPiece is true -> false
             if (SelectedPiece.FirstMove == true) SelectedPiece.FirstMove = false;
 

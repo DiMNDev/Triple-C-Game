@@ -1,6 +1,8 @@
 @page "/{GameName}/lobby/Play/{GameID:guid}/{PlayerID:guid}"
 @using Chess_Final.Generics
-@using Chess
+@using Chess_Final.Chess
+@using Chess_Final.Checkers
+@using Chess_Final.ConnectFour
 @using Chess_Final.Lobby
 @using Chess_Final.PlayerManager
 @using Chess_Final.Player
@@ -16,64 +18,84 @@
 
 <h3>@(game?.PlayerOne?.Username ?? "waiting") vs. @(game?.PlayerTwo?.Username ?? "waiting")</h3>
 <div class="MainContainer">
-    <div class="GameSide">
-        @if (game?.GameOver ?? false)
-        {
-            <div class="gameOver">
-                <div class="innerGameOver">
-                    <div>Checkmate</div>
-                    <div>@(game?.Winner.Username) Wins!</div>
+    @if (game != null)
+    {
+        <div class="GameSide">
+            @if (game?.GameOver ?? false)
+            {
+                <div class="gameOver">
+                    <div class="innerGameOver">
+                        <div>Checkmate</div>
+                        <div>@(game?.Winner.Username) Wins!</div>
+                    </div>
                 </div>
+            }
+            <div class="PlayerDash">
+                @if (game?.PlayerTwo != null)
+                {
+                    <h2>@(PlayerID == game?.PlayerTwo.PlayerID ? game?.PlayerOne?.Username : game?.PlayerTwo?.Username ??
+                            "Loading")</h2>
+
+                }
             </div>
-        }
-        <div class="PlayerDash">
-            @if (game?.PlayerTwo != null)
-            {
-                <h2>@(PlayerID == game?.PlayerTwo.PlayerID ? game?.PlayerOne?.Username : game?.PlayerTwo?.Username ??
+            @* Create a seperate GameBoard component for each game? *@
+            <div class="GameBoard @(UI_Manager.CSS_ClassSelector(PlayerID, "Rotate_Opponent_Board", 0,0,game))">
+                @for (int y = 0; y < game?.Board?.Matrix?.GetLength(0); y++)
+                {
+                    <div style="display: grid; grid-template-columns: repeat(8, 1fr);">
+
+                        @for (int x = 0; x < game?.Board?.Matrix?.GetLength(1); x++)
+                        {
+                            var LocalY = y;
+                            var LocalX = x;
+
+                            <div id="cell-@x-@y"
+                                class="GridCell @UI_Manager.CSS_ClassSelector(PlayerID,"Selected", LocalX, LocalY, game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Selected_Spec", LocalX, LocalY, game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Valid", LocalX, LocalY,  game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Valid_Spec", LocalX, LocalY,  game!)"
+                                @onclick="()=>HandleCellSelection(LocalX,LocalY)"
+                                style="@UI_Manager.CSS_ClassSelector(PlayerID, "Chess_BG", LocalX, LocalY, game!)">
+                                @if (game.Board.Matrix[x, y] != null)
+                                {
+                                    <div class="@(UI_Manager.CSS_ClassSelector(PlayerID, "Rotate_Opponent_Board", 0,0,game))">
+                                        <img src="@(UI_Manager.GetImageSource(game,game?.Board?.Matrix[LocalX,LocalY]))" alt="">
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                    </div>
+                }
+
+            </div>
+            <div class=" PlayerDash">
+                <h2>@(PlayerID == game?.PlayerTwo?.PlayerID ? game?.PlayerTwo?.Username : game?.PlayerOne?.Username ??
                         "Loading")</h2>
-
-            }
+            </div>
         </div>
-        @* Create a seperate GameBoard component for each game? *@
-        <div class="GameBoard @(UI_Manager.CSS_ClassSelector(PlayerID, "Rotate_Opponent_Board", 0,0,game))">
-            @for (int y = 0; y < game?.Board?.Matrix?.GetLength(0); y++)
-            {
-                <div style="display: grid; grid-template-columns: repeat(8, 1fr);">
-
-                    @for (int x = 0; x < game?.Board?.Matrix?.GetLength(1); x++)
-                    {
-                        var LocalY = y;
-                        var LocalX = x;
-
-                        <div id="cell-@x-@y"
-                            class="GridCell @UI_Manager.CSS_ClassSelector(PlayerID,"Selected", LocalX, LocalY, game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Selected_Spec", LocalX, LocalY, game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Valid", LocalX, LocalY,  game!) @UI_Manager.CSS_ClassSelector(PlayerID,"Valid_Spec", LocalX, LocalY,  game!)"
-                            @onclick="()=>HandleCellSelection(LocalX,LocalY)"
-                            style="@UI_Manager.CSS_ClassSelector(PlayerID, "Chess_BG", LocalX, LocalY, game!)">
-                            @if (game.Board.Matrix[x, y] != null)
-                            {
-                                <div class="@(UI_Manager.CSS_ClassSelector(PlayerID, "Rotate_Opponent_Board", 0,0,game))">
-                                    <img src="@(UI_Manager.GetImageSource(game,game?.Board?.Matrix[LocalX,LocalY]))" alt="">
-                                </div>
-                            }
-
-                        </div>
-                    }
-                </div>
-            }
-
-        </div>
-        <div class=" PlayerDash">
-            @if (player != null)
-            {
-                <h2>@(PlayerID == game?.PlayerTwo.PlayerID ? game?.PlayerTwo?.Username : game?.PlayerOne?.Username ??
-                        "Loading")</h2>
-            }
-        </div>
-    </div>
+    }
     <div class="GameDetails">
         <h1>Details</h1>
         <div class="CurrentTurn">
             <h3>Current Turn: @(game?.CurrentPlayer?.Username ?? "waiting")</h3>
+            @if (game.MoveLog != null)
+            {
+                foreach (var move in game?.MoveLog)
+                {
+                    @(move.InCheck ? $"{move.player.Username} is in Check!" : "")
+                    <div class="MoveList">
+                <div>
+                    @move.player.Username
+                </div>
+                <div>
+                    moved @move.piece.Name to
+                </div>
+                <div>
+                    [ @move.movedTo.X , @move.movedTo.Y ]
+                </div>
+            </div>
+                    <div>
+            </div>
+                }
+            }
             @if (game?.CurrentPlayer?.Check == true)
             {
                 <h3>@(game?.CurrentPlayer?.Username) is in Check!</h3>
@@ -101,7 +123,7 @@
     public Guid GameID { get; set; }
     [Parameter]
     public Guid PlayerID { get; set; }
-    public Player? player { get; set; }
+    public Player? player { get; set; } = null;
     public GameType gameType { get; set; }
     private Game? game { get; set; } = null;
 
