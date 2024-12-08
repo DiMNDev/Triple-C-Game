@@ -10,9 +10,7 @@
 
 <PageTitle>Triple C</PageTitle>
 <div class="LobbyHeader">
-    <div class="BackToLobbySelection" @onclick=ReturnToLobbySelection>
-        <p> @("<- Lobby Selection")</p>
-    </div>
+    <BackButton Route=@($"/Home/{PlayerID}") PlayerID="@PlayerID" Content="Game Selection" />
     <h1>@gameType Lobby</h1>
 </div>
 
@@ -73,8 +71,4 @@
         }
     }
 
-    void ReturnToLobbySelection()
-    {
-        Nav.NavigateTo($"/Home/{PlayerID}");
-    }
 }

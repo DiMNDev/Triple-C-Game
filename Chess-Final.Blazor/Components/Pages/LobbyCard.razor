@@ -8,7 +8,9 @@
     <div class="cell">@(game?.PlayerOne?.Username ?? "Waiting")</div>
     <div class="cell">vs</div>
     <div class="cell">@(game?.PlayerTwo?.Username ?? "Waiting")</div>
-    <button class="cardButton" disabled=@Playable @onclick=JoinGame>Join</button>
+    <button class="cardButton" disabled=@GameIsFull() @onclick=JoinGame>@(PlayerID == game?.PlayerOne?.PlayerID ||
+        PlayerID ==
+        game?.PlayerTwo?.PlayerID ? "Resume" : "Join")</button>
     <button class="cardButton" @onclick=WatchGame>Watch</button>
 </div>
 
@@ -34,8 +36,29 @@
     }
     public void JoinGame()
     {
-        game?.JoinGame(player, JoinAs.Player);
-        Nav.NavigateTo($"/{gameType}/lobby/Play/{GameID}/{PlayerID}");
+        if (PlayerID == game?.PlayerOne?.PlayerID || PlayerID == game?.PlayerTwo?.PlayerID)
+        {
+            Nav.NavigateTo($"/{gameType}/lobby/Play/{GameID}/{PlayerID}");
+        }
+        else
+        {
+            Nav.NavigateTo($"/{gameType}/lobby/Play/{GameID}/{PlayerID}");
+            game?.JoinGame(player, JoinAs.Player);
+        }
+    }
+
+    public bool GameIsFull()
+    {
+        if (game?.PlayerOne != null && game?.PlayerTwo != null && PlayerID != game?.PlayerOne.PlayerID && PlayerID !=
+        game?.PlayerTwo?.PlayerID)
+        {
+            return true;
+        }
+        else
+        {
+
+            return false;
+        }
     }
 
     public void WatchGame()

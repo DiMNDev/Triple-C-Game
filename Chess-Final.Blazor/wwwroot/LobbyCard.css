@@ -34,3 +34,7 @@
 .cardButton:hover {
   scale: 110%;
 }
+.cardButton:disabled:hover {
+  scale: 100%;
+  cursor: not-allowed;
+}

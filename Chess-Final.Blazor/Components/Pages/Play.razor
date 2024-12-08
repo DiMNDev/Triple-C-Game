@@ -9,21 +9,28 @@
 
 <PageTitle>Triple C</PageTitle>
 
-<h1>@GameName</h1>
+<div class="Header">
+    <h1>@GameName</h1>
+    <BackButton Route=@($"/{gameType}/lobby/{@PlayerID}") PlayerID="@PlayerID" Content="Back to Lobby" />
+</div>
+
 <h3>@(game?.PlayerOne?.Username ?? "waiting") vs. @(game?.PlayerTwo?.Username ?? "waiting")</h3>
 <div class="MainContainer">
     <div class="GameSide">
-        <div class="gameOver">
-            @if (game?.GameOver ?? false)
-            {
-                <div>Checkmate</div>
-                <div>@(game?.Winner) Wins!</div>
-            }
-        </div>
+        @if (game?.GameOver ?? false)
+        {
+            <div class="gameOver">
+                <div class="innerGameOver">
+                    <div>Checkmate</div>
+                    <div>@(game?.Winner.Username) Wins!</div>
+                </div>
+            </div>
+        }
         <div class="PlayerDash">
             @if (game?.PlayerTwo != null)
             {
-                <h2>@(game?.PlayerTwo?.Username ?? "Loading")</h2>
+                <h2>@(PlayerID == game?.PlayerTwo.PlayerID ? game?.PlayerOne?.Username : game?.PlayerTwo?.Username ??
+                        "Loading")</h2>
 
             }
         </div>
@@ -56,9 +63,9 @@
 
         </div>
         <div class=" PlayerDash">
-            @if (game?.PlayerOne != null)
+            @if (player != null)
             {
-                <h2>@(game?.PlayerOne?.Username ?? "Loading")</h2>
+                <h2>@(player?.Username ?? "Loading")</h2>
             }
         </div>
     </div>
@@ -82,7 +89,6 @@
                 <li>@spec.Username is watching</li>
             }
         </ul>
-        using Microsoft.VisualBasic;
     </div>
 </div>
 

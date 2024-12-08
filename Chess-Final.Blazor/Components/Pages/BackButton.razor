@@ -1,0 +1,22 @@
+@inject NavigationManager Nav
+<link rel="stylesheet" href="BackButton.css">
+<div class="BackToLobbySelection" @onclick=GoBack>
+    <p> &larr; @Content</p>
+</div>
+
+@code
+{
+    [Parameter]
+    public string? Route { get; set; }
+    [Parameter]
+    public Guid PlayerID { get; set; }
+    [Parameter]
+    public string? Content { get; set; }
+    void GoBack()
+    {
+        if (Route != null)
+        {
+            Nav.NavigateTo($"{Route}");
+        }
+    }
+}
