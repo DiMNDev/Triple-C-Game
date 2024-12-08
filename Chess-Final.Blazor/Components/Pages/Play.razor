@@ -65,7 +65,8 @@
         <div class=" PlayerDash">
             @if (player != null)
             {
-                <h2>@(player?.Username ?? "Loading")</h2>
+                <h2>@(PlayerID == game?.PlayerTwo.PlayerID ? game?.PlayerTwo?.Username : game?.PlayerOne?.Username ??
+                        "Loading")</h2>
             }
         </div>
     </div>
@@ -137,6 +138,11 @@
         {
             Console.WriteLine(err);
         }
+    }
+
+    bool validatePlayer()
+    {
+        return PlayerID == game?.PlayerOne?.PlayerID || PlayerID == game?.PlayerTwo?.PlayerID;
     }
 
     void VerifyStateChange()
