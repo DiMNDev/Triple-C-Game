@@ -64,6 +64,10 @@
   text-shadow: 1rem 1rem 10rem #5c145c;
 }
 
+img {
+  max-height: 3rem;
+}
+
 .P1P {
   color: blue;
 }
@@ -78,4 +82,8 @@
   flex-direction: column;
   align-items: center;
   border: 2px solid rebeccapurple;
+}
+
+.rotateBoard {
+  transform: rotateX(180deg);
 }

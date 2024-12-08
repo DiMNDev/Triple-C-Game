@@ -1,7 +1,9 @@
 namespace Chess_Final.Lobby;
 using Chess_Final.Chess;
+using Chess_Final.Checkers;
+using Chess_Final.ConnectFour;
 using Chess_Final.Generics;
-using Microsoft.VisualBasic;
+using Chess_Final.Player;
 
 public static class LobbyManager
 {
@@ -18,21 +20,19 @@ public static class LobbyManager
         LobbyChanged?.Invoke();
     }
 
-    public static Guid CreateGame(GameType gameType)
+    public static Guid CreateGame(GameType gameType, Player player)
     {
-        switch (gameType)
+        Game game = gameType switch
         {
-            case GameType.Chess:
-                Chess chess = new Chess();
-                // chess.JoinGame(player);
-                ChessGames.Add(chess.UUID, chess);
-                LobbyChanged?.Invoke();
-                return chess.UUID;
-            case GameType.Checkers: throw new NotImplementedException("Game logic does not exist");
-            case GameType.ConnectFour: throw new NotImplementedException("Game logic does not exist");
-            default:
-                throw new InvalidGameTypeException("Sorry, fresh out..");
-        }
+            GameType.Chess => new Chess(),
+            GameType.Checkers => new Checkers(),
+            GameType.ConnectFour => new ConnectFour(),
+            _ => throw new InvalidGameTypeException("Sorry, fresh out..")
+        };
+
+        game?.JoinGame(player, JoinAs.Player);
+        LobbyChanged?.Invoke();
+        return game.UUID;
     }
     // create new game
     // pull Guid -> add to respective dictionary

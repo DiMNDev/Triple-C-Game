@@ -14,7 +14,7 @@
 <div class="MainContainer">
     <div class="GameSide">
         <div class="gameOver">
-            @if (game.GameOver)
+            @if (game?.GameOver ?? false)
             {
                 <div>Checkmate</div>
                 <div>@(game?.Winner) Wins!</div>
@@ -28,8 +28,7 @@
             }
         </div>
         @* Create a seperate GameBoard component for each game? *@
-        <div class="GameBoard">
-
+        <div class="GameBoard @(UI_Manager.CSS_ClassSelector(PlayerID, "Rotate_Opponent_Board", 0,0,game))">
             @for (int y = 0; y < game?.Board?.Matrix?.GetLength(0); y++)
             {
                 <div style="display: grid; grid-template-columns: repeat(8, 1fr);">
@@ -45,8 +44,8 @@
                             style="@UI_Manager.CSS_ClassSelector(PlayerID, "Chess_BG", LocalX, LocalY, game!)">
                             @if (game.Board.Matrix[x, y] != null)
                             {
-                                <div class="@(game?.Board?.Matrix[x,y].owner == Owner.Player ? "P1P" : "P2P")">
-                                    @(game?.Board?.Matrix[x, y].Name)
+                                <div class="@(UI_Manager.CSS_ClassSelector(PlayerID, "Rotate_Opponent_Board", 0,0,game))">
+                                    <img src="@(UI_Manager.GetImageSource(game,game?.Board?.Matrix[LocalX,LocalY]))" alt="">
                                 </div>
                             }
 
@@ -78,11 +77,12 @@
         <ul>
 
 
-            @foreach (var spec in game.Spectators ?? [new("None")])
+            @foreach (var spec in game?.Spectators ?? [new("None")])
             {
                 <li>@spec.Username is watching</li>
             }
         </ul>
+        using Microsoft.VisualBasic;
     </div>
 </div>
 
@@ -109,13 +109,7 @@
             gameType = LobbyManager.ConvertStringToGameType(GameName);
             game = LobbyManager.GetGame(gameType, GameID);
             player = PlayerManager.GetPlayer(PlayerID);
-            game?.JoinGame(player, JoinAs.Player);
             game?.PlaceInMatrix();
-
-            @* if (game?.PlayerTwo == null)
-            {
-                game.PlayerOne.TurnOver += () => InvokeAsync(game.NewTurn);
-            } *@
 
             if (game?.PlayerOne != null && game.PlayerTwo != null)
             {
@@ -131,7 +125,6 @@
     {
         try
         {
-            @* Console.WriteLine($"Play: {((ChessCoordinate)x).ToString()},{y}"); *@
             game?.CurrentPlayer.Select(x, y, game, player);
         }
         catch (Exception err)
