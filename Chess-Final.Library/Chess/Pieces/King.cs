@@ -33,7 +33,7 @@ public class King : ChessPiece
 
         List<(int X, int Y)> PossibleMoves = [UP, UP_Left, UP_Right, Left, Down_Left, Down, Down_right, Right];
         // Filter this list to make sure it's all on the board!
-        PossibleMoves = PossibleMoves.Where(mv => mv.X > 0 && mv.X < 7 && mv.Y > 0 && mv.Y < 7).ToList();
+        PossibleMoves = PossibleMoves.Where(mv => mv.X >= 0 && mv.X <= 7 && mv.Y >= 0 && mv.Y <= 7).ToList();
 
         List<(int X, int Y)> EnemyMoves = this.owner switch
         {
@@ -47,15 +47,15 @@ public class King : ChessPiece
             Owner.Opponent => Chess.GetPlayerPiecePositions(Owner.Opponent, GameID, this),
         };
 
-        // Filter out possible moves that would put the king in check
-        PossibleMoves = PossibleMoves.Where(mv => !EnemyMoves.Contains(mv)).ToList();
         // Filter out possilbe moves if the players pieces are in the way
         PossibleMoves = PossibleMoves.Where(mv => !PlayerPieces.Contains(mv)).ToList();
+        // Filter out possible moves that would put the king in check
+        PossibleMoves = PossibleMoves.Where(mv => !EnemyMoves.Contains(mv)).ToList();
         // Include attacks that would put the king in check
         List<(int X, int Y)> AltThreats = Chess.ValidateSafeMovesForKing(owner, PossibleMoves, GameID);
         PossibleMoves = PossibleMoves.Where(mv => !AltThreats.Contains(mv)).ToList();
 
-        Game game = LobbyManager.GetGame(GameType.Chess, GameID);
+        // Game game = LobbyManager.GetGame(GameType.Chess, GameID);
 
         AllowedMovement.AddRange(PossibleMoves);
     }

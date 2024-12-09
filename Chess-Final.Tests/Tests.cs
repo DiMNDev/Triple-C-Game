@@ -9,6 +9,19 @@ using TC_DataManager;
 using Chess_Final.PlayerManager;
 using Chess_Final.DB_Manager;
 
+public static class Test_Setup
+{
+    public static (Player PlayerOne, Player PlayerTwo, Game game) CreateDefaultGame()
+    {
+        Player PlayerOne = new("P1");
+        Guid GameID = LobbyManager.CreateGame(GameType.Chess, PlayerOne);
+        Game game = LobbyManager.GetGame(GameType.Chess, GameID);
+        Player PlayerTwo = new("P2");
+        game.JoinGame(PlayerTwo, JoinAs.Player);
+
+        return (PlayerOne, PlayerTwo, game);
+    }
+}
 public class Player_Tests
 {
     [Fact]
@@ -53,23 +66,13 @@ public class Player_Tests
 
 public class GamePiece_Tests
 {
-    private static (Game, Player, Player) CreateDefaultGame()
-    {
-        Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-        Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-        Player PlayerOne = new("P1");
-        Player PlayerTwo = new("P2");
-        game.JoinGame(PlayerOne, JoinAs.Player);
-        game.JoinGame(PlayerTwo, JoinAs.Player);
-        return (game, PlayerOne, PlayerTwo);
-    }
     public class Pawn_Tests
     {
         [Fact]
         public void ShouldHaveValidMove()
         {
             // Arrange
-            (var game, var PlayerOne, var PlayerTwo) = CreateDefaultGame();
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             // Act
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
@@ -94,12 +97,7 @@ public class GamePiece_Tests
         public void ShouldMovePlayerOnePieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
 
@@ -116,12 +114,7 @@ public class GamePiece_Tests
         public void ShouldMovePlayerTwoPieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
 
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
@@ -146,12 +139,7 @@ public class GamePiece_Tests
             // Arrange
 
             // Setup Game
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
 
             // Setup PlayerOne
@@ -199,12 +187,7 @@ public class GamePiece_Tests
         public void RookShouldNotHaveAnyValidMovesForBothPlayers()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             // Act
             GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook").FirstOrDefault();
@@ -228,12 +211,7 @@ public class GamePiece_Tests
         public void RookShouldHaveMultipleValidMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook").FirstOrDefault();
             // Act
             PlayerOneRook.CurrentPosition = ("C", 3);
@@ -249,12 +227,7 @@ public class GamePiece_Tests
         public void ShouldHaveMultipleValidMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerTwoRook = PlayerTwo!.GamePieces!.Where(p => p.Name == "Rook").FirstOrDefault();
             // Act
             PlayerTwoRook.CurrentPosition = ("C", 3);
@@ -271,12 +244,7 @@ public class GamePiece_Tests
         public void ShouldMovePlayerOnePieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             GamePiece? PlayerOneRook = PlayerOne!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("H", 7)).FirstOrDefault();
             PlayerOneRook.CurrentPosition = ("H", 5);
@@ -294,12 +262,7 @@ public class GamePiece_Tests
         public void ShouldMovePlayerTwoPieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
 
             GamePiece? PlayerTwoRook = PlayerTwo!.GamePieces!.Where(p => p.Name == "Rook" && p.CurrentPosition == ("H", 0)).FirstOrDefault();
@@ -319,14 +282,7 @@ public class GamePiece_Tests
         public void RookShouldAllowRookToAttack()
         {
             // Arrange
-
-            // Setup Game
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
 
             // Setup PlayerOne
@@ -379,12 +335,7 @@ public class GamePiece_Tests
         public void KnightShouldHaveTwoMovesForBothPlayers()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerOneKnight = PlayerOne!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 7)).FirstOrDefault();
             GamePiece? PlayerTwoKnight = PlayerTwo!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 0)).FirstOrDefault();
             game.PlaceInMatrix();
@@ -403,12 +354,7 @@ public class GamePiece_Tests
         public void KnightShouldHaveEightValidMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             GamePiece? PlayerOneKnight = PlayerOne!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 7)).FirstOrDefault();
             // Act
@@ -422,12 +368,7 @@ public class GamePiece_Tests
         public void KnightShouldHaveEightValidMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             GamePiece? PlayerTwoKnight = PlayerTwo!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 0)).FirstOrDefault();
             // Act
@@ -442,12 +383,7 @@ public class GamePiece_Tests
         public void KnightShouldMovePlayerOnePieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
             GamePiece? PlayerOneKnight = PlayerOne!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 7)).FirstOrDefault();
 
@@ -464,12 +400,7 @@ public class GamePiece_Tests
         public void KnightShouldMovePlayerTwoPieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
 
             GamePiece? PlayerOneKnight = PlayerOne!.GamePieces!.Where(p => p.Name == "Knight" && p.CurrentPosition == ("B", 7)).FirstOrDefault();
@@ -493,14 +424,7 @@ public class GamePiece_Tests
         public void KnightShouldAllowKnightToAttack()
         {
             // Arrange
-
-            // Setup Game
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             game.PlaceInMatrix();
 
             // Setup PlayerOne
@@ -538,12 +462,7 @@ public class GamePiece_Tests
         public void BishopShouldHaveFiveMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 7)).FirstOrDefault();
             // Remove pawn @ (D,6) -> (D,5)
@@ -562,12 +481,7 @@ public class GamePiece_Tests
         public void BishopShouldHaveFiveMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
 
@@ -588,12 +502,7 @@ public class GamePiece_Tests
         public void BishopShouldHaveSevenValidMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 7)).FirstOrDefault();
             // Move pawn @ (D,6) -> (D,5)
             GamePiece? PlayerOnePawnOne = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 6)).FirstOrDefault();
@@ -613,12 +522,7 @@ public class GamePiece_Tests
         public void BishopShouldHaveEightValidMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
             // Remove pawn @ (D,1) -> (D,2)
             GamePiece? PlayerTwoPawnOne = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 1)).FirstOrDefault();
@@ -639,12 +543,7 @@ public class GamePiece_Tests
         public void BishopShouldMovePlayerOnePieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 7)).FirstOrDefault();
             // Move pawn @ (D,6) -> (D,5)
             GamePiece? PlayerOnePawnOne = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 6)).FirstOrDefault();
@@ -663,12 +562,7 @@ public class GamePiece_Tests
         public void BishopShouldMovePlayerTwoPieceToValidPosition()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
             // Move pawn @ (D,1) -> (D,2)
@@ -692,12 +586,7 @@ public class GamePiece_Tests
             // Arrange
 
             // Setup Game
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             // Setup PlayerOne
             GamePiece? PlayerOneBishop = PlayerOne!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 7)).FirstOrDefault();
@@ -734,12 +623,7 @@ public class GamePiece_Tests
         public void QueenShouldHaveNotHaveAnyMovesForBothPlayers()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerOneQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 7)).FirstOrDefault();
             GamePiece? PlayerTwoQueen = PlayerTwo!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
             game.PlaceInMatrix();
@@ -763,12 +647,7 @@ public class GamePiece_Tests
         public void QueenShouldHaveSixMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 7)).FirstOrDefault();
 
@@ -790,12 +669,7 @@ public class GamePiece_Tests
         public void QueenShouldHaveSixMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerTwoQueen = PlayerTwo!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
 
@@ -818,12 +692,7 @@ public class GamePiece_Tests
         public void QueenShouldHave20MovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 7)).FirstOrDefault();
 
@@ -847,12 +716,7 @@ public class GamePiece_Tests
         public void QueenShouldHave20MovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerTwoQueen = PlayerTwo!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 0)).FirstOrDefault();
 
@@ -882,12 +746,7 @@ public class GamePiece_Tests
             // Arrange
 
             // Setup Game
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             // Setup PlayerOne
             GamePiece? PlayerOneQueen = PlayerOne!.GamePieces!.Where(p => p.Name == "Queen" && p.CurrentPosition == ("E", 7)).FirstOrDefault();
@@ -919,12 +778,7 @@ public class GamePiece_Tests
         public void KingShouldHaveNotHaveAnyMovesForBothPlayers()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
             game.PlaceInMatrix();
@@ -948,12 +802,7 @@ public class GamePiece_Tests
         public void KingShouldHaveOneMove()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
 
@@ -988,12 +837,7 @@ public class GamePiece_Tests
         public void KingShouldHaveEightMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.FirstOrDefault(p => p.Name == "King" && p.CurrentPosition == ("D", 7));
             // Place King @ (D,4) 
@@ -1022,12 +866,7 @@ public class GamePiece_Tests
         public void KingShouldHaveEightMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
 
@@ -1057,12 +896,7 @@ public class GamePiece_Tests
         public void KingShouldHaveFiveMovesForPlayerOne()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             // Place King @ (D,4) 
@@ -1085,12 +919,7 @@ public class GamePiece_Tests
         public void KingShouldHaveFiveMovesForPlayerTwo()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
             // Place King @ (D,4) 
@@ -1114,12 +943,7 @@ public class GamePiece_Tests
         public void ShouldPutPlayerOneInCheck()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             // Place King @ (H,5) 
@@ -1148,12 +972,7 @@ public class GamePiece_Tests
         public void KingShouldHaveNotHaveMovesAndTriggerGameOver()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             // Place King @ (D,4) 
@@ -1188,12 +1007,7 @@ public class GamePiece_Tests
         public void KingCanNotPutItselfInDanger()
         {
             // Arrange
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             // Place King @ (D,4) 
@@ -1223,6 +1037,32 @@ public class GamePiece_Tests
             PlayerOne.Losses.Should().Be(1);
             PlayerTwo.Wins.Should().Be(1);
         }
+        [Fact]
+        public void KingCanNotPutItselfInDangerTwo()
+        {
+            // Arrange
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
+
+            GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 6)).FirstOrDefault();
+            PlayerOnePawn.CurrentPosition = ("D", 4);
+
+            GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 1)).FirstOrDefault();
+            PlayerTwoPawn.CurrentPosition = ("E", 4);
+
+            GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
+            PlayerTwoKing.CurrentPosition = ("D", 1);
+
+            game.PlaceInMatrix();
+
+            // Act            
+            game.CurrentPlayer = PlayerTwo;
+            game.CurrentPlayer.Select(3, 1, game, PlayerTwo);
+            // Assert
+            // PlayerTwoKing.AllowedMovement.Count.Should().Be(2);
+            PlayerTwoKing.AllowedMovement[0].Should().Be((3, 0));
+            PlayerTwoKing.AllowedMovement[1].Should().Be((3, 2));
+
+        }
 
         [Fact]
         public void KingShouldAllowKingToAttack()
@@ -1230,12 +1070,7 @@ public class GamePiece_Tests
             // Arrange
 
             // Setup Game
-            Guid GameID = LobbyManager.CreateGame(GameType.Chess);
-            Game game = LobbyManager.GetGame(GameType.Chess, GameID);
-            Player PlayerOne = new("P1");
-            Player PlayerTwo = new("P2");
-            game.JoinGame(PlayerOne, JoinAs.Player);
-            game.JoinGame(PlayerTwo, JoinAs.Player);
+            (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             // Setup PlayerOne
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
@@ -1408,13 +1243,11 @@ public class Lobby_Tests
         Player playerTwo = new("P2");
         Player playerThree = new("P3");
         int previousGameCount = LobbyManager.ChessGames.Select(d => d.Value.Open == true).ToList().Count();
-        Guid g1 = LobbyManager.CreateGame(GameType.Chess);
-        Guid g2 = LobbyManager.CreateGame(GameType.Chess);
+        Guid g1 = LobbyManager.CreateGame(GameType.Chess, playerOne);
+        Guid g2 = LobbyManager.CreateGame(GameType.Chess, playerThree);
         Game gameOne = LobbyManager.GetGame(GameType.Chess, g1);
         Game gameTwo = LobbyManager.GetGame(GameType.Chess, g2);
-        gameOne.JoinGame(playerOne, JoinAs.Player);
         gameOne.JoinGame(playerTwo, JoinAs.Player);
-        gameTwo.JoinGame(playerThree, JoinAs.Player);
         // Act
         var OpenGames = LobbyManager.FilterByOpen(GameType.Chess);
 
@@ -1428,7 +1261,7 @@ public class Lobby_Tests
         // Arrange
 
         Player player = new Player("John");
-        Guid newGameGuid = LobbyManager.CreateGame(GameType.Chess);
+        Guid newGameGuid = LobbyManager.CreateGame(GameType.Chess, player);
         // Act
         // Assert
         LobbyManager.ChessGames.FirstOrDefault(g => g.Key == newGameGuid).Should().NotBeNull();

@@ -21,17 +21,28 @@ public class Pawn : ChessPiece
         // If Piece is PlayerOne Piece
         if (this.owner == Owner.Player)
         {
+            GamePiece Collision1 = FindOpponent(CurrentX, CurrentY - 1);
+            GamePiece Collision2 = FindOpponent(CurrentX, CurrentY - 2);
             // On First move can move 2 spacese
             if (FirstMove)
             {
                 // Set AllowedMove to move 2 spaces
-                AllowedMovement.Add((CurrentX, CurrentY - 2));
-                AllowedMovement.Add((CurrentX, CurrentPosition.Y - 1));
+                if (Collision1 == null)
+                {
+                    AllowedMovement.Add((CurrentX, CurrentY - 1));
+                }
+                if (Collision2 == null)
+                {
+                    AllowedMovement.Add((CurrentX, CurrentY - 2));
+                }
             }
             else
             {
-                // Regular move -- Can move 1 space forward                    
-                AllowedMovement.Add((CurrentX, CurrentPosition.Y - 1));
+                // Regular move -- Can move 1 space forward      
+                if (Collision1 == null)
+                {
+                    AllowedMovement.Add((CurrentX, CurrentPosition.Y - 1));
+                }
             }
             // If FindOpponent method is not null check if can attack (x+-1,y-1)
             if (FindOpponent != null)
@@ -40,15 +51,13 @@ public class Pawn : ChessPiece
                 var pieceToRight = FindOpponent(CurrentX + 1, CurrentY - 1);
                 // Check if piece to left is opponent
                 var pieceToLeft = FindOpponent(CurrentX - 1, CurrentY - 1);
-                Console.WriteLine(pieceToLeft);
-                Console.WriteLine(pieceToRight);
                 // Set allowed movement if opponent piece to right exists
-                if (pieceToRight != null)
+                if (pieceToRight != null && pieceToRight.owner != owner)
                 {
                     AllowedMovement.Add((CurrentX + 1, CurrentY - 1));
                 }
                 // Set allowed movement if opponent piece to left exists
-                if (pieceToLeft != null)
+                if (pieceToLeft != null && pieceToLeft.owner != owner)
                 {
                     AllowedMovement.Add((CurrentX - 1, CurrentY - 1));
                 }

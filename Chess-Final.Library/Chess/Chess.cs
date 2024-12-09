@@ -31,9 +31,6 @@ public class Chess : Game
     {
         Player NextPlayer = CurrentPlayer == PlayerOne ? PlayerTwo : PlayerOne;
 
-        Console.WriteLine($"CurrentPlayer: {CurrentPlayer.Username}");
-        Console.WriteLine($"NextPlayer: {NextPlayer.Username}");
-
         GamePiece King = NextPlayer.GamePieces.FirstOrDefault(gp => gp.Name == "King");
 
         (int X, int Y) KingPosition = ParsePosition(King.CurrentPosition);
@@ -64,15 +61,25 @@ public class Chess : Game
         {
             GamePiece[,] temp = game.Board.TempMatrix;
             temp[move.X, move.Y] = King;
+            Console.WriteLine($"---King POS: ({move.X},{move.Y})---");
             for (int Y = 0; Y < temp.GetLength(0); Y++)
             {
                 for (int X = 0; X < temp.GetLength(1); X++)
                 {
-                    if (temp[X, Y] != null)
+                    if (temp[X, Y] != null && temp[X, Y].Name != "King")
                     {
-                        if (temp[X, Y].Name != "King")
+                        Console.WriteLine($"Piece: {temp[X, Y].Name} POS: ({X},{Y})");
+                        temp[X, Y].CalculateValidMoves(game.Board.GetPieceFromMatrix);
+
+                        // Ignore Pawn Forward
+                        if (temp[X, Y].Name == "Pawn")
                         {
-                            temp[X, Y].CalculateValidMoves(game.Board.GetPieceFromMatrix);
+
+                            (int pieceX, int _) = Chess.ParsePosition(temp[X, Y].CurrentPosition);
+                            temp[X, Y].AllowedMovement.Where(mv => mv.X != pieceX);
+                        }
+                        else
+                        {
                             returnList.AddRange(temp[X, Y].AllowedMovement.Where(mv => returnList.Contains(mv)));
                         }
                     }
@@ -91,10 +98,18 @@ public class Chess : Game
             {
                 if (piece.Name != "King")
                 {
+                    (int X, int _) = Chess.ParsePosition(piece.CurrentPosition);
                     piece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
                     foreach (var move in piece.AllowedMovement)
                     {
-                        EnemyMoves.Add(move);
+                        if (piece.Name != "Pawn")
+                        {
+                            EnemyMoves.Add(move);
+                        }
+                        else if (piece.Name == "Pawn" && move.X != X)
+                        {
+                            EnemyMoves.Add(move);
+                        }
                     }
                 }
             }
@@ -105,10 +120,18 @@ public class Chess : Game
             {
                 if (piece.Name != "King")
                 {
+                    (int X, int _) = Chess.ParsePosition(piece.CurrentPosition);
                     piece.CalculateValidMoves(game.Board.GetPieceFromMatrix);
                     foreach (var move in piece.AllowedMovement)
                     {
-                        EnemyMoves.Add(move);
+                        if (piece.Name != "Pawn")
+                        {
+                            EnemyMoves.Add(move);
+                        }
+                        else if (piece.Name == "Pawn" && move.X != X)
+                        {
+                            EnemyMoves.Add(move);
+                        }
                     }
                 }
             }
