@@ -1,5 +1,6 @@
 namespace Chess_Final.Generics;
 
+//REQ#2.2.1
 public interface IPlayer
 {
     public Guid PlayerID { get; set; }

@@ -1,7 +1,7 @@
 namespace Chess_Final.Chess;
-
 using Generics;
 
+//REQ#2.1.2
 public class Pawn : ChessPiece
 {
     public override PieceType Type { get; set; } = PieceType.pawn;

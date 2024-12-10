@@ -5,7 +5,7 @@ public class GameBoard
     public GameType Type { get; init; }
     public (int X, int Y)? BoardSize { get; private set; }
     public GamePiece[,]? Matrix { get; private set; }
-    public GamePiece[,]? TempMatrix { get => HardCopy(); set => _ = value; }
+    public GamePiece[,]? TempMatrix { get; set; }
 
     public GameBoard(GameType gameType)
     {
@@ -20,7 +20,7 @@ public class GameBoard
         BoardSize = Size;
         Matrix = new GamePiece[Size.X, Size.Y];
     }
-    private GamePiece[,] HardCopy()
+    public GamePiece[,] HardCopy()
     {
         GamePiece[,] temp = new GamePiece[8, 8];
         for (int Y = 0; Y < Matrix.GetLength(0); Y++)
@@ -30,6 +30,7 @@ public class GameBoard
                 temp[X, Y] = Matrix[X, Y];
             }
         }
+        TempMatrix = temp;
         return temp;
     }
 
@@ -38,6 +39,14 @@ public class GameBoard
         if (x < Matrix.GetLength(0) && x >= 0 && y < Matrix.GetLength(1) && y >= 0)
         {
             return Matrix[x, y];
+        }
+        else { return null; }
+    }
+    public GamePiece? GetPieceFromTempMatrix(int x, int y)
+    {
+        if (x < TempMatrix.GetLength(0) && x >= 0 && y < TempMatrix.GetLength(1) && y >= 0)
+        {
+            return TempMatrix[x, y];
         }
         else { return null; }
     }

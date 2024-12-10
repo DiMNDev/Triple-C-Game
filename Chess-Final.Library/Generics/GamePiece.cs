@@ -1,5 +1,5 @@
 namespace Chess_Final.Generics;
-
+//REQ#2.1.1
 public abstract class GamePiece
 {
     public string Name { get; set; }

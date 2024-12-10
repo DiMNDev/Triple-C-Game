@@ -77,7 +77,8 @@ public class GamePiece_Tests
             // Act
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("A", 6)).FirstOrDefault();
             (int X, int Y) P1Pawn = Chess.ParsePosition(PlayerOnePawn.CurrentPosition);
-            var PlayerOneFirstMove = (0, 4);
+            var PlayerOneMoveOne = (0, 4);
+            var PlayerOneMoveTwo = (0, 5);
             game.CurrentPlayer.Select(P1Pawn.X, P1Pawn.Y, game, PlayerOne);
 
             game.NewTurn();
@@ -85,12 +86,15 @@ public class GamePiece_Tests
             GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("H", 1)).FirstOrDefault();
             (int X, int Y) P2Pawn = Chess.ParsePosition(PlayerTwoPawn.CurrentPosition);
             game.CurrentPlayer.Select(P2Pawn.X, P2Pawn.Y, game, PlayerTwo);
-            var PlayerTwoFirstMove = (7, 3);
+            var PlayerTwoMoveOne = (7, 3);
+            var PlayerTwoMoveTwo = (7, 2);
             // Assert
             PlayerOnePawn!.AllowedMovement.Count().Should().Be(2);
-            PlayerOnePawn!.AllowedMovement[0].Should().Be(PlayerOneFirstMove);
+            PlayerOnePawn!.AllowedMovement.Should().Contain(PlayerOneMoveOne);
+            PlayerOnePawn!.AllowedMovement.Should().Contain(PlayerOneMoveTwo);
             PlayerTwoPawn!.AllowedMovement.Count().Should().Be(2);
-            PlayerTwoPawn!.AllowedMovement[0].Should().Be(PlayerTwoFirstMove);
+            PlayerTwoPawn!.AllowedMovement.Should().Contain(PlayerTwoMoveOne);
+            PlayerTwoPawn!.AllowedMovement.Should().Contain(PlayerTwoMoveTwo);
 
         }
         [Fact]
@@ -958,10 +962,8 @@ public class GamePiece_Tests
             game.CurrentPlayer = PlayerTwo;
 
             game.CurrentPlayer.Select(3, 2, game, PlayerTwo);
-            PlayerTwo.MovePiece(5, 3, game);
+            game.CurrentPlayer.MovePiece(5, 3, game);
             game.NewTurn();
-
-            game.CurrentPlayer.Select(0, 7, game, PlayerOne);
 
             // Assert
             PlayerOne.Check.Should().BeTrue();
@@ -1030,7 +1032,7 @@ public class GamePiece_Tests
             game.CurrentPlayer = PlayerTwo;
             game.CurrentPlayer.Select(1, 5, game, PlayerTwo);
             game.NewTurn();
-            game.CurrentPlayer.Select(3, 3, game, PlayerOne);
+            // game.CurrentPlayer.Select(3, 3, game, PlayerOne);
             // Assert
             PlayerOneKing.AllowedMovement.Count.Should().Be(0);
             game.GameOver.Should().BeTrue();
@@ -1038,29 +1040,30 @@ public class GamePiece_Tests
             PlayerTwo.Wins.Should().Be(1);
         }
         [Fact]
-        public void KingCanNotPutItselfInDangerTwo()
+        public void KingCanNotMoveWherePlayerTwoPawnCanAttack()
         {
             // Arrange
             (var PlayerOne, var PlayerTwo, var game) = Test_Setup.CreateDefaultGame();
 
             GamePiece? PlayerOnePawn = PlayerOne!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 6)).FirstOrDefault();
-            PlayerOnePawn.CurrentPosition = ("D", 4);
+            PlayerOnePawn.CurrentPosition = ("A", 5);
+
+            GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
+            PlayerOneKing.CurrentPosition = ("D", 6);
 
             GamePiece? PlayerTwoPawn = PlayerTwo!.GamePieces!.Where(p => p.Name == "Pawn" && p.CurrentPosition == ("D", 1)).FirstOrDefault();
-            PlayerTwoPawn.CurrentPosition = ("E", 4);
-
-            GamePiece? PlayerTwoKing = PlayerTwo!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 0)).FirstOrDefault();
-            PlayerTwoKing.CurrentPosition = ("D", 1);
+            PlayerTwoPawn.CurrentPosition = ("D", 4);
 
             game.PlaceInMatrix();
 
             // Act            
-            game.CurrentPlayer = PlayerTwo;
-            game.CurrentPlayer.Select(3, 1, game, PlayerTwo);
+            game.CurrentPlayer.Select(3, 6, game, PlayerOne);
             // Assert
             // PlayerTwoKing.AllowedMovement.Count.Should().Be(2);
-            PlayerTwoKing.AllowedMovement[0].Should().Be((3, 0));
-            PlayerTwoKing.AllowedMovement[1].Should().Be((3, 2));
+            PlayerOneKing.AllowedMovement.Should().NotContain((2, 5));
+            PlayerOneKing.AllowedMovement.Should().NotContain((4, 5));
+            PlayerOneKing.AllowedMovement[0].Should().Be((3, 5));
+            PlayerOneKing.AllowedMovement[1].Should().Be((3, 7));
 
         }
 
@@ -1075,23 +1078,22 @@ public class GamePiece_Tests
             // Setup PlayerOne
             GamePiece? PlayerOneKing = PlayerOne!.GamePieces!.Where(p => p.Name == "King" && p.CurrentPosition == ("D", 7)).FirstOrDefault();
             PlayerOneKing.CurrentPosition = ("D", 4);
-            Enum.TryParse<ChessCoordinate>(PlayerOneKing.CurrentPosition.X, out ChessCoordinate X);
-            int Y = PlayerOneKing.CurrentPosition.Y;
+            (int P1x, int P1Y) = Chess.ParsePosition(PlayerOneKing.CurrentPosition);
 
             // Setup PlayerTwo
             GamePiece? PlayerTwoBishop = PlayerTwo!.GamePieces!.Where(p => p.Name == "Bishop" && p.CurrentPosition == ("C", 0)).FirstOrDefault();
             PlayerTwoBishop.CurrentPosition = ("E", 4);
-            Enum.TryParse<ChessCoordinate>(PlayerTwoBishop.CurrentPosition.X, out ChessCoordinate X2);
-            int Y2 = PlayerTwoBishop.CurrentPosition.Y;
+            (int P2x, int P2Y) = Chess.ParsePosition(PlayerTwoBishop.CurrentPosition);
             game.PlaceInMatrix();
 
             // Act
-            PlayerOne.Select((int)X, Y, game, PlayerOne);
+            PlayerOne.Select(3, 4, game, PlayerOne);
             PlayerOne.MovePiece(4, 4, game);
+
             GamePiece? RemovedFromPlay = null;
             for (int i = 0; i < game.Board.Matrix.GetLength(0); i++)
             {
-                for (int j = 0; j < game.Board.Matrix.GetLength(0); j++)
+                for (int j = 0; j < game.Board.Matrix.GetLength(1); j++)
                 {
                     if (game.Board.Matrix[i, j] == PlayerTwoBishop) RemovedFromPlay = game.Board.Matrix[i, j];
                 }

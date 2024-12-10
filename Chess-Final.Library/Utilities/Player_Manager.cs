@@ -34,6 +34,7 @@ public static class PlayerManager
         {
             Player player = new(username);
             DB_Connect dB_Connect = new();
+            //REQ#4.1.1
             dB_Connect.InsertRecord(player, password);
             OnlinePlayers.Add(player);
             NewSignIn?.Invoke();
@@ -50,6 +51,7 @@ public static class PlayerManager
     public static Player GetPlayer(Guid UUID)
     {
         DB_Connect dB_Connect = new();
+        //REQ#4.1.2
         Player? data = dB_Connect.GetUserData(UUID);
         return data;
     }

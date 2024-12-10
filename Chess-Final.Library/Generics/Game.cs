@@ -5,6 +5,7 @@ using Chess_Final.DB_Manager;
 using Chess_Final.Lobby;
 using Player;
 
+//REQ#2.1.1
 public abstract class Game
 {
     public Guid UUID { get; set; } = Guid.NewGuid();

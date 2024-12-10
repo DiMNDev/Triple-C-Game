@@ -4,7 +4,6 @@ using Player;
 using Generics;
 using TC_DataManager;
 using Chess_Final.Lobby;
-using System.Security.Cryptography.X509Certificates;
 
 public class Chess : Game
 {
@@ -17,6 +16,7 @@ public class Chess : Game
     public override Player? CurrentPlayer { get; set; }
     public override void NewTurn()
     {
+        CheckInCheck();
         if (GameOver) GameOverCleanUp();
         Console.WriteLine($"{CurrentPlayer.Username} Has ended their turn.");
         base.NewTurn();
@@ -49,44 +49,66 @@ public class Chess : Game
     {
         Game game = LobbyManager.GetGame(GameType.Chess, gameID);
 
-
-        GamePiece King = owner switch
-        {
-            Owner.Player => game.PlayerOne.GamePieces.Where(p => p.Name == "King").FirstOrDefault(),
-            Owner.Opponent => game.PlayerTwo.GamePieces.Where(p => p.Name == "King").FirstOrDefault(),
-
-        };
+        // Create a new list to return safe moves for king
         List<(int X, int Y)> returnList = new();
+        // Loop through each scenario of current possible moves
         foreach (var move in possibleMoves)
         {
-            GamePiece[,] temp = game.Board.TempMatrix;
-            temp[move.X, move.Y] = King;
-            Console.WriteLine($"---King POS: ({move.X},{move.Y})---");
-            for (int Y = 0; Y < temp.GetLength(0); Y++)
+            // Create a hard copy of the matrix
+            GamePiece[,] tempBoard = game.Board.HardCopy();
+            // Get reference to King in question
+            GamePiece tempKing = FindTempKing(ref tempBoard, owner);
+            // Move King in question to current move
+            tempBoard[move.X, move.Y] = tempKing;
+            // Remove old tempKing
+            RemoveOldKing(ref tempBoard, tempKing);
+            // Update NewTempKing current position
+            tempBoard[move.X, move.Y].CurrentPosition = (((ChessCoordinate)move.X).ToString(), move.Y);
+
+            // Loop through the matrix to calculate moves for each piece 🥵
+            for (int Y = 0; Y < tempBoard.GetLength(0); Y++)
             {
-                for (int X = 0; X < temp.GetLength(1); X++)
+                for (int X = 0; X < tempBoard.GetLength(1); X++)
                 {
-                    if (temp[X, Y] != null && temp[X, Y].Name != "King")
+                    if (tempBoard[X, Y] != null && tempBoard[X, Y].Name != "King" && tempBoard[X, Y].owner != owner)
                     {
-                        Console.WriteLine($"Piece: {temp[X, Y].Name} POS: ({X},{Y})");
-                        temp[X, Y].CalculateValidMoves(game.Board.GetPieceFromMatrix);
-
-                        // Ignore Pawn Forward
-                        if (temp[X, Y].Name == "Pawn")
+                        tempBoard[X, Y].CalculateValidMoves(game.Board.GetPieceFromTempMatrix);
+                        List<(int MX, int MY)> pieceMoves = tempBoard[X, Y].AllowedMovement;
+                        if (tempBoard[X, Y].Name == "Pawn")
                         {
+                            (int pieceX, int _) = ParsePosition(tempBoard[X, Y].CurrentPosition);
+                            pieceMoves = pieceMoves.Where(mv => mv.MX != pieceX).ToList();
+                        }
+                        List<(int MX, int MY)> Threats = pieceMoves.Where(possibleMoves.Contains).ToList();
 
-                            (int pieceX, int _) = Chess.ParsePosition(temp[X, Y].CurrentPosition);
-                            temp[X, Y].AllowedMovement.Where(mv => mv.X != pieceX);
-                        }
-                        else
-                        {
-                            returnList.AddRange(temp[X, Y].AllowedMovement.Where(mv => returnList.Contains(mv)));
-                        }
+                        returnList.AddRange(Threats);
+
                     }
                 }
             }
         }
         return returnList;
+    }
+    private static void RemoveOldKing(ref GamePiece[,] tempBoard, GamePiece King)
+    {
+        GamePiece pieceToRemove = tempBoard.Cast<GamePiece>().Where(p => p != null).FirstOrDefault(p => p.CurrentPosition.X == King.CurrentPosition.X && p.CurrentPosition.Y == King.CurrentPosition.Y && p.Name == "King");
+        (int X, int Y) removeAt = ParsePosition(pieceToRemove.CurrentPosition);
+        if (pieceToRemove == null)
+        {
+            throw new TheKingDoesNotExistException();
+        }
+        tempBoard[removeAt.X, removeAt.Y] = null;
+
+    }
+    public static GamePiece? FindTempKing(ref GamePiece[,] tempBoard, Owner owner)
+    {
+        GamePiece? King = tempBoard.Cast<GamePiece>().Where(p => p != null).FirstOrDefault(p => p.Name == "King" && p.owner == owner);
+        if (King == null)
+        {
+            throw new TheKingDoesNotExistException();
+        }
+        return King;
+
     }
     public static List<(int X, int Y)> GenerateEnemyMoves(Owner owner, Guid gameID)
     {
@@ -181,7 +203,7 @@ public class Chess : Game
         // Check CWD for use with different projects
         string CWD = Directory.GetCurrentDirectory();
         Console.WriteLine(CWD);
-
+        //REQ#4.1.2
         IEnumerable<PlayerData> data = DataManager.LoadFile<IEnumerable<PlayerData>>(FilePaths.Blazor);
         if (data != null)
             if (player == PlayerOne)

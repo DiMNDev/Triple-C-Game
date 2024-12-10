@@ -1,8 +1,7 @@
 namespace Chess_Final.Chess;
-
 using Generics;
-using Chess_Final.Lobby;
 
+//REQ#2.1.2
 public class King : ChessPiece
 {
     public override PieceType Type { get; set; } = PieceType.king;
